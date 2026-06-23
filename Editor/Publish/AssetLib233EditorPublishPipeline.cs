@@ -65,10 +65,12 @@ namespace AssetLib233.Editor
             report.cdnRegion = config.cdnRegion;
             report.cdnBucket = config.cdnBucket;
             report.cdnPathPrefix = config.cdnPathPrefix;
+            report.uploadConfigName = AssetLib233EditorPublishConfigResolver.ResolveUploadConfigName(config);
             report.cdnGoToolConfigPath = AssetLib233CdnGoToolAdapter.ResolveConfigPathForReport(config);
             report.agentValidationPlatform = config.agentValidationPlatform;
             report.agentValidationEnvironment = config.agentValidationEnvironment;
             report.cdnRootUrl = config.cdnRootUrl;
+            report.enableBundleCrypto = config.enableBundleCrypto;
             return report;
         }
 
@@ -111,7 +113,13 @@ namespace AssetLib233.Editor
             string outputRoot = string.IsNullOrWhiteSpace(config.buildOutputRoot)
                 ? "AssetBundles/AssetLib233/" + buildTarget
                 : config.buildOutputRoot;
-            bool success = AssetLib233EditorBuildPipeline.BuildProfile(profile, outputRoot, buildTarget, out string error);
+            bool success = AssetLib233EditorBuildPipeline.BuildProfile(
+                profile,
+                outputRoot,
+                buildTarget,
+                config.enableBundleCrypto,
+                config.bundleCryptoPassword,
+                out string error);
             step.exitCode = success ? 0 : -1;
             step.command = "AssetLib233EditorBuildPipeline.BuildProfile";
             step.message = success ? "构建成功: " + outputRoot : error;

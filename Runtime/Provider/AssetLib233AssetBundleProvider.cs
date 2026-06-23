@@ -99,7 +99,14 @@ namespace AssetLib233.Runtime
             _bundleLoadErrorByName.Remove(bundleInfo.BundleName);
             string localPath = AssetLib233BundlePathResolver.GetCacheBundlePath(_assetPackage.PackageName, bundleInfo);
             string builtinPath = AssetLib233BundlePathResolver.GetBuiltinBundlePath(_assetPackage.PackageName, bundleInfo);
-            AssetLib233BundleLoadSlot slot = new AssetLib233BundleLoadSlot(bundleInfo, localPath, builtinPath);
+            string cryptoPassword = _assetPackage.Config == null
+                ? AssetLib233Constants.DefaultBundleCryptoPassword
+                : _assetPackage.Config.BundleCryptoPassword;
+            AssetLib233BundleLoadSlot slot = new AssetLib233BundleLoadSlot(
+                bundleInfo,
+                localPath,
+                builtinPath,
+                cryptoPassword);
             _loadingSlotByName.Add(bundleInfo.BundleName, slot);
             AssetLib233RuntimeDiagnostic.RecordEvent(
                 "bundle-load-start group=" +

@@ -25,12 +25,12 @@ namespace AssetLib233.Runtime
 
         public EnumAssetLib233LoadMethod GetPreferredLoadMethod(AssetLib233PackageConfig config)
         {
-            if (config.PlayMode == EnumAssetLib233PlayMode.EditorRemoteSimulation)
+            if (config.PlayMode == EnumHotUpdateType.EditorRemoteSimulation)
             {
                 return EnumAssetLib233LoadMethod.EditorRemoteSimulation;
             }
 
-            if (config.PlayMode == EnumAssetLib233PlayMode.Web)
+            if (config.PlayMode == EnumHotUpdateType.Web)
             {
                 return EnumAssetLib233LoadMethod.WebRequest;
             }

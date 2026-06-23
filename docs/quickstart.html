@@ -17,9 +17,11 @@
     <h2>1. 初始化</h2>
     <pre>AssetLib233PackageConfig config = new AssetLib233PackageConfig();
 config.PackageName = "default";
-config.PlayMode = EnumAssetLib233PlayMode.Host;
+config.PlayMode = EnumHotUpdateType.Host;
 config.DefaultHostServer = "https://cdn.example.com/default";
 config.FallbackHostServer = "https://backup.example.com/default";
+config.EnableBundleCrypto = true;
+config.BundleCryptoPassword = "root";
 
 AssetLib233.Instance.Initialize();
 AssetLib233.Instance.InitializeGroup(config);</pre>
@@ -37,7 +39,7 @@ await downloadOperation;</pre>
   <section>
     <h2>3. 加载资源</h2>
     <pre>AssetHandle233&lt;GameObject&gt; handle =
-    AssetLib233.Instance.LoadAssetAsync&lt;GameObject&gt;("default", "ui/main.prefab");
+    AssetLib233.Instance.LoadAssetAsync&lt;GameObject&gt;("default", "main");
 await handle;
 GameObject prefab = handle.AssetObject;</pre>
   </section>

@@ -69,10 +69,12 @@ namespace AssetLib233.Editor
             report.cdnRegion = config.cdnRegion;
             report.cdnBucket = config.cdnBucket;
             report.cdnPathPrefix = config.cdnPathPrefix;
+            report.uploadConfigName = AssetLib233EditorPublishConfigResolver.ResolveUploadConfigName(config);
             report.cdnGoToolConfigPath = AssetLib233CdnGoToolAdapter.ResolveConfigPathForReport(config);
             report.agentValidationPlatform = config.agentValidationPlatform;
             report.agentValidationEnvironment = config.agentValidationEnvironment;
             report.cdnRootUrl = config.cdnRootUrl;
+            report.enableBundleCrypto = config.enableBundleCrypto;
             return report;
         }
 
@@ -334,18 +336,10 @@ namespace AssetLib233.Editor
         {
             if (string.IsNullOrEmpty(collector.AddressPrefix))
             {
-                return assetPath;
+                return Path.GetFileNameWithoutExtension(assetPath);
             }
 
-            string rootPath = collector.AssetRootPath.Replace('\\', '/').TrimEnd('/');
-            string safeAssetPath = assetPath.Replace('\\', '/');
-            string relativePath = safeAssetPath;
-            if (safeAssetPath.StartsWith(rootPath, System.StringComparison.Ordinal))
-            {
-                relativePath = safeAssetPath.Substring(rootPath.Length).TrimStart('/');
-            }
-
-            return collector.AddressPrefix.TrimEnd('/') + "/" + relativePath;
+            return collector.AddressPrefix.TrimEnd('/') + "/" + Path.GetFileNameWithoutExtension(assetPath);
         }
 
         private static AssetLib233EditorPublishReportStep CreateStep(string stepName)

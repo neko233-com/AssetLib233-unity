@@ -68,7 +68,7 @@ namespace AssetLib233.Runtime
             _config = config;
             IAssetLib233PlatformPlugin plugin = AssetLib233PluginRegistry.GetPlugin(AssetLib233PlatformDetector.GetRuntimePlatform());
             plugin.BeforeInitializePackage(config);
-            if (config.PlayMode == EnumAssetLib233PlayMode.EditorRemoteSimulation)
+            if (config.PlayMode == EnumHotUpdateType.EditorRemoteSimulation)
             {
                 AssetLib233EditorRemoteSimulationService.Enable(string.Empty);
             }
@@ -112,8 +112,8 @@ namespace AssetLib233.Runtime
 
 #if UNITY_EDITOR
             if (_config == null ||
-                _config.PlayMode == EnumAssetLib233PlayMode.EditorSimulate ||
-                _config.PlayMode == EnumAssetLib233PlayMode.EditorRemoteSimulation)
+                _config.PlayMode == EnumHotUpdateType.EditorSimulate ||
+                _config.PlayMode == EnumHotUpdateType.EditorRemoteSimulation)
             {
                 return _editorAssetDatabaseProvider.LoadAssetAsync<TObject>(this, assetInfo);
             }
@@ -124,6 +124,11 @@ namespace AssetLib233.Runtime
         public AssetHandle233<Object> LoadAssetAsync(string location)
         {
             return LoadAssetAsync<Object>(location);
+        }
+
+        public AssetHandle233<TObject> LoadAssetByPathAsync<TObject>(string assetPath) where TObject : Object
+        {
+            return LoadAssetAsync<TObject>(assetPath);
         }
 
         public void BuildDownloadRequestsNonAlloc(

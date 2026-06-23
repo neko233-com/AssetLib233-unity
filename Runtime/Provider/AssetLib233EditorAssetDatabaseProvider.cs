@@ -11,7 +11,8 @@ namespace AssetLib233.Runtime
     {
         public bool CanLoad(AssetInfo233 assetInfo)
         {
-            return assetInfo != null && !string.IsNullOrEmpty(assetInfo.AssetPath);
+            return assetInfo != null &&
+                   (!string.IsNullOrEmpty(assetInfo.AssetPath) || !string.IsNullOrEmpty(assetInfo.Address));
         }
 
         public AssetHandle233<TObject> LoadAssetAsync<TObject>(AssetPackage233 assetPackage, AssetInfo233 assetInfo)
@@ -26,7 +27,10 @@ namespace AssetLib233.Runtime
                 return handle;
             }
 
-            TObject assetObject = AssetDatabase.LoadAssetAtPath<TObject>(assetInfo.AssetPath);
+            string assetPath = ResolveEditorAssetPath(assetInfo);
+            TObject assetObject = string.IsNullOrEmpty(assetPath)
+                ? null
+                : AssetDatabase.LoadAssetAtPath<TObject>(assetPath);
             if (assetObject == null)
             {
                 handle.SetFailed(
@@ -35,7 +39,7 @@ namespace AssetLib233.Runtime
                     " | address = " +
                     assetInfo.Address +
                     " | path = " +
-                    assetInfo.AssetPath +
+                    assetPath +
                     " | type = " +
                     typeof(TObject).Name);
                 return handle;
@@ -48,10 +52,51 @@ namespace AssetLib233.Runtime
                 " address=" +
                 assetInfo.Address +
                 " path=" +
-                assetInfo.AssetPath +
+                assetPath +
                 " type=" +
                 typeof(TObject).Name);
             return handle;
+        }
+
+        private static string ResolveEditorAssetPath(AssetInfo233 assetInfo)
+        {
+            if (assetInfo == null)
+            {
+                return string.Empty;
+            }
+
+            if (!string.IsNullOrEmpty(assetInfo.AssetPath))
+            {
+                return assetInfo.AssetPath;
+            }
+
+            if (string.IsNullOrEmpty(assetInfo.Address))
+            {
+                return string.Empty;
+            }
+
+            string[] guids = AssetDatabase.FindAssets(assetInfo.Address);
+            string matchedPath = string.Empty;
+            int matchedCount = 0;
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+                string fileName = System.IO.Path.GetFileNameWithoutExtension(assetPath);
+                if (!string.Equals(fileName, assetInfo.Address, System.StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                matchedPath = assetPath;
+                matchedCount++;
+                if (matchedCount > 1)
+                {
+                    Debug.LogError("[AssetLib233] EditorSimulate 文件名重复，无法按短地址唯一加载: " + assetInfo.Address);
+                    return string.Empty;
+                }
+            }
+
+            return matchedPath;
         }
     }
 }

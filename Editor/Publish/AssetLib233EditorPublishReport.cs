@@ -19,10 +19,12 @@ namespace AssetLib233.Editor
         public string cdnRegion = "";
         public string cdnBucket = "";
         public string cdnPathPrefix = "";
+        public string uploadConfigName = "";
         public string cdnGoToolConfigPath = "";
         public string agentValidationPlatform = "";
         public string agentValidationEnvironment = "";
         public string cdnRootUrl = "";
+        public bool enableBundleCrypto;
         public bool success;
         public List<AssetLib233EditorPublishReportStep> steps =
             new List<AssetLib233EditorPublishReportStep>(16);

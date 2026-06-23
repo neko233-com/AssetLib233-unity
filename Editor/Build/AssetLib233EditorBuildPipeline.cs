@@ -20,11 +20,31 @@ namespace AssetLib233.Editor
         private static readonly List<AssetBundleInfo233> _bundleInfos = new List<AssetBundleInfo233>(256);
         private static readonly List<AssetInfo233> _assetInfos = new List<AssetInfo233>(2048);
         private static readonly List<string> _bundleNames = new List<string>(256);
+        private static readonly Dictionary<string, string> _assetPathToAddress = new Dictionary<string, string>(2048);
+        private static readonly HashSet<string> _assetAddressSet = new HashSet<string>();
         private static readonly HashSet<string> _collectedAssetPathSet = new HashSet<string>();
         private static readonly AssetLib233DefaultPackRule _defaultPackRule = new AssetLib233DefaultPackRule();
         private static readonly AssetLib233DefaultBuildVerifier _defaultVerifier = new AssetLib233DefaultBuildVerifier();
+        private static int _duplicateAddressCount;
 
         public static bool BuildProfile(AssetBuildProfile233 profile, string outputRoot, BuildTarget buildTarget, out string error)
+        {
+            return BuildProfile(
+                profile,
+                outputRoot,
+                buildTarget,
+                false,
+                AssetLib233Constants.DefaultBundleCryptoPassword,
+                out error);
+        }
+
+        public static bool BuildProfile(
+            AssetBuildProfile233 profile,
+            string outputRoot,
+            BuildTarget buildTarget,
+            bool enableBundleCrypto,
+            string bundleCryptoPassword,
+            out string error)
         {
             error = string.Empty;
             if (profile == null)
@@ -51,7 +71,7 @@ namespace AssetLib233.Editor
                 }
 
                 string groupOutputRoot = Path.Combine(outputRoot, AssetLib233NameUtility.NormalizePackageName(group.GroupName));
-                if (!BuildGroup(group, groupOutputRoot, buildTarget, out string groupError))
+                if (!BuildGroup(group, groupOutputRoot, buildTarget, enableBundleCrypto, bundleCryptoPassword, out string groupError))
                 {
                     error = groupError;
                     isOk = false;
@@ -63,7 +83,13 @@ namespace AssetLib233.Editor
             return isOk;
         }
 
-        private static bool BuildGroup(AssetGroup233 group, string outputRoot, BuildTarget buildTarget, out string error)
+        private static bool BuildGroup(
+            AssetGroup233 group,
+            string outputRoot,
+            BuildTarget buildTarget,
+            bool enableBundleCrypto,
+            string bundleCryptoPassword,
+            out string error)
         {
             error = string.Empty;
             Directory.CreateDirectory(outputRoot);
@@ -71,10 +97,22 @@ namespace AssetLib233.Editor
             _bundleInfos.Clear();
             _assetInfos.Clear();
             _bundleNames.Clear();
+            _assetPathToAddress.Clear();
+            _assetAddressSet.Clear();
             _collectedAssetPathSet.Clear();
+            _duplicateAddressCount = 0;
 
             Dictionary<string, List<string>> bundleToAssets = new Dictionary<string, List<string>>(256);
             CollectGroupAssets(group, bundleToAssets);
+            if (_duplicateAddressCount > 0)
+            {
+                error = "AssetGroup 存在重复收集地址，请修正重名资源或 AddressPrefix. group = " +
+                        group.GroupName +
+                        " | duplicateAddressCount = " +
+                        _duplicateAddressCount;
+                return false;
+            }
+
             if (bundleToAssets.Count == 0)
             {
                 error = "AssetGroup 没有收集到资源: " + group.GroupName;
@@ -93,7 +131,12 @@ namespace AssetLib233.Editor
                 return false;
             }
 
-            AssetManifest233 manifest = CreateManifest(group, outputRoot, unityManifest);
+            AssetManifest233 manifest = CreateManifest(
+                group,
+                outputRoot,
+                unityManifest,
+                enableBundleCrypto,
+                bundleCryptoPassword);
             WriteManifestAndVersionFiles(manifest, outputRoot);
             AssetLib233BuildVerifyContext verifyContext = new AssetLib233BuildVerifyContext();
             verifyContext.platformName = buildTarget.ToString();
@@ -149,9 +192,19 @@ namespace AssetLib233.Editor
 
                     _collectedAssetPathSet.Add(assetPath);
                     string bundleName = _defaultPackRule.GetBundleName(group, collector, assetPath);
+                    string address = BuildAddress(collector, assetPath);
+                    if (_assetAddressSet.Contains(address))
+                    {
+                        _duplicateAddressCount++;
+                        Debug.LogError("[AssetLib233] 收集地址重复，已跳过重复资源. address = " + address + " | assetPath = " + assetPath);
+                        continue;
+                    }
+
+                    _assetAddressSet.Add(address);
                     AddAssetToBundle(bundleToAssets, bundleName, assetPath);
+                    _assetPathToAddress[assetPath] = address;
                     AssetLib233BuildAssetRecord record = new AssetLib233BuildAssetRecord();
-                    record.Address = BuildAddress(collector, assetPath);
+                    record.Address = address;
                     record.AssetPath = assetPath;
                     record.BundleName = bundleName;
                     record.Tags = SplitTags(collector.TagText);
@@ -184,13 +237,36 @@ namespace AssetLib233.Editor
                 AssetBundleBuild build = new AssetBundleBuild();
                 build.assetBundleName = bundleName;
                 build.assetNames = assets.ToArray();
+                build.addressableNames = BuildAddressableNames(assets);
                 builds[i] = build;
             }
 
             return builds;
         }
 
-        private static AssetManifest233 CreateManifest(AssetGroup233 group, string outputRoot, AssetBundleManifest unityManifest)
+        private static string[] BuildAddressableNames(List<string> assets)
+        {
+            string[] addressableNames = new string[assets.Count];
+            for (int i = 0; i < assets.Count; i++)
+            {
+                string assetPath = assets[i];
+                if (!_assetPathToAddress.TryGetValue(assetPath, out string address))
+                {
+                    address = Path.GetFileNameWithoutExtension(assetPath);
+                }
+
+                addressableNames[i] = address;
+            }
+
+            return addressableNames;
+        }
+
+        private static AssetManifest233 CreateManifest(
+            AssetGroup233 group,
+            string outputRoot,
+            AssetBundleManifest unityManifest,
+            bool enableBundleCrypto,
+            string bundleCryptoPassword)
         {
             string groupName = AssetLib233NameUtility.NormalizePackageName(group.GroupName);
             for (int i = 0; i < _bundleNames.Count; i++)
@@ -198,14 +274,21 @@ namespace AssetLib233.Editor
                 string bundleName = _bundleNames[i];
                 string filePath = Path.Combine(outputRoot, bundleName);
                 FileInfo fileInfo = new FileInfo(filePath);
+                uint crc = 0;
+                BuildPipeline.GetCRCForAssetBundle(filePath, out crc);
+                if (enableBundleCrypto)
+                {
+                    ApplyBundleXorCrypto(filePath, bundleCryptoPassword);
+                    fileInfo.Refresh();
+                }
+
                 AssetBundleInfo233 bundleInfo = new AssetBundleInfo233();
                 bundleInfo.BundleName = bundleName;
                 bundleInfo.FileName = bundleName;
                 bundleInfo.FileHash = ComputeFileMd5(filePath);
                 bundleInfo.FileSize = fileInfo.Exists ? fileInfo.Length : 0L;
-                uint crc = 0;
-                BuildPipeline.GetCRCForAssetBundle(filePath, out crc);
                 bundleInfo.FileCrc = crc;
+                bundleInfo.IsEncrypted = enableBundleCrypto;
                 bundleInfo.BundleType = EnumAssetLib233BundleType.AssetBundle;
                 bundleInfo.SetDependBundleNames(unityManifest.GetDirectDependencies(bundleName));
                 bundleInfo.SetTags(System.Array.Empty<string>());
@@ -217,7 +300,7 @@ namespace AssetLib233.Editor
                 AssetLib233BuildAssetRecord record = _assetRecords[i];
                 AssetInfo233 assetInfo = new AssetInfo233();
                 assetInfo.Address = record.Address;
-                assetInfo.AssetPath = record.AssetPath;
+                assetInfo.AssetPath = string.Empty;
                 assetInfo.BundleName = record.BundleName;
                 assetInfo.SetTags(record.Tags);
                 _assetInfos.Add(assetInfo);
@@ -257,18 +340,10 @@ namespace AssetLib233.Editor
         {
             if (string.IsNullOrEmpty(collector.AddressPrefix))
             {
-                return assetPath;
+                return Path.GetFileNameWithoutExtension(assetPath);
             }
 
-            string rootPath = collector.AssetRootPath.Replace('\\', '/').TrimEnd('/');
-            string safeAssetPath = assetPath.Replace('\\', '/');
-            string relativePath = safeAssetPath;
-            if (safeAssetPath.StartsWith(rootPath))
-            {
-                relativePath = safeAssetPath.Substring(rootPath.Length).TrimStart('/');
-            }
-
-            return collector.AddressPrefix.TrimEnd('/') + "/" + relativePath;
+            return collector.AddressPrefix.TrimEnd('/') + "/" + Path.GetFileNameWithoutExtension(assetPath);
         }
 
         private static string[] SplitTags(string tagText)
@@ -300,6 +375,34 @@ namespace AssetLib233.Editor
                     }
 
                     return builder.ToString();
+                }
+            }
+        }
+
+        private static void ApplyBundleXorCrypto(string filePath, string bundleCryptoPassword)
+        {
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            {
+                return;
+            }
+
+            byte[] keyBytes = AssetLib233XorCrypto.BuildKeyBytes(bundleCryptoPassword);
+            byte[] buffer = new byte[64 * 1024];
+            using (FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+            {
+                long filePosition = 0L;
+                while (true)
+                {
+                    int readCount = stream.Read(buffer, 0, buffer.Length);
+                    if (readCount <= 0)
+                    {
+                        break;
+                    }
+
+                    AssetLib233XorCrypto.ApplyXorInPlace(buffer, 0, readCount, filePosition, keyBytes);
+                    stream.Position = filePosition;
+                    stream.Write(buffer, 0, readCount);
+                    filePosition += readCount;
                 }
             }
         }

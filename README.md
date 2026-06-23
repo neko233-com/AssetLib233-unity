@@ -63,9 +63,11 @@ flowchart LR
 ```csharp
 AssetLib233PackageConfig config = new AssetLib233PackageConfig();
 config.PackageName = "default";
-config.PlayMode = EnumAssetLib233PlayMode.Host;
+config.PlayMode = EnumHotUpdateType.Host;
 config.DefaultHostServer = "https://cdn.example.com/default";
 config.FallbackHostServer = "https://backup.example.com/default";
+config.EnableBundleCrypto = true;
+config.BundleCryptoPassword = "root";
 
 AssetLib233.Instance.Initialize();
 AssetLib233.Instance.InitializeGroup(config);
@@ -105,6 +107,49 @@ AssetLib233.publish.local.json
 ```powershell
 $env:ASSETLIB233_LOCAL_CONFIG="D:/Private/AssetLib233.publish.local.json"
 ```
+
+多环境不要固定某个 CDN json，使用映射：
+
+```json
+{
+  "activeConfigKey": "",
+  "uploadArguments": "--config {uploadConfigName}",
+  "uploadConfigMappings": [
+    {
+      "key": "minigame_wx_test",
+      "platform": "WX",
+      "environment": "test",
+      "macro": "WX",
+      "configName": "minigame_wx_test"
+    },
+    {
+      "key": "minigame_taptap_test",
+      "platform": "TAPMINIGAME",
+      "environment": "test",
+      "macro": "TAPMINIGAME",
+      "configName": "minigame_taptap_test"
+    }
+  ],
+  "cdnGoToolConfigMappings": [
+    {
+      "key": "minigame_wx_test",
+      "platform": "WX",
+      "environment": "test",
+      "macro": "WX",
+      "configName": "config-for-douyin-refresh-cdn.minigame_wx_test.json"
+    },
+    {
+      "key": "minigame_taptap_test",
+      "platform": "TAPMINIGAME",
+      "environment": "test",
+      "macro": "TAPMINIGAME",
+      "configName": "config-for-douyin-refresh-cdn.minigame_taptap_test.json"
+    }
+  ]
+}
+```
+
+解析优先级：`ASSETLIB233_CONFIG_KEY` / `activeConfigKey` -> 宏或当前 Unity BuildTarget -> `platform + environment` -> `platform`。未命中时不再默认落 WX，避免 Android/TapTap 被错传。AssetLib233 默认 XOR 密码为 `root`；项目可在 `.project/.local` 配置里覆盖，例如当前项目使用 `neko233`。
 
 ## Agent-first 发布
 
@@ -148,7 +193,22 @@ powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-
 {
   "cdnProvider": "VolcengineChina",
   "cdnGoToolConfigDirectory": "_tools/cdn_douyin_tools",
-  "cdnGoToolConfigName": "config-for-douyin-refresh-cdn.minigame_wx_test.json",
+  "cdnGoToolConfigMappings": [
+    {
+      "key": "minigame_wx_test",
+      "platform": "WX",
+      "environment": "test",
+      "macro": "WX",
+      "configName": "config-for-douyin-refresh-cdn.minigame_wx_test.json"
+    },
+    {
+      "key": "minigame_taptap_test",
+      "platform": "TAPMINIGAME",
+      "environment": "test",
+      "macro": "TAPMINIGAME",
+      "configName": "config-for-douyin-refresh-cdn.minigame_taptap_test.json"
+    }
+  ],
   "cdnGoToolExecutableName": "douyin-refresh-cdn.exe",
   "cdnGoToolCommand": "run"
 }
@@ -164,6 +224,8 @@ powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-
 - 多 AssetGroup 下载统一汇总一条 Loading。
 - 默认下载并发 10，小游戏平台优先。
 - 框架内部热路径使用 NonAlloc / ListPool。
+- AssetInfo 默认按文件名短地址写入 Manifest，完整路径输入会映射到短地址，降低真机字符串常驻开销。
+- 原生 XOR 加密按文件偏移分段处理，构建端加密、运行端 `LoadFromStreamAsync` 解密，支持 Seek 和分段读取一致。
 - 稳定优先，不为了零 GC 牺牲可维护性和排障能力。
 
 ## 真机诊断

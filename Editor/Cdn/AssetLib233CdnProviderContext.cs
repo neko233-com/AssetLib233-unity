@@ -48,10 +48,24 @@ namespace AssetLib233.Editor
 
         public bool RunUploadTool(string stepName)
         {
+            string arguments = AssetLib233EditorPublishConfigResolver.ResolveUploadArguments(_config);
+            if (!string.IsNullOrWhiteSpace(_config.uploadToolPath) && string.IsNullOrWhiteSpace(arguments))
+            {
+                AssetLib233EditorPublishReportStep failedStep = new AssetLib233EditorPublishReportStep();
+                failedStep.name = stepName;
+                failedStep.exitCode = -1;
+                failedStep.message = "未解析到上传配置名，请检查 activeConfigKey / 宏映射 / ASSETLIB233_CONFIG_KEY";
+                failedStep.startTimeUtc = System.DateTime.UtcNow.ToString("O");
+                failedStep.endTimeUtc = failedStep.startTimeUtc;
+                _report.AddStep(failedStep);
+                Debug.LogError("[AssetLib233-CDN] " + failedStep.message);
+                return false;
+            }
+
             return RunToolStep(
                 stepName,
                 _config.uploadToolPath,
-                _config.uploadArguments,
+                arguments,
                 _config.uploadWorkingDirectory);
         }
 

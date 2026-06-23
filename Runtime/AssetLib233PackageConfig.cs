@@ -6,11 +6,12 @@ namespace AssetLib233.Runtime
     public sealed class AssetLib233PackageConfig
     {
         [SerializeField] private string _packageName = AssetLib233Constants.DefaultPackageName;
-        [SerializeField] private EnumAssetLib233PlayMode _playMode = EnumAssetLib233PlayMode.Host;
+        [SerializeField] private EnumHotUpdateType _playMode = EnumHotUpdateType.Host;
         [SerializeField] private string _defaultHostServer = "";
         [SerializeField] private string _fallbackHostServer = "";
         [SerializeField] private bool _autoUnloadBundleWhenUnused = true;
         [SerializeField] private bool _enableBundleCrypto;
+        [SerializeField] private string _bundleCryptoPassword = AssetLib233Constants.DefaultBundleCryptoPassword;
         [SerializeField] private EnumAssetLib233GroupRole _groupRole = EnumAssetLib233GroupRole.RequiredPostLogin;
         [SerializeField] private int _downloadPriority;
         [SerializeField] private long _operationTimeSliceMs = AssetLib233Constants.WebGLOperationTimeSliceMs;
@@ -22,7 +23,7 @@ namespace AssetLib233.Runtime
             set { _packageName = AssetLib233NameUtility.NormalizePackageName(value); }
         }
 
-        public EnumAssetLib233PlayMode PlayMode
+        public EnumHotUpdateType PlayMode
         {
             get { return _playMode; }
             set { _playMode = value; }
@@ -50,6 +51,12 @@ namespace AssetLib233.Runtime
         {
             get { return _enableBundleCrypto; }
             set { _enableBundleCrypto = value; }
+        }
+
+        public string BundleCryptoPassword
+        {
+            get { return string.IsNullOrEmpty(_bundleCryptoPassword) ? AssetLib233Constants.DefaultBundleCryptoPassword : _bundleCryptoPassword; }
+            set { _bundleCryptoPassword = string.IsNullOrEmpty(value) ? AssetLib233Constants.DefaultBundleCryptoPassword : value; }
         }
 
         public EnumAssetLib233GroupRole GroupRole

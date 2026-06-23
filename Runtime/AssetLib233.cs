@@ -122,6 +122,12 @@ namespace AssetLib233.Runtime
             return assetPackage.LoadAssetAsync<TObject>(address);
         }
 
+        public AssetHandle233<TObject> LoadAssetByPathAsync<TObject>(string groupName, string assetPath) where TObject : Object
+        {
+            AssetPackage233 assetPackage = GetOrCreateGroup(groupName);
+            return assetPackage.LoadAssetByPathAsync<TObject>(assetPath);
+        }
+
         /// <summary>
         /// 按 tag 创建热更下载计划。调用方传入 results，避免高频路径分配。
         /// </summary>
@@ -271,6 +277,11 @@ namespace AssetLib233.Runtime
         public static AssetHandle233<TObject> LoadAsync<TObject>(string groupName, string address) where TObject : Object
         {
             return Instance.LoadAssetAsync<TObject>(groupName, address);
+        }
+
+        public static AssetHandle233<TObject> LoadByPathAsync<TObject>(string groupName, string assetPath) where TObject : Object
+        {
+            return Instance.LoadAssetByPathAsync<TObject>(groupName, assetPath);
         }
     }
 }

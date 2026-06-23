@@ -25,13 +25,20 @@ namespace AssetLib233.Editor
 
             isHandled = true;
             string configDirectory = ResolveProjectRelativePath(config.cdnGoToolConfigDirectory);
-            string configPath = ResolveConfigPath(configDirectory, config.cdnGoToolConfigName);
+            string configName = AssetLib233EditorPublishConfigResolver.ResolveCdnGoConfigName(config);
+            string configPath = ResolveConfigPath(configDirectory, configName);
             string toolPath = ResolveToolPath(configDirectory, config.cdnGoToolExecutableName);
             string finalCommand = string.IsNullOrWhiteSpace(command) ? "run" : command.Trim();
 
             if (!Directory.Exists(configDirectory))
             {
                 AddFailedStep(report, stepName, AssetLib233EditorI18n.Text("CdnGoConfigMissing") + ": " + configDirectory);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(configName))
+            {
+                AddFailedStep(report, stepName, "未解析到 CDN Go 配置名，请检查 activeConfigKey / 宏映射 / ASSETLIB233_CONFIG_KEY");
                 return false;
             }
 
@@ -50,7 +57,9 @@ namespace AssetLib233.Editor
             string reportRoot = ResolveReportRoot(config);
             Directory.CreateDirectory(reportRoot);
             string logPath = Path.Combine(reportRoot, report.reportId + "_" + stepName + ".log");
-            string arguments = "-config \"" + Path.GetFileName(configPath) + "\" " + finalCommand;
+            string arguments = AssetLib233EditorPublishConfigResolver.ResolveCdnGoArguments(
+                Path.GetFileName(configPath),
+                finalCommand);
             AssetLib233EditorPublishReportStep step = new AssetLib233EditorPublishReportStep();
             int exitCode = AssetLib233EditorProcessRunner.RunAndWait(
                 stepName,
@@ -73,7 +82,7 @@ namespace AssetLib233.Editor
 
             return ResolveConfigPath(
                 ResolveProjectRelativePath(config.cdnGoToolConfigDirectory),
-                config.cdnGoToolConfigName);
+                AssetLib233EditorPublishConfigResolver.ResolveCdnGoConfigName(config));
         }
 
         private static string ResolveToolPath(string configDirectory, string executableName)
@@ -86,9 +95,7 @@ namespace AssetLib233.Editor
 
         private static string ResolveConfigPath(string configDirectory, string configName)
         {
-            string safeConfigName = string.IsNullOrWhiteSpace(configName)
-                ? "config-for-douyin-refresh-cdn.minigame_wx.json"
-                : configName.Trim();
+            string safeConfigName = string.IsNullOrWhiteSpace(configName) ? string.Empty : configName.Trim();
             return Path.Combine(configDirectory, safeConfigName);
         }
 

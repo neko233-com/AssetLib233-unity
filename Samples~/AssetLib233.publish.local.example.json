@@ -1,14 +1,48 @@
 {
+  "activeConfigKey": "",
   "buildOutputRoot": "D:/Build/AssetLib233",
   "nativeBuildProfilePath": "Assets/neko233/AssetLib233/AssetLib233BuildProfile.asset",
   "nativeBuildTarget": "WebGL",
+  "enableBundleCrypto": true,
+  "bundleCryptoPassword": "root",
   "reportRoot": "Library/AssetLib233/PublishReports",
   "buildToolPath": "D:/Tools/assetlib233-build/assetlib233-build.exe",
   "buildWorkingDirectory": "D:/Tools/assetlib233-build",
   "buildArguments": "--platform wx --group all",
   "uploadToolPath": "D:/Tools/unity_copy_hotUpdate_to_server/unity_copy_hotUpdate_to_server.exe",
   "uploadWorkingDirectory": "D:/Tools/unity_copy_hotUpdate_to_server",
-  "uploadArguments": "--config minigame_wx",
+  "uploadArguments": "--config {uploadConfigName}",
+  "uploadConfigName": "",
+  "uploadConfigMappings": [
+    {
+      "key": "minigame_wx_test",
+      "platform": "WX",
+      "environment": "test",
+      "macro": "WX",
+      "configName": "minigame_wx_test"
+    },
+    {
+      "key": "minigame_wx_release",
+      "platform": "WX",
+      "environment": "release",
+      "macro": "WX",
+      "configName": "minigame_wx_release"
+    },
+    {
+      "key": "minigame_taptap_test",
+      "platform": "TAPMINIGAME",
+      "environment": "test",
+      "macro": "TAPMINIGAME",
+      "configName": "minigame_taptap_test"
+    },
+    {
+      "key": "minigame_taptap_release",
+      "platform": "TAPMINIGAME",
+      "environment": "release",
+      "macro": "TAPMINIGAME",
+      "configName": "minigame_taptap_release"
+    }
+  ],
   "refreshToolPath": "D:/Tools/cdn_refresh/run-for-windows.cmd",
   "refreshWorkingDirectory": "D:/Tools/cdn_refresh",
   "refreshArguments": "-config wx run",
@@ -20,7 +54,37 @@
   "cdnRefreshMode": "Directory",
   "cdnProviderProfile": "volcengine-default",
   "cdnGoToolConfigDirectory": "_tools/cdn_douyin_tools",
-  "cdnGoToolConfigName": "config-for-douyin-refresh-cdn.minigame_wx_test.json",
+  "cdnGoToolConfigName": "",
+  "cdnGoToolConfigMappings": [
+    {
+      "key": "minigame_wx_test",
+      "platform": "WX",
+      "environment": "test",
+      "macro": "WX",
+      "configName": "config-for-douyin-refresh-cdn.minigame_wx_test.json"
+    },
+    {
+      "key": "minigame_wx_release",
+      "platform": "WX",
+      "environment": "release",
+      "macro": "WX",
+      "configName": "config-for-douyin-refresh-cdn.minigame_wx_release.json"
+    },
+    {
+      "key": "minigame_taptap_test",
+      "platform": "TAPMINIGAME",
+      "environment": "test",
+      "macro": "TAPMINIGAME",
+      "configName": "config-for-douyin-refresh-cdn.minigame_taptap_test.json"
+    },
+    {
+      "key": "minigame_taptap_release",
+      "platform": "TAPMINIGAME",
+      "environment": "release",
+      "macro": "TAPMINIGAME",
+      "configName": "config-for-douyin-refresh-cdn.minigame_taptap_release.json"
+    }
+  ],
   "cdnGoToolExecutableName": "douyin-refresh-cdn.exe",
   "cdnGoToolCommand": "run",
   "agentValidationBuildProfilePath": "Assets/neko233/AssetLib233/AssetLib233BuildProfile.asset",

@@ -46,8 +46,8 @@ namespace AssetLib233.Runtime
             }
 
             _remoteHost = config.DefaultHostServer;
-            if (config.PlayMode == EnumAssetLib233PlayMode.Offline ||
-                config.PlayMode == EnumAssetLib233PlayMode.EditorSimulate)
+            if (config.PlayMode == EnumHotUpdateType.Offline ||
+                config.PlayMode == EnumHotUpdateType.EditorSimulate)
             {
                 _step = Step.LoadLocalManifest;
                 return;

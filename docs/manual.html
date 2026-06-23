@@ -14,7 +14,7 @@
 <nav><a href="index.html">首页</a><a href="quickstart.html">快速上手</a><a href="comparison.html">对比其他框架</a><a href="architecture.html">架构设计</a><a href="manual.html">详细文档</a><a href="qa.html">QA问题</a><a href="contact.html">联系我们</a></nav>
 <main>
   <section>
-    <h2>PlayMode</h2>
+    <h2>EnumHotUpdateType</h2>
     <table><tr><th>模式</th><th>用途</th></tr><tr><td>EditorSimulate</td><td>编辑器直接走 AssetDatabase。</td></tr><tr><td>EditorRemoteSimulation</td><td>编辑器模拟真机远端下载，不绑定业务 Loading。</td></tr><tr><td>Host</td><td>标准热更，远端 Manifest + 本地缓存。</td></tr><tr><td>Web</td><td>WebGL / Web Play 远端加载。</td></tr><tr><td>Offline</td><td>内置包运行。</td></tr></table>
   </section>
   <section>
@@ -36,13 +36,54 @@
   "cdnRegion": "cn",
   "cdnBucket": "your-volcengine-tos-bucket",
   "cdnPathPrefix": "project/env/weixin/minigame/StreamingAssets",
+  "activeConfigKey": "",
+  "enableBundleCrypto": true,
+  "bundleCryptoPassword": "root",
+  "uploadArguments": "--config {uploadConfigName}",
+  "uploadConfigMappings": [
+    {
+      "key": "minigame_wx_test",
+      "platform": "WX",
+      "environment": "test",
+      "macro": "WX",
+      "configName": "minigame_wx_test"
+    },
+    {
+      "key": "minigame_taptap_test",
+      "platform": "TAPMINIGAME",
+      "environment": "test",
+      "macro": "TAPMINIGAME",
+      "configName": "minigame_taptap_test"
+    }
+  ],
   "cdnGoToolConfigDirectory": "_tools/cdn_douyin_tools",
-  "cdnGoToolConfigName": "config-for-douyin-refresh-cdn.minigame_wx_test.json",
+  "cdnGoToolConfigMappings": [
+    {
+      "key": "minigame_wx_test",
+      "platform": "WX",
+      "environment": "test",
+      "macro": "WX",
+      "configName": "config-for-douyin-refresh-cdn.minigame_wx_test.json"
+    },
+    {
+      "key": "minigame_taptap_test",
+      "platform": "TAPMINIGAME",
+      "environment": "test",
+      "macro": "TAPMINIGAME",
+      "configName": "config-for-douyin-refresh-cdn.minigame_taptap_test.json"
+    }
+  ],
   "cdnGoToolExecutableName": "douyin-refresh-cdn.exe",
   "cdnGoToolCommand": "run",
   "uploadToolPath": "D:/Tools/upload.exe",
   "refreshToolPath": "D:/Tools/refresh.cmd"
 }</pre>
+    <p><code>activeConfigKey</code> 为空时按宏或当前 Unity BuildTarget 选择配置；未命中不会默认落到 WX，避免 Android / TapTap 被错传。</p>
+  </section>
+  <section>
+    <h2>短地址与 XOR 加密</h2>
+    <p>默认收集地址为文件名不带扩展名，Manifest 不再保存完整资源路径。运行时传入完整路径时会自动映射到短地址；构建端通过 <code>AssetBundleBuild.addressableNames</code> 保证 AB 内资源名与短地址一致。</p>
+    <p>AssetLib233 默认 XOR 密码为 <code>root</code>。项目可在 .project/.local 或运行时 <code>AssetLib233PackageConfig.BundleCryptoPassword</code> 覆盖。构建端先记录明文 CRC，再对 AB 文件按偏移 XOR；运行端使用 <code>LoadFromStreamAsync</code> 流式解密，不整包复制。</p>
   </section>
   <section>
     <h2>免打包验证</h2>

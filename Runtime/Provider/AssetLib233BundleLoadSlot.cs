@@ -9,7 +9,9 @@ namespace AssetLib233.Runtime
         private readonly AssetBundleInfo233 _bundleInfo;
         private readonly string _localPath;
         private readonly string _builtinPath;
+        private readonly string _cryptoPassword;
         private AssetBundleCreateRequest _fileRequest;
+        private AssetLib233XorBundleStream _xorStream;
         private UnityWebRequest _webRequest;
         private bool _isStarted;
 
@@ -18,11 +20,16 @@ namespace AssetLib233.Runtime
         public string Error;
         public string UsedPath;
 
-        public AssetLib233BundleLoadSlot(AssetBundleInfo233 bundleInfo, string localPath, string builtinPath)
+        public AssetLib233BundleLoadSlot(
+            AssetBundleInfo233 bundleInfo,
+            string localPath,
+            string builtinPath,
+            string cryptoPassword)
         {
             _bundleInfo = bundleInfo;
             _localPath = localPath;
             _builtinPath = builtinPath;
+            _cryptoPassword = cryptoPassword;
         }
 
         public void Update()
@@ -55,20 +62,25 @@ namespace AssetLib233.Runtime
             _isStarted = true;
             if (!string.IsNullOrEmpty(_localPath) && File.Exists(_localPath))
             {
-                UsedPath = _localPath;
-                _fileRequest = AssetBundle.LoadFromFileAsync(_localPath, _bundleInfo.FileCrc);
+                StartLoadFromLocalFile(_localPath);
                 return;
             }
 
             if (!string.IsNullOrEmpty(_builtinPath) && File.Exists(_builtinPath))
             {
-                UsedPath = _builtinPath;
-                _fileRequest = AssetBundle.LoadFromFileAsync(_builtinPath, _bundleInfo.FileCrc);
+                StartLoadFromLocalFile(_builtinPath);
                 return;
             }
 
             if (AssetLib233BundlePathResolver.IsWebPath(_builtinPath))
             {
+                if (_bundleInfo.IsEncrypted)
+                {
+                    IsDone = true;
+                    Error = "加密 AB 不支持直接 WebPath 加载，请先下载到本地缓存再用流式解密. url = " + _builtinPath;
+                    return;
+                }
+
                 UsedPath = _builtinPath;
                 _webRequest = UnityWebRequestAssetBundle.GetAssetBundle(_builtinPath, _bundleInfo.FileCrc);
                 _webRequest.SendWebRequest();
@@ -88,11 +100,25 @@ namespace AssetLib233.Runtime
 
             Bundle = _fileRequest.assetBundle;
             _fileRequest = null;
+            DisposeXorStream();
             IsDone = true;
             if (Bundle == null)
             {
                 Error = "AssetBundle.LoadFromFileAsync 返回空. path = " + UsedPath;
             }
+        }
+
+        private void StartLoadFromLocalFile(string path)
+        {
+            UsedPath = path;
+            if (_bundleInfo.IsEncrypted)
+            {
+                _xorStream = new AssetLib233XorBundleStream(path, _cryptoPassword);
+                _fileRequest = AssetBundle.LoadFromStreamAsync(_xorStream, _bundleInfo.FileCrc);
+                return;
+            }
+
+            _fileRequest = AssetBundle.LoadFromFileAsync(path, _bundleInfo.FileCrc);
         }
 
         private void UpdateWebRequest()
@@ -124,6 +150,52 @@ namespace AssetLib233.Runtime
             {
                 Error = "UnityWebRequestAssetBundle 返回空. url = " + UsedPath;
             }
+        }
+
+        private void DisposeXorStream()
+        {
+            if (_xorStream == null)
+            {
+                return;
+            }
+
+            _xorStream.Dispose();
+            _xorStream = null;
+        }
+    }
+
+    internal sealed class AssetLib233XorBundleStream : FileStream
+    {
+        private readonly byte[] _keyBytes;
+
+        public AssetLib233XorBundleStream(string path, string password)
+            : base(path, FileMode.Open, FileAccess.Read, FileShare.Read)
+        {
+            _keyBytes = AssetLib233XorCrypto.BuildKeyBytes(password);
+        }
+
+        public override int Read(byte[] array, int offset, int count)
+        {
+            long startPosition = Position;
+            int readCount = base.Read(array, offset, count);
+            if (readCount > 0)
+            {
+                AssetLib233XorCrypto.ApplyXorInPlace(array, offset, readCount, startPosition, _keyBytes);
+            }
+
+            return readCount;
+        }
+
+        public override int ReadByte()
+        {
+            long startPosition = Position;
+            int rawValue = base.ReadByte();
+            if (rawValue < 0)
+            {
+                return rawValue;
+            }
+
+            return AssetLib233XorCrypto.ApplyXorByte((byte)rawValue, startPosition, _keyBytes);
         }
     }
 }

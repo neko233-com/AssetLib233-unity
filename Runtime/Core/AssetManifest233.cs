@@ -14,6 +14,7 @@ namespace AssetLib233.Runtime
         [SerializeField] private List<AssetBundleInfo233> _bundles = new List<AssetBundleInfo233>(256);
 
         private readonly Dictionary<string, AssetInfo233> _assetByAddress = new Dictionary<string, AssetInfo233>(1024);
+        private readonly Dictionary<string, AssetInfo233> _assetByPath = new Dictionary<string, AssetInfo233>(1024);
         private readonly Dictionary<string, AssetBundleInfo233> _bundleByName = new Dictionary<string, AssetBundleInfo233>(256);
         private bool _isIndexDirty = true;
 
@@ -60,7 +61,30 @@ namespace AssetLib233.Runtime
         public bool TryGetAssetInfo(string address, out AssetInfo233 assetInfo)
         {
             RebuildIndexIfNeeded();
-            return _assetByAddress.TryGetValue(address, out assetInfo);
+            if (_assetByAddress.TryGetValue(address, out assetInfo))
+            {
+                return true;
+            }
+
+            string pathAddress = BuildAddressFromPath(address);
+            if (!string.IsNullOrEmpty(pathAddress) && _assetByAddress.TryGetValue(pathAddress, out assetInfo))
+            {
+                return true;
+            }
+
+            return _assetByPath.TryGetValue(NormalizePathKey(address), out assetInfo);
+        }
+
+        public bool TryGetAssetInfoByPath(string assetPath, out AssetInfo233 assetInfo)
+        {
+            RebuildIndexIfNeeded();
+            if (_assetByPath.TryGetValue(NormalizePathKey(assetPath), out assetInfo))
+            {
+                return true;
+            }
+
+            string pathAddress = BuildAddressFromPath(assetPath);
+            return !string.IsNullOrEmpty(pathAddress) && _assetByAddress.TryGetValue(pathAddress, out assetInfo);
         }
 
         public bool TryGetBundleInfo(string bundleName, out AssetBundleInfo233 bundleInfo)
@@ -100,6 +124,7 @@ namespace AssetLib233.Runtime
             }
 
             _assetByAddress.Clear();
+            _assetByPath.Clear();
             _bundleByName.Clear();
 
             for (int i = 0; i < _assets.Count; i++)
@@ -111,6 +136,10 @@ namespace AssetLib233.Runtime
                 }
 
                 _assetByAddress[assetInfo.Address] = assetInfo;
+                if (!string.IsNullOrEmpty(assetInfo.AssetPath))
+                {
+                    _assetByPath[NormalizePathKey(assetInfo.AssetPath)] = assetInfo;
+                }
             }
 
             for (int i = 0; i < _bundles.Count; i++)
@@ -125,6 +154,30 @@ namespace AssetLib233.Runtime
             }
 
             _isIndexDirty = false;
+        }
+
+        private static string NormalizePathKey(string path)
+        {
+            return string.IsNullOrEmpty(path) ? string.Empty : path.Replace('\\', '/');
+        }
+
+        private static string BuildAddressFromPath(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return string.Empty;
+            }
+
+            string safePath = path.Replace('\\', '/');
+            int slashIndex = safePath.LastIndexOf('/');
+            string fileName = slashIndex >= 0 ? safePath.Substring(slashIndex + 1) : safePath;
+            int dotIndex = fileName.LastIndexOf('.');
+            if (dotIndex > 0)
+            {
+                fileName = fileName.Substring(0, dotIndex);
+            }
+
+            return fileName;
         }
     }
 }
