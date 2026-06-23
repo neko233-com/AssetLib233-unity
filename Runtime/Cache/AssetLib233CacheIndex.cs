@@ -27,6 +27,21 @@ namespace AssetLib233.Runtime
             _records[record.BundleName] = record;
         }
 
+        public void GetRecordsNonAlloc(List<AssetLib233CacheRecord> results)
+        {
+            if (results == null)
+            {
+                return;
+            }
+
+            results.Clear();
+            Dictionary<string, AssetLib233CacheRecord>.Enumerator enumerator = _records.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                results.Add(enumerator.Current.Value);
+            }
+        }
+
         public void RemoveRecord(string bundleName)
         {
             if (string.IsNullOrEmpty(bundleName))

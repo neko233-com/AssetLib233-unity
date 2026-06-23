@@ -6,6 +6,8 @@
 
 仓库: https://github.com/neko233-com/AssetLib233-unity
 
+目标：完全替代 YooAsset，优先服务微信小游戏 / WebGL / HybridCLR / 多 AssetGroup 热更场景。框架本体 0 依赖；UniTask 为可选插件；CDN 上传 / 刷新可接 Go 二进制、C# 工具或任意外部命令。
+
 ## 安装
 
 UPM Git 一行安装：
@@ -31,6 +33,11 @@ powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.c
 - `AssetLib233StartupPlan`: 一个 login 快速首组 + 登录后 N 个 AssetGroup。
 - `AssetLib233AssetGcService`: 自动 Asset GC + 手动 Asset GC。
 - `AssetLib233EditorPublishPipeline`: 打包、上传 CDN、刷新 CDN、报告、溯源的一条龙发布流水线。
+- `AssetLib233DownloadScheduler`: 单文件下载 + 多 AssetGroup 并发下载 + 统一 Loading。
+- `IAssetLib233BuildCompressionStrategy`: 压缩策略接口。
+- `IAssetLib233BuildPackRule`: 打包规则接口。
+- `IAssetLib233BuildVerifier`: 打包产物校验接口，确认 AB / Manifest / hash / size 完整。
+- `AssetLib233ObsoleteBundleCleaner`: 清理新版本不再使用的废弃 AB。
 
 ## 快速示例
 
@@ -81,3 +88,11 @@ powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-
 发布完成后会在 `.local` 的 `reportRoot` 下生成独立报告 JSON，可回溯每次 build / upload / refresh 的命令、日志、退出码。
 
 若配置了 `cdnTraceServerUrl`，发布报告会以 JSON POST 到溯源服务器。鉴权 token 从 `cdnTraceTokenEnvName` 指向的环境变量读取，不写入仓库。
+
+## 性能原则
+
+- 主线程异步 Tick，不引入线程、锁、并发容器。
+- 多 AssetGroup 下载统一汇总一条 Loading。
+- 默认下载并发 10，小游戏平台优先。
+- 框架内部热路径使用 NonAlloc / ListPool。
+- 稳定优先，不为了零 GC 牺牲可维护性和排障能力。
