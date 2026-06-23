@@ -6,7 +6,7 @@
 
 仓库: https://github.com/neko233-com/AssetLib233-unity
 
-目标：完全替代 YooAsset，优先服务微信小游戏 / WebGL / HybridCLR / 多 AssetGroup 热更场景。框架本体 0 依赖；UniTask 为可选插件；CDN 上传 / 刷新可接 Go 二进制、C# 工具或任意外部命令。
+目标：完全替代 YooAsset，优先服务微信小游戏 / WebGL / HybridCLR / 多 AssetGroup 热更场景。框架本体 0 依赖；UniTask 为可选插件。CDN 发布不内置在核心库里，项目继续使用自己的上传、刷新、预热链路。
 
 ## 安装
 
@@ -44,15 +44,13 @@ flowchart LR
 - `Plugin_UniTask`: UniTask 扩展，Runtime 不强依赖 UniTask。
 - `AssetLib233StartupPlan`: 一个 login 快速首组 + 登录后 N 个 AssetGroup。
 - `AssetLib233AssetGcService`: 自动 Asset GC + 手动 Asset GC。
-- `AssetLib233EditorPublishPipeline`: 打包、上传 CDN、刷新 CDN、报告、溯源的一条龙发布流水线。
-- `IAssetLib233CdnProvider`: CDN 策略接口，内置火山引擎中国、阿里云、腾讯云、AWS、Custom，默认火山引擎中国。
-- `AssetLib233CdnGoToolAdapter`: 原生适配现有火山 DCDN Go 工具配置目录，如 `_tools/cdn_douyin_tools`。
-- `AssetLib233EditorAgentValidationPipeline`: 不打 AB 的 agent-first 验证，检查平台配置、Collector、地址、Editor 可加载性和已发布 CDN 文件。
-- `AssetLib233EditorI18n`: 中英文日志/报告文案策略。
+- `Plugin_CDN_Deploy`: 可选 CDN 发布插件，默认不编译；需要时定义 `ASSETLIB233_CDN_DEPLOY` 后使用。
 - `AssetLib233DownloadScheduler`: 单文件下载 + 多 AssetGroup 并发下载 + 统一 Loading。
 - `IAssetLib233BuildCompressionStrategy`: 压缩策略接口。
 - `IAssetLib233BuildPackRule`: 打包规则接口。
 - `IAssetLib233BuildVerifier`: 打包产物校验接口，确认 AB / Manifest / hash / size 完整。
+- `AssetLib233EditorBuildReportWindow`: 构建后自动弹出报告，支持复制排障文本。
+- `IAssetLib233EditorBuildNotifier`: 构建通知扩展点，内置飞书 webhook 支持。
 - `AssetLib233ObsoleteBundleCleaner`: 清理新版本不再使用的废弃 AB。
 - `AssetLib233PreparePackageOperation`: `.version -> .manifest -> Manifest 注入` 主线程异步流程。
 - `AssetLib233PackageDownloadOperation`: Manifest 就绪后全量 / tag 下载到本地 cache。
@@ -73,7 +71,7 @@ AssetLib233.Instance.Initialize();
 AssetLib233.Instance.InitializeGroup(config);
 
 AssetHandle233<GameObject> handle =
-    AssetLib233.Instance.LoadAssetAsync<GameObject>("default", "ui/main.prefab");
+    AssetLib233.Instance.LoadAssetAsync<GameObject>("default", "main");
 ```
 
 ## 异步支持
@@ -94,129 +92,24 @@ AssetHandle233<GameObject> handle =
 - QA问题：`docs/qa.html`
 - 联系我们：`docs/contact.html`
 
-## .local 私密配置
+## 打包产物
 
-复制 `Samples~/AssetLib233.publish.local.example.json` 到项目根目录：
-
-```text
-AssetLib233.publish.local.json
-```
-
-该文件用于配置本机 SSH、CDN、上传工具、刷新工具、溯源服务器，不提交 Git。也可用环境变量指定：
-
-```powershell
-$env:ASSETLIB233_LOCAL_CONFIG="D:/Private/AssetLib233.publish.local.json"
-```
-
-多环境不要固定某个 CDN json，使用映射：
-
-```json
-{
-  "activeConfigKey": "",
-  "uploadArguments": "--config {uploadConfigName}",
-  "uploadConfigMappings": [
-    {
-      "key": "minigame_wx_test",
-      "platform": "WX",
-      "environment": "test",
-      "macro": "WX",
-      "configName": "minigame_wx_test"
-    },
-    {
-      "key": "minigame_taptap_test",
-      "platform": "TAPMINIGAME",
-      "environment": "test",
-      "macro": "TAPMINIGAME",
-      "configName": "minigame_taptap_test"
-    }
-  ],
-  "cdnGoToolConfigMappings": [
-    {
-      "key": "minigame_wx_test",
-      "platform": "WX",
-      "environment": "test",
-      "macro": "WX",
-      "configName": "config-for-douyin-refresh-cdn.minigame_wx_test.json"
-    },
-    {
-      "key": "minigame_taptap_test",
-      "platform": "TAPMINIGAME",
-      "environment": "test",
-      "macro": "TAPMINIGAME",
-      "configName": "config-for-douyin-refresh-cdn.minigame_taptap_test.json"
-    }
-  ]
-}
-```
-
-解析优先级：`ASSETLIB233_CONFIG_KEY` / `activeConfigKey` -> 宏或当前 Unity BuildTarget -> `platform + environment` -> `platform`。未命中时不再默认落 WX，避免 Android/TapTap 被错传。AssetLib233 默认 XOR 密码为 `root`；项目可在 `.project/.local` 配置里覆盖，例如当前项目使用 `neko233`。
-
-## Agent-first 发布
-
-```mermaid
-flowchart TD
-  A["AssetLib233.publish.local.json<br/>或项目级 project config"] --> B["BuildProfile 校验"]
-  B --> C["AssetLib233 原生打包"]
-  C --> D["单台 SSH CDN 上传工具"]
-  D --> E["火山 DCDN Go 工具刷新/预热"]
-  E --> F["publish_verify CDN 校验"]
-  F --> G["JSON 报告 + 可选溯源服务器"]
-```
-
-```powershell
-powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-publish.ps1 -UnityPath "D:/Unity/Editor/Unity.exe" -ProjectRoot "D:/Project"
-```
-
-若 `.local` 配置了 `nativeBuildProfilePath`，发布流水线会先调用 AssetLib233 原生构建：
-
-```json
-{
-  "nativeBuildProfilePath": "Assets/neko233/AssetLib233/AssetLib233BuildProfile.asset",
-  "nativeBuildTarget": "WebGL",
-  "buildOutputRoot": "D:/Build/AssetLib233",
-  "cdnProvider": "VolcengineChina",
-  "cdnRegion": "cn"
-}
-```
+AssetLib233 核心只负责资源收集、AB 构建、Manifest、版本文件、下载和加载。CDN 上传、刷新、预热继续由项目原有链路处理。
 
 构建输出按 `buildOutputRoot/{AssetGroup}` 组织，每个组包含：
 
 - `{group}.version`: `version|manifestFileName|manifestHash|manifestSize`
 - `{group}.manifest`: AssetLib233 二进制 Manifest
 - `*.ab`: AssetBundle 文件
+- `Library/AssetLib233/BuildReports/*.json`: 构建报告，打包后自动弹出，不提交 Git
 
-发布完成后会在 `.local` 的 `reportRoot` 下生成独立报告 JSON，可回溯每次 build / upload / refresh 的命令、日志、退出码。
+可选 `Plugin_CDN_Deploy/` 保留一套独立发布插件，默认通过 `ASSETLIB233_CDN_DEPLOY` 宏禁用。本项目不用这个插件，继续使用原有 CDN 工具链。
 
-火山引擎中国默认支持直接指向项目内已有 Go 工具配置目录：
+飞书通知使用环境变量：
 
-```json
-{
-  "cdnProvider": "VolcengineChina",
-  "cdnGoToolConfigDirectory": "_tools/cdn_douyin_tools",
-  "cdnGoToolConfigMappings": [
-    {
-      "key": "minigame_wx_test",
-      "platform": "WX",
-      "environment": "test",
-      "macro": "WX",
-      "configName": "config-for-douyin-refresh-cdn.minigame_wx_test.json"
-    },
-    {
-      "key": "minigame_taptap_test",
-      "platform": "TAPMINIGAME",
-      "environment": "test",
-      "macro": "TAPMINIGAME",
-      "configName": "config-for-douyin-refresh-cdn.minigame_taptap_test.json"
-    }
-  ],
-  "cdnGoToolExecutableName": "douyin-refresh-cdn.exe",
-  "cdnGoToolCommand": "run"
-}
+```text
+ASSETLIB233_FEISHU_WEBHOOK=https://open.feishu.cn/open-apis/bot/v2/hook/xxx
 ```
-
-该 Go 配置可继续使用原来的 `publish_verify`，AssetLib233 会把命令、日志路径、退出码写进报告。
-
-若配置了 `cdnTraceServerUrl`，发布报告会以 JSON POST 到溯源服务器。鉴权 token 从 `cdnTraceTokenEnvName` 指向的环境变量读取，不写入仓库。
 
 ## 性能原则
 
@@ -238,42 +131,3 @@ Debug.Log(report);
 ```
 
 诊断串包含平台、并发、AssetGroup、Manifest、Bundle 本地路径、最近下载 / 加载事件，方便复制真机日志定位 AB 下载失败或资源为空。
-
-## 免打包 Agent 验证
-
-```mermaid
-flowchart LR
-  A["不打包"] --> B["检查 BuildProfile / Collector"]
-  B --> C["Editor 加载资源地址"]
-  C --> D["检查 Required Groups"]
-  D --> E["运行 CDN Go publish_verify"]
-  E --> F["输出完整报告"]
-```
-
-```powershell
-powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-validate.ps1 -UnityPath "D:/Unity/Editor/Unity.exe" -ProjectRoot "D:/Project"
-```
-
-验证内容：
-
-- BuildProfile 是否存在
-- Required AssetGroup 是否存在
-- Collector 根目录是否存在
-- 收集到的资源地址是否重复
-- 资源是否能在 Editor 被加载
-- sample address 是否存在
-- CDN Go 工具配置是否可运行
-- 已发布 CDN 文件是否通过 Go 工具 `publish_verify`
-
-`.local` 可配置：
-
-```json
-{
-  "language": "zh-CN",
-  "agentValidationBuildProfilePath": "Assets/neko233/AssetLib233/AssetLib233BuildProfile.asset",
-  "agentValidationPlatform": "WX",
-  "agentValidationEnvironment": "test",
-  "agentValidationRequiredGroups": ["login", "default", "story"],
-  "agentValidationSampleAddresses": []
-}
-```

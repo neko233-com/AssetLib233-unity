@@ -1,0 +1,22 @@
+{
+  "name": "AssetLib233.Plugin_CDN_Deploy.Editor",
+  "rootNamespace": "AssetLib233.Editor",
+  "references": [
+    "AssetLib233.Runtime",
+    "AssetLib233.Editor"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "ASSETLIB233_CDN_DEPLOY"
+  ],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "useGUIDs": false
+}

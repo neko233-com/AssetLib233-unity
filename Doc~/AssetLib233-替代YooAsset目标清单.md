@@ -5,8 +5,8 @@
 - 用户只接 `AssetLib233.Instance`。
 - `login` 首组快启，登录后 N 个 AssetGroup 聚合下载。
 - 多 AssetGroup 只显示一条 Loading。
-- CDN build / upload / refresh / trace / report 一条龙。
-- `.local` 放私密配置，GitHub 只保留 schema 和示例。
+- 核心打包后自动产出报告并弹窗，支持飞书通知。
+- CDN 发布保持项目链路；可选 `Plugin_CDN_Deploy` 独立承载旧一条龙方案。
 
 ## 必须更适合小游戏
 
@@ -30,4 +30,5 @@
 - `IAssetLib233BuildPackRule`：打包规则。
 - `IAssetLib233BuildVerifier`：产物校验。
 - `IAssetLib233DownloadTransport`：平台下载传输层。
-- 外部 CDN 工具可用 Go / C# / 任意命令。
+- `IAssetLib233EditorBuildNotifier`：构建后通知，可接飞书 / 企业微信 / 自建平台。
+- `Plugin_CDN_Deploy`：外部 CDN 工具可选插件化，不污染核心库。

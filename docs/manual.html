@@ -3,14 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AssetLib233 详细文档</title>`r`n  <link rel="icon" href="data:,">
+  <title>AssetLib233 详细文档</title>
+  <link rel="icon" href="data:,">
   <style>
     body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
     header{background:#17212b;color:#fff;padding:36px 28px}nav{background:#fff;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}nav a{color:#1769d8;text-decoration:none;font-weight:700;margin-right:18px}main{max-width:1120px;margin:0 auto;padding:28px}section{background:#fff;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}h1,h2{line-height:1.28;margin-top:0}code,pre{font-family:Consolas,"SFMono-Regular",monospace}pre{background:#101826;color:#e8edf5;padding:16px;border-radius:8px;overflow:auto}table{width:100%;border-collapse:collapse}th,td{border:1px solid #d8dee8;padding:10px;text-align:left;vertical-align:top}th{background:#eef3fb}.diagram{width:100%;max-width:980px;height:auto;display:block;margin:8px auto 0}.box{fill:#eef3fb;stroke:#1769d8;stroke-width:2}.box2{fill:#eaf8f1;stroke:#16865a;stroke-width:2}.arrow{stroke:#334155;stroke-width:2;marker-end:url(#arrow)}.label{font-size:14px;font-weight:700;fill:#17212b}
   </style>
 </head>
 <body>
-<header><h1>详细文档</h1><p>运行时、编辑器、CDN、调试、清理、扩展点。</p></header>
+<header><h1>详细文档</h1><p>运行时、编辑器、构建报告、调试、清理、扩展点。</p></header>
 <nav><a href="index.html">首页</a><a href="quickstart.html">快速上手</a><a href="comparison.html">对比其他框架</a><a href="architecture.html">架构设计</a><a href="manual.html">详细文档</a><a href="qa.html">QA问题</a><a href="contact.html">联系我们</a></nav>
 <main>
   <section>
@@ -18,86 +19,34 @@
     <table><tr><th>模式</th><th>用途</th></tr><tr><td>EditorSimulate</td><td>编辑器直接走 AssetDatabase。</td></tr><tr><td>EditorRemoteSimulation</td><td>编辑器模拟真机远端下载，不绑定业务 Loading。</td></tr><tr><td>Host</td><td>标准热更，远端 Manifest + 本地缓存。</td></tr><tr><td>Web</td><td>WebGL / Web Play 远端加载。</td></tr><tr><td>Offline</td><td>内置包运行。</td></tr></table>
   </section>
   <section>
-    <h2>CDN provider</h2>
-    <p>内置 <code>VolcengineChina</code>、<code>Aliyun</code>、<code>TencentCloud</code>、<code>Aws</code>、<code>Custom</code>。默认火山引擎中国。所有 provider 默认复用 .local 中的上传/刷新命令，用户可注册自定义 <code>IAssetLib233CdnProvider</code>。</p>
-    <svg class="diagram" viewBox="0 0 980 250" role="img" aria-label="CDN 单台 SSH 发布链路图">
+    <h2>构建产物与报告</h2>
+    <p>核心只负责 AB、Manifest、version、加载、下载、GC 和诊断。构建完成后自动生成 JSON 报告并弹出报告窗口；报告默认保存在 <code>Library/AssetLib233/BuildReports</code>，不进 Git。</p>
+    <svg class="diagram" viewBox="0 0 980 250" role="img" aria-label="构建报告链路图">
       <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#334155"></path></marker></defs>
-      <rect class="box" x="28" y="44" width="160" height="66" rx="8"></rect><text class="label" x="54" y="74">AssetLib233</text><text class="label" x="54" y="96">Build Output</text>
+      <rect class="box" x="28" y="44" width="160" height="66" rx="8"></rect><text class="label" x="54" y="74">BuildProfile</text><text class="label" x="54" y="96">AssetGroup</text>
       <line class="arrow" x1="188" y1="77" x2="236" y2="77"></line>
-      <rect class="box2" x="238" y="44" width="190" height="66" rx="8"></rect><text class="label" x="270" y="74">单台 SSH 上传</text><text class="label" x="270" y="96">项目内网配置</text>
+      <rect class="box2" x="238" y="44" width="190" height="66" rx="8"></rect><text class="label" x="282" y="74">BuildPipeline</text><text class="label" x="286" y="96">AB + Manifest</text>
       <line class="arrow" x1="428" y1="77" x2="476" y2="77"></line>
-      <rect class="box" x="478" y="44" width="190" height="66" rx="8"></rect><text class="label" x="512" y="74">火山 DCDN Go</text><text class="label" x="515" y="96">刷新 / 预热</text>
+      <rect class="box" x="478" y="44" width="190" height="66" rx="8"></rect><text class="label" x="520" y="74">BuildReport</text><text class="label" x="508" y="96">JSON + 窗口</text>
       <line class="arrow" x1="668" y1="77" x2="716" y2="77"></line>
-      <rect class="box2" x="718" y="44" width="210" height="66" rx="8"></rect><text class="label" x="760" y="74">publish_verify</text><text class="label" x="750" y="96">CDN 文件可读校验</text>
-      <rect class="box" x="246" y="154" width="486" height="54" rx="8"></rect><text class="label" x="318" y="188">报告记录命令、日志、退出码、CDN 根路径，不记录密码</text>
+      <rect class="box2" x="718" y="44" width="210" height="66" rx="8"></rect><text class="label" x="764" y="74">Feishu</text><text class="label" x="746" y="96">可选 webhook</text>
+      <rect class="box" x="246" y="154" width="486" height="54" rx="8"></rect><text class="label" x="306" y="188">报告记录平台、版本、Bundle 数、资源数、加密、错误摘要</text>
     </svg>
-    <pre>{
-  "cdnProvider": "VolcengineChina",
-  "cdnRegion": "cn",
-  "cdnBucket": "your-volcengine-tos-bucket",
-  "cdnPathPrefix": "project/env/weixin/minigame/StreamingAssets",
-  "activeConfigKey": "",
-  "enableBundleCrypto": true,
-  "bundleCryptoPassword": "root",
-  "uploadArguments": "--config {uploadConfigName}",
-  "uploadConfigMappings": [
-    {
-      "key": "minigame_wx_test",
-      "platform": "WX",
-      "environment": "test",
-      "macro": "WX",
-      "configName": "minigame_wx_test"
-    },
-    {
-      "key": "minigame_taptap_test",
-      "platform": "TAPMINIGAME",
-      "environment": "test",
-      "macro": "TAPMINIGAME",
-      "configName": "minigame_taptap_test"
-    }
-  ],
-  "cdnGoToolConfigDirectory": "_tools/cdn_douyin_tools",
-  "cdnGoToolConfigMappings": [
-    {
-      "key": "minigame_wx_test",
-      "platform": "WX",
-      "environment": "test",
-      "macro": "WX",
-      "configName": "config-for-douyin-refresh-cdn.minigame_wx_test.json"
-    },
-    {
-      "key": "minigame_taptap_test",
-      "platform": "TAPMINIGAME",
-      "environment": "test",
-      "macro": "TAPMINIGAME",
-      "configName": "config-for-douyin-refresh-cdn.minigame_taptap_test.json"
-    }
-  ],
-  "cdnGoToolExecutableName": "douyin-refresh-cdn.exe",
-  "cdnGoToolCommand": "run",
-  "uploadToolPath": "D:/Tools/upload.exe",
-  "refreshToolPath": "D:/Tools/refresh.cmd"
-}</pre>
-    <p><code>activeConfigKey</code> 为空时按宏或当前 Unity BuildTarget 选择配置；未命中不会默认落到 WX，避免 Android / TapTap 被错传。</p>
+    <pre>set ASSETLIB233_FEISHU_WEBHOOK=https://open.feishu.cn/open-apis/bot/v2/hook/xxx</pre>
+    <p>飞书 webhook 只在环境变量存在时发送。项目也可注册 <code>IAssetLib233EditorBuildNotifier</code> 接入企业微信、钉钉、自建平台。</p>
   </section>
   <section>
     <h2>短地址与 XOR 加密</h2>
     <p>默认收集地址为文件名不带扩展名，Manifest 不再保存完整资源路径。运行时传入完整路径时会自动映射到短地址；构建端通过 <code>AssetBundleBuild.addressableNames</code> 保证 AB 内资源名与短地址一致。</p>
-    <p>AssetLib233 默认 XOR 密码为 <code>root</code>。项目可在 .project/.local 或运行时 <code>AssetLib233PackageConfig.BundleCryptoPassword</code> 覆盖。构建端先记录明文 CRC，再对 AB 文件按偏移 XOR；运行端使用 <code>LoadFromStreamAsync</code> 流式解密，不整包复制。</p>
+    <p>AssetLib233 默认 XOR 密码为 <code>root</code>。项目可通过构建参数或运行时 <code>AssetLib233PackageConfig.BundleCryptoPassword</code> 覆盖；当前项目使用 <code>neko233</code>。构建端先记录明文 CRC，再对 AB 文件按偏移 XOR；运行端使用 <code>LoadFromStreamAsync</code> 流式解密，不整包复制。</p>
   </section>
   <section>
-    <h2>免打包验证</h2>
-    <p><code>AssetLib233EditorAgentValidationPipeline</code> 不执行 AB 打包，只验证 BuildProfile、Collector、资源地址、Editor 可加载性，以及 Go 工具 <code>publish_verify</code> 指向的已发布 CDN 文件。</p>
-    <pre>powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-validate.ps1 -UnityPath "D:/Unity/Editor/Unity.exe" -ProjectRoot "D:/Project"</pre>
+    <h2>构建扩展点</h2>
+    <p><code>AssetLib233EditorBuildExtensionRegistry</code> 支持注册 <code>IAssetLib233BuildPackRule</code>、<code>IAssetLib233BuildCompressionStrategy</code>、<code>IAssetLib233BuildVerifier</code>。压缩默认 LZ4，小游戏优先。</p>
   </section>
   <section>
-    <h2>中英文输出</h2>
-    <p>配置 <code>language</code> 为 <code>zh-CN</code> 或 <code>en-US</code>。发布报告和验证报告会输出完整上下文，包含平台、环境、配置路径、命令、日志文件、退出码、错误摘要。</p>
-  </section>
-  <section>
-    <h2>Agent-first 发布</h2>
-    <pre>powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-publish.ps1 -UnityPath "D:/Unity/Editor/Unity.exe" -ProjectRoot "D:/Project"</pre>
-    <p>产物报告保存到 <code>reportRoot</code>，报告包含 provider、bucket、路径前缀、每一步命令、日志路径、退出码、溯源结果。</p>
+    <h2>CDN 可选插件</h2>
+    <p><code>Plugin_CDN_Deploy</code> 已拆成可选插件，并通过 <code>ASSETLIB233_CDN_DEPLOY</code> 宏禁用。当前项目不启用它，继续使用已有 CDN 发布链路。</p>
   </section>
   <section>
     <h2>清理废弃 Bundle</h2>

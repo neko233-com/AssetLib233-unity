@@ -59,28 +59,96 @@ namespace AssetLib233.Editor
                 return false;
             }
 
-            Directory.CreateDirectory(outputRoot);
-            profile.GetGroupsNonAlloc(_groupCache);
-            bool isOk = true;
-            for (int i = 0; i < _groupCache.Count; i++)
+            AssetLib233EditorBuildReport report = CreateBuildReport(
+                profile,
+                outputRoot,
+                buildTarget,
+                enableBundleCrypto,
+                bundleCryptoPassword);
+            bool isOk = false;
+            try
             {
-                AssetGroup233 group = _groupCache[i];
-                if (group == null)
+                Directory.CreateDirectory(outputRoot);
+                profile.GetGroupsNonAlloc(_groupCache);
+                isOk = true;
+                for (int i = 0; i < _groupCache.Count; i++)
                 {
-                    continue;
-                }
+                    AssetGroup233 group = _groupCache[i];
+                    if (group == null)
+                    {
+                        continue;
+                    }
 
-                string groupOutputRoot = Path.Combine(outputRoot, AssetLib233NameUtility.NormalizePackageName(group.GroupName));
-                if (!BuildGroup(group, groupOutputRoot, buildTarget, enableBundleCrypto, bundleCryptoPassword, out string groupError))
-                {
-                    error = groupError;
-                    isOk = false;
-                    break;
+                    string groupOutputRoot = Path.Combine(outputRoot, AssetLib233NameUtility.NormalizePackageName(group.GroupName));
+                    AssetLib233EditorBuildReportGroup groupReport;
+                    if (!BuildGroup(
+                            group,
+                            groupOutputRoot,
+                            buildTarget,
+                            enableBundleCrypto,
+                            bundleCryptoPassword,
+                            out string groupError,
+                            out groupReport))
+                    {
+                        report.AddGroup(groupReport);
+                        error = groupError;
+                        isOk = false;
+                        break;
+                    }
+
+                    report.AddGroup(groupReport);
                 }
             }
+            catch (System.Exception exception)
+            {
+                error = exception.Message;
+                isOk = false;
+                Debug.LogException(exception);
+            }
+            finally
+            {
+                _groupCache.Clear();
+                FinishBuildReport(report, isOk, error);
+            }
 
-            _groupCache.Clear();
             return isOk;
+        }
+
+        private static AssetLib233EditorBuildReport CreateBuildReport(
+            AssetBuildProfile233 profile,
+            string outputRoot,
+            BuildTarget buildTarget,
+            bool enableBundleCrypto,
+            string bundleCryptoPassword)
+        {
+            AssetLib233EditorBuildReport report = new AssetLib233EditorBuildReport();
+            report.reportId = System.DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
+            report.profilePath = AssetDatabase.GetAssetPath(profile);
+            report.outputRoot = outputRoot;
+            report.platformName = buildTarget.ToString();
+            report.buildStartUtc = System.DateTime.UtcNow.ToString("o");
+            report.enableBundleCrypto = enableBundleCrypto;
+            report.bundleCryptoPassword = string.IsNullOrEmpty(bundleCryptoPassword)
+                ? AssetLib233Constants.DefaultBundleCryptoPassword
+                : bundleCryptoPassword;
+            return report;
+        }
+
+        private static void FinishBuildReport(AssetLib233EditorBuildReport report, bool success, string error)
+        {
+            if (report == null)
+            {
+                return;
+            }
+
+            report.success = success;
+            report.error = error;
+            report.buildEndUtc = System.DateTime.UtcNow.ToString("o");
+            report.RefreshTotals();
+            string reportPath = AssetLib233EditorBuildReportStore.Save(report);
+            Debug.Log("[AssetLib233] 构建报告已生成: " + reportPath);
+            AssetLib233EditorBuildReportWindow.Open(report);
+            AssetLib233EditorBuildNotificationCenter.Notify(report);
         }
 
         private static bool BuildGroup(
@@ -89,9 +157,12 @@ namespace AssetLib233.Editor
             BuildTarget buildTarget,
             bool enableBundleCrypto,
             string bundleCryptoPassword,
-            out string error)
+            out string error,
+            out AssetLib233EditorBuildReportGroup groupReport)
         {
             error = string.Empty;
+            EnumAssetLib233CompressionMode compressionMode = ResolveCompressionMode(group, buildTarget);
+            groupReport = CreateGroupReport(group, outputRoot, compressionMode);
             Directory.CreateDirectory(outputRoot);
             _assetRecords.Clear();
             _bundleInfos.Clear();
@@ -110,24 +181,28 @@ namespace AssetLib233.Editor
                         group.GroupName +
                         " | duplicateAddressCount = " +
                         _duplicateAddressCount;
+                groupReport.error = error;
                 return false;
             }
 
             if (bundleToAssets.Count == 0)
             {
                 error = "AssetGroup 没有收集到资源: " + group.GroupName;
+                groupReport.error = error;
                 return false;
             }
 
             AssetBundleBuild[] builds = CreateAssetBundleBuilds(bundleToAssets);
+            BuildAssetBundleOptions buildOptions = ResolveBuildOptions(compressionMode);
             AssetBundleManifest unityManifest = BuildPipeline.BuildAssetBundles(
                 outputRoot,
                 builds,
-                BuildAssetBundleOptions.ChunkBasedCompression,
+                buildOptions,
                 buildTarget);
             if (unityManifest == null)
             {
                 error = "BuildPipeline.BuildAssetBundles 返回空. group = " + group.GroupName;
+                groupReport.error = error;
                 return false;
             }
 
@@ -142,12 +217,15 @@ namespace AssetLib233.Editor
             verifyContext.platformName = buildTarget.ToString();
             verifyContext.outputRoot = outputRoot;
             verifyContext.manifest = manifest;
-            if (!_defaultVerifier.Verify(verifyContext, out string verifyError))
+            IAssetLib233BuildVerifier verifier = AssetLib233EditorBuildExtensionRegistry.ResolveVerifier(_defaultVerifier);
+            if (!verifier.Verify(verifyContext, out string verifyError))
             {
                 error = verifyError;
+                groupReport.error = error;
                 return false;
             }
 
+            FillGroupReport(groupReport, manifest);
             Debug.Log(
                 "[AssetLib233] 构建完成. group = " +
                 group.GroupName +
@@ -156,12 +234,112 @@ namespace AssetLib233.Editor
                 " | assets = " +
                 manifest.Assets.Count +
                 " | bundles = " +
-                manifest.Bundles.Count);
+                manifest.Bundles.Count +
+                " | compression = " +
+                compressionMode);
             return true;
+        }
+
+        private static AssetLib233EditorBuildReportGroup CreateGroupReport(
+            AssetGroup233 group,
+            string outputRoot,
+            EnumAssetLib233CompressionMode compressionMode)
+        {
+            AssetLib233EditorBuildReportGroup groupReport = new AssetLib233EditorBuildReportGroup();
+            groupReport.groupName = group == null ? string.Empty : group.GroupName;
+            groupReport.outputRoot = outputRoot;
+            groupReport.compressionMode = compressionMode.ToString();
+            return groupReport;
+        }
+
+        private static void FillGroupReport(AssetLib233EditorBuildReportGroup groupReport, AssetManifest233 manifest)
+        {
+            if (groupReport == null || manifest == null)
+            {
+                return;
+            }
+
+            groupReport.success = true;
+            groupReport.packageVersion = manifest.PackageVersion;
+            groupReport.bundleCount = manifest.Bundles.Count;
+            groupReport.assetCount = manifest.Assets.Count;
+            groupReport.encryptedBundleCount = 0;
+            groupReport.totalBundleBytes = 0L;
+            for (int i = 0; i < manifest.Bundles.Count; i++)
+            {
+                AssetBundleInfo233 bundleInfo = manifest.Bundles[i];
+                if (bundleInfo == null)
+                {
+                    continue;
+                }
+
+                groupReport.totalBundleBytes += bundleInfo.FileSize;
+                if (bundleInfo.IsEncrypted)
+                {
+                    groupReport.encryptedBundleCount++;
+                }
+            }
+        }
+
+        private static EnumAssetLib233CompressionMode ResolveCompressionMode(AssetGroup233 group, BuildTarget buildTarget)
+        {
+            string platformName = buildTarget.ToString();
+            string groupName = group == null ? string.Empty : group.GroupName;
+            group.GetCollectorsNonAlloc(_collectorCache);
+            EnumAssetLib233CompressionMode result = EnumAssetLib233CompressionMode.Lz4;
+            bool hasResult = false;
+            for (int i = 0; i < _collectorCache.Count; i++)
+            {
+                AssetCollector233 collector = _collectorCache[i];
+                if (collector == null || !collector.Enabled)
+                {
+                    continue;
+                }
+
+                EnumAssetLib233CompressionMode compressionMode =
+                    AssetLib233EditorBuildExtensionRegistry.ResolveCompressionMode(
+                        platformName,
+                        groupName,
+                        collector.CollectorName);
+                if (!hasResult)
+                {
+                    result = compressionMode;
+                    hasResult = true;
+                }
+                else if (result != compressionMode)
+                {
+                    Debug.Log(
+                        "[AssetLib233] 同一 AssetGroup 内暂不支持混合压缩，使用首个有效 Collector 压缩策略. group = " +
+                        groupName +
+                        " | first = " +
+                        result +
+                        " | ignored = " +
+                        compressionMode);
+                }
+            }
+
+            _collectorCache.Clear();
+            return result;
+        }
+
+        private static BuildAssetBundleOptions ResolveBuildOptions(EnumAssetLib233CompressionMode compressionMode)
+        {
+            if (compressionMode == EnumAssetLib233CompressionMode.Uncompressed)
+            {
+                return BuildAssetBundleOptions.UncompressedAssetBundle;
+            }
+
+            if (compressionMode == EnumAssetLib233CompressionMode.Lzma)
+            {
+                return BuildAssetBundleOptions.None;
+            }
+
+            return BuildAssetBundleOptions.ChunkBasedCompression;
         }
 
         private static void CollectGroupAssets(AssetGroup233 group, Dictionary<string, List<string>> bundleToAssets)
         {
+            IAssetLib233BuildPackRule packRule = AssetLib233EditorBuildExtensionRegistry.ResolvePackRule(_defaultPackRule);
             group.GetCollectorsNonAlloc(_collectorCache);
             for (int i = 0; i < _collectorCache.Count; i++)
             {
@@ -191,7 +369,7 @@ namespace AssetLib233.Editor
                     }
 
                     _collectedAssetPathSet.Add(assetPath);
-                    string bundleName = _defaultPackRule.GetBundleName(group, collector, assetPath);
+                    string bundleName = packRule.GetBundleName(group, collector, assetPath);
                     string address = BuildAddress(collector, assetPath);
                     if (_assetAddressSet.Contains(address))
                     {

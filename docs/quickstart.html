@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AssetLib233 快速上手</title>`r`n  <link rel="icon" href="data:,">
+  <title>AssetLib233 快速上手</title>
+  <link rel="icon" href="data:,">
   <style>
     body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
     header{background:#17212b;color:#fff;padding:36px 28px}nav{background:#fff;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}nav a{color:#1769d8;text-decoration:none;font-weight:700;margin-right:18px}main{max-width:1120px;margin:0 auto;padding:28px}section{background:#fff;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}h1,h2{line-height:1.28;margin-top:0}code,pre{font-family:Consolas,"SFMono-Regular",monospace}pre{background:#101826;color:#e8edf5;padding:16px;border-radius:8px;overflow:auto}
@@ -56,8 +57,9 @@ AssetLib233LoginFastOperation loginOperation =
 await loginOperation;</pre>
   </section>
   <section>
-    <h2>5. Agent 验证</h2>
-    <pre>powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-validate.ps1 -UnityPath "D:/Unity/Editor/Unity.exe" -ProjectRoot "D:/Project"</pre>
+    <h2>5. 构建报告</h2>
+    <pre>neko233/AssetLib233/构建选中 BuildProfile</pre>
+    <p>构建后会自动弹出报告窗口。需要飞书通知时，设置 <code>ASSETLIB233_FEISHU_WEBHOOK</code> 环境变量。</p>
   </section>
 </main>
 </body>

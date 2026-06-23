@@ -3,14 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AssetLib233 对比其他框架</title>`r`n  <link rel="icon" href="data:,">
+  <title>AssetLib233 对比其他框架</title>
+  <link rel="icon" href="data:,">
   <style>
     body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
     header{background:#17212b;color:#fff;padding:36px 28px}nav{background:#fff;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}nav a{color:#1769d8;text-decoration:none;font-weight:700;margin-right:18px}main{max-width:1120px;margin:0 auto;padding:28px}section{background:#fff;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #d8dee8;padding:10px;text-align:left;vertical-align:top}th{background:#eef3fb}code{font-family:Consolas,"SFMono-Regular",monospace}
   </style>
 </head>
 <body>
-<header><h1>对比其他框架</h1><p>不照抄任何实现。保留好用模型，补齐小游戏、诊断、CDN、启动链路。</p></header>
+<header><h1>对比其他框架</h1><p>不照抄任何实现。保留好用模型，补齐小游戏、诊断、构建报告、启动链路。</p></header>
 <nav><a href="index.html">首页</a><a href="quickstart.html">快速上手</a><a href="comparison.html">对比其他框架</a><a href="architecture.html">架构设计</a><a href="manual.html">详细文档</a><a href="qa.html">QA问题</a><a href="contact.html">联系我们</a></nav>
 <main>
   <section>
@@ -20,8 +21,8 @@
       <tr><td>资源域</td><td><code>AssetGroup</code> 原生支持 login / default / story / voice 分层。</td><td>常见模型需要项目再包一层启动流程。</td></tr>
       <tr><td>小游戏</td><td>WX 单宏、小游戏缓存根、并发 10、诊断串、远端模拟下载。</td><td>常需改源码或写外部适配。</td></tr>
       <tr><td>Loading</td><td>多 AssetGroup 汇总为一个进度。</td><td>单包下载较容易，多包统一体验需业务自己写。</td></tr>
-      <tr><td>CDN</td><td>打包、上传、刷新、报告、溯源一条龙。</td><td>通常只处理 Runtime 下载。</td></tr>
-      <tr><td>扩展</td><td>压缩、打包规则、下载传输、平台插件、CDN provider 都可替换。</td><td>扩展点分散，项目要补胶水。</td></tr>
+      <tr><td>构建报告</td><td>打包后自动弹出报告，记录版本、Bundle、资源、加密和错误摘要，并支持飞书通知。</td><td>常需额外工具拼接。</td></tr>
+      <tr><td>扩展</td><td>压缩、打包规则、产物校验、下载传输、平台插件都可替换；CDN 发布可选插件化。</td><td>扩展点分散，项目要补胶水。</td></tr>
     </table>
   </section>
   <section>
