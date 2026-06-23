@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AssetLib233-unity 文档</title>
+  <style>
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#182026;background:#f6f8fb;line-height:1.7}
+    header{background:#182026;color:white;padding:40px 28px}
+    nav{background:white;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}
+    nav a{margin-right:18px;color:#1b65d8;text-decoration:none;font-weight:600}
+    main{max-width:1080px;margin:0 auto;padding:28px}
+    section{background:white;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}
+    h1,h2,h3{line-height:1.3}
+    code,pre{font-family:Consolas,"SFMono-Regular",monospace}
+    pre{background:#111827;color:#e5e7eb;padding:16px;border-radius:8px;overflow:auto}
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid #d8dee8;padding:10px;text-align:left}
+    th{background:#eef3fb}
+    .tag{display:inline-block;background:#e8f1ff;color:#1b65d8;border-radius:999px;padding:2px 10px;margin-right:6px}
+  </style>
+</head>
+<body>
+<header>
+  <h1>AssetLib233-unity</h1>
+  <p>独立 Unity / 团结引擎资源系统。AssetGroup 管热更资源组，Collector 管 AB 切分，Manifest 管版本和依赖，Plugin 管平台差异。</p>
+</header>
+<nav>
+  <a href="#quickstart">快速开始</a>
+  <a href="#architecture">架构</a>
+  <a href="#hotupdate">热更</a>
+  <a href="#collector">收集器</a>
+  <a href="#platform">平台</a>
+  <a href="#async">异步</a>
+  <a href="#editor-sim">编辑器模拟</a>
+  <a href="#debug">调试</a>
+</nav>
+<main>
+  <section id="quickstart"><h2>快速开始</h2><p>用户侧只访问单例 <code>AssetLib233.Instance</code>。</p></section>
+  <section id="architecture"><h2>核心架构</h2><table><tr><th>模块</th><th>职责</th></tr><tr><td>AssetGroup</td><td>顶层资源组，承载 login / default / story 等独立热更域。</td></tr><tr><td>AssetCollector</td><td>配置资源根目录、地址规则、标签、打包规则。</td></tr><tr><td>AssetManifest</td><td>二进制清单，记录 asset 到 bundle、bundle 依赖、hash、crc、size、tags。</td></tr></table></section>
+  <section id="hotupdate"><h2>热更流程</h2><p><span class="tag">请求版本</span><span class="tag">加载 Manifest</span><span class="tag">生成下载计划</span><span class="tag">下载 Bundle</span><span class="tag">校验缓存</span></p></section>
+  <section id="collector"><h2>收集器规则</h2><p>Collector 支持 PackTogether、PackSeparately、PackByTopDirectory、PackBySecondDirectory、PackByFileExtension、RawFile、ArchiveFile。</p></section>
+  <section id="platform"><h2>平台插件</h2><table><tr><th>插件</th><th>平台</th><th>能力</th></tr><tr><td>Plugin_MiniGame_WX</td><td>微信小游戏</td><td>只使用 WX 宏识别平台，下载并发 10、微信缓存根路径、小游戏加载方式。</td></tr><tr><td>Plugin_MiniGame_DouYin</td><td>抖音小游戏</td><td>下载并发 10、抖音缓存根路径、小游戏加载方式。</td></tr><tr><td>Plugin_MiniGame_TapTap</td><td>TapTap 小游戏</td><td>Tap.env 缓存根路径、下载并发 10。</td></tr></table></section>
+  <section id="async"><h2>异步模型</h2><p>AssetLib233 原生支持 callback 和 C# async/await。UniTask 通过 <code>Plugin_UniTask</code> 接入。</p></section>
+  <section id="editor-sim"><h2>编辑器真机下载模拟</h2><p><code>EnumAssetLib233PlayMode.EditorRemoteSimulation</code> 用于 Editor 内模拟真机远端下载，不绑定业务 Loading。</p></section>
+  <section id="debug"><h2>调试工具</h2><p>调试层输出 <code>AssetLib233DebugSnapshot</code>，用于编辑器窗口、运行时控制台、远端诊断。</p></section>
+</main>
+</body>
+</html>
