@@ -34,6 +34,9 @@ powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.c
 - `AssetLib233AssetGcService`: 自动 Asset GC + 手动 Asset GC。
 - `AssetLib233EditorPublishPipeline`: 打包、上传 CDN、刷新 CDN、报告、溯源的一条龙发布流水线。
 - `IAssetLib233CdnProvider`: CDN 策略接口，内置火山引擎中国、阿里云、腾讯云、AWS、Custom，默认火山引擎中国。
+- `AssetLib233CdnGoToolAdapter`: 原生适配现有火山 DCDN Go 工具配置目录，如 `_tools/cdn_douyin_tools`。
+- `AssetLib233EditorAgentValidationPipeline`: 不打 AB 的 agent-first 验证，检查平台配置、Collector、地址、Editor 可加载性和已发布 CDN 文件。
+- `AssetLib233EditorI18n`: 中英文日志/报告文案策略。
 - `AssetLib233DownloadScheduler`: 单文件下载 + 多 AssetGroup 并发下载 + 统一 Loading。
 - `IAssetLib233BuildCompressionStrategy`: 压缩策略接口。
 - `IAssetLib233BuildPackRule`: 打包规则接口。
@@ -117,6 +120,20 @@ powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-
 
 发布完成后会在 `.local` 的 `reportRoot` 下生成独立报告 JSON，可回溯每次 build / upload / refresh 的命令、日志、退出码。
 
+火山引擎中国默认支持直接指向项目内已有 Go 工具配置目录：
+
+```json
+{
+  "cdnProvider": "VolcengineChina",
+  "cdnGoToolConfigDirectory": "_tools/cdn_douyin_tools",
+  "cdnGoToolConfigName": "config-for-douyin-refresh-cdn.minigame_wx_test.json",
+  "cdnGoToolExecutableName": "douyin-refresh-cdn.exe",
+  "cdnGoToolCommand": "run"
+}
+```
+
+该 Go 配置可继续使用原来的 `publish_verify`，AssetLib233 会把命令、日志路径、退出码写进报告。
+
 若配置了 `cdnTraceServerUrl`，发布报告会以 JSON POST 到溯源服务器。鉴权 token 从 `cdnTraceTokenEnvName` 指向的环境变量读取，不写入仓库。
 
 ## 性能原则
@@ -137,3 +154,33 @@ Debug.Log(report);
 ```
 
 诊断串包含平台、并发、AssetGroup、Manifest、Bundle 本地路径、最近下载 / 加载事件，方便复制真机日志定位 AB 下载失败或资源为空。
+
+## 免打包 Agent 验证
+
+```powershell
+powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-validate.ps1 -UnityPath "D:/Unity/Editor/Unity.exe" -ProjectRoot "D:/Project"
+```
+
+验证内容：
+
+- BuildProfile 是否存在
+- Required AssetGroup 是否存在
+- Collector 根目录是否存在
+- 收集到的资源地址是否重复
+- 资源是否能在 Editor 被加载
+- sample address 是否存在
+- CDN Go 工具配置是否可运行
+- 已发布 CDN 文件是否通过 Go 工具 `publish_verify`
+
+`.local` 可配置：
+
+```json
+{
+  "language": "zh-CN",
+  "agentValidationBuildProfilePath": "Assets/neko233/AssetLib233/AssetLib233BuildProfile.asset",
+  "agentValidationPlatform": "WX",
+  "agentValidationEnvironment": "test",
+  "agentValidationRequiredGroups": ["login", "default", "story"],
+  "agentValidationSampleAddresses": []
+}
+```

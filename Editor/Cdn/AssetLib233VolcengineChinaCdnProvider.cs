@@ -10,5 +10,23 @@ namespace AssetLib233.Editor
             : base(EnumAssetLib233CdnProvider.VolcengineChina, "VolcengineChina")
         {
         }
+
+        public override bool Refresh(AssetLib233CdnProviderContext context)
+        {
+            bool isHandled;
+            bool success = AssetLib233CdnGoToolAdapter.TryRun(
+                context.Config,
+                context.Report,
+                "VolcengineChina_GoRefreshVerify",
+                context.Config.cdnGoToolCommand,
+                context.TimeoutMilliseconds,
+                out isHandled);
+            if (isHandled)
+            {
+                return success;
+            }
+
+            return base.Refresh(context);
+        }
     }
 }

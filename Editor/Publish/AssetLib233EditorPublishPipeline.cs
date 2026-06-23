@@ -38,6 +38,7 @@ namespace AssetLib233.Editor
             }
 
             AssetLib233EditorPublishReport report = CreateReport(config);
+            AssetLib233EditorI18n.SetLanguage(config.language);
             bool success = true;
 
             success &= RunNativeBuildStep(config, report);
@@ -64,6 +65,9 @@ namespace AssetLib233.Editor
             report.cdnRegion = config.cdnRegion;
             report.cdnBucket = config.cdnBucket;
             report.cdnPathPrefix = config.cdnPathPrefix;
+            report.cdnGoToolConfigPath = AssetLib233CdnGoToolAdapter.ResolveConfigPathForReport(config);
+            report.agentValidationPlatform = config.agentValidationPlatform;
+            report.agentValidationEnvironment = config.agentValidationEnvironment;
             report.cdnRootUrl = config.cdnRootUrl;
             return report;
         }

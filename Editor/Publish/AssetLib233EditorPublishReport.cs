@@ -19,6 +19,9 @@ namespace AssetLib233.Editor
         public string cdnRegion = "";
         public string cdnBucket = "";
         public string cdnPathPrefix = "";
+        public string cdnGoToolConfigPath = "";
+        public string agentValidationPlatform = "";
+        public string agentValidationEnvironment = "";
         public string cdnRootUrl = "";
         public bool success;
         public List<AssetLib233EditorPublishReportStep> steps =

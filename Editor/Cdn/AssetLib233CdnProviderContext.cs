@@ -41,6 +41,11 @@ namespace AssetLib233.Editor
             get { return _reportRoot; }
         }
 
+        public int TimeoutMilliseconds
+        {
+            get { return _timeoutMilliseconds; }
+        }
+
         public bool RunUploadTool(string stepName)
         {
             return RunToolStep(

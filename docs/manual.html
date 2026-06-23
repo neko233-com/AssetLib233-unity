@@ -25,9 +25,22 @@
   "cdnRegion": "cn",
   "cdnBucket": "your-volcengine-tos-bucket",
   "cdnPathPrefix": "project/env/weixin/minigame/StreamingAssets",
+  "cdnGoToolConfigDirectory": "_tools/cdn_douyin_tools",
+  "cdnGoToolConfigName": "config-for-douyin-refresh-cdn.minigame_wx_test.json",
+  "cdnGoToolExecutableName": "douyin-refresh-cdn.exe",
+  "cdnGoToolCommand": "run",
   "uploadToolPath": "D:/Tools/upload.exe",
   "refreshToolPath": "D:/Tools/refresh.cmd"
 }</pre>
+  </section>
+  <section>
+    <h2>免打包验证</h2>
+    <p><code>AssetLib233EditorAgentValidationPipeline</code> 不执行 AB 打包，只验证 BuildProfile、Collector、资源地址、Editor 可加载性，以及 Go 工具 <code>publish_verify</code> 指向的已发布 CDN 文件。</p>
+    <pre>powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-validate.ps1 -UnityPath "D:/Unity/Editor/Unity.exe" -ProjectRoot "D:/Project"</pre>
+  </section>
+  <section>
+    <h2>中英文输出</h2>
+    <p>配置 <code>language</code> 为 <code>zh-CN</code> 或 <code>en-US</code>。发布报告和验证报告会输出完整上下文，包含平台、环境、配置路径、命令、日志文件、退出码、错误摘要。</p>
   </section>
   <section>
     <h2>Agent-first 发布</h2>
