@@ -27,6 +27,7 @@ namespace AssetLib233.Runtime
                 return;
             }
 
+            _startupPlan.LoginGroupConfig.GroupRole = EnumAssetLib233GroupRole.LoginFast;
             _startupPlan.LoadingSink?.OnAssetLib233StageChanged("LoginGroup", "初始化 login 快速资源组");
             AssetLib233.Instance.InitializeGroup(_startupPlan.LoginGroupConfig);
             _startupPlan.LoadingSink?.OnAssetLib233ProgressChanged(1f, 0, 0);

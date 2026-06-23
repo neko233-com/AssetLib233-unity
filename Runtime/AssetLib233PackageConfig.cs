@@ -11,6 +11,8 @@ namespace AssetLib233.Runtime
         [SerializeField] private string _fallbackHostServer = "";
         [SerializeField] private bool _autoUnloadBundleWhenUnused = true;
         [SerializeField] private bool _enableBundleCrypto;
+        [SerializeField] private EnumAssetLib233GroupRole _groupRole = EnumAssetLib233GroupRole.RequiredPostLogin;
+        [SerializeField] private int _downloadPriority;
         [SerializeField] private long _operationTimeSliceMs = AssetLib233Constants.WebGLOperationTimeSliceMs;
         [SerializeField] private int _downloadConcurrency = AssetLib233Constants.DefaultDownloadConcurrency;
 
@@ -48,6 +50,18 @@ namespace AssetLib233.Runtime
         {
             get { return _enableBundleCrypto; }
             set { _enableBundleCrypto = value; }
+        }
+
+        public EnumAssetLib233GroupRole GroupRole
+        {
+            get { return _groupRole; }
+            set { _groupRole = value; }
+        }
+
+        public int DownloadPriority
+        {
+            get { return _downloadPriority; }
+            set { _downloadPriority = value; }
         }
 
         public long OperationTimeSliceMs

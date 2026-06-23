@@ -27,6 +27,11 @@ namespace AssetLib233.Runtime
                 return;
             }
 
+            if (config.GroupRole == EnumAssetLib233GroupRole.LoginFast)
+            {
+                config.GroupRole = EnumAssetLib233GroupRole.RequiredPostLogin;
+            }
+
             _postLoginGroupConfigs.Add(config);
         }
 

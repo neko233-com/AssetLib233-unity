@@ -10,6 +10,8 @@
 - `AssetManifest`: 二进制清单，保存地址、标签、依赖、hash、crc、size。
 - `Plugin_MiniGame_WX` / `Plugin_MiniGame_DouYin` / `Plugin_MiniGame_TapTap`: 小游戏平台插件。
 - `Plugin_UniTask`: UniTask 扩展，Runtime 不强依赖 UniTask。
+- `AssetLib233StartupPlan`: 一个 login 快速首组 + 登录后 N 个 AssetGroup。
+- `AssetLib233AssetGcService`: 自动 Asset GC + 手动 Asset GC。
 
 ## 快速示例
 
