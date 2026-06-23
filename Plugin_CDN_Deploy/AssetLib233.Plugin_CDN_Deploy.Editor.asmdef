@@ -13,9 +13,7 @@
   "overrideReferences": false,
   "precompiledReferences": [],
   "autoReferenced": false,
-  "defineConstraints": [
-    "ASSETLIB233_CDN_DEPLOY"
-  ],
+  "defineConstraints": [],
   "versionDefines": [],
   "noEngineReferences": false,
   "useGUIDs": false
