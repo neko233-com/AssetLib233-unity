@@ -11,6 +11,10 @@ namespace AssetLib233.Runtime
             snapshot.CaptureTime = DateTime.UtcNow.ToString("O");
             snapshot.RuntimePlatform = runtimePlatform;
             snapshot.DownloadConcurrency = AssetLib233DownloadPolicy.GetDownloadConcurrency(runtimePlatform);
+            AssetLib233GcStats stats = new AssetLib233GcStats();
+            AssetLib233.Instance.AssetGcService.FillStats(stats);
+            snapshot.TrackedAssetCount = stats.TrackedAssetCount;
+            snapshot.AliveReferenceCount = stats.AliveReferenceCount;
             return snapshot;
         }
     }

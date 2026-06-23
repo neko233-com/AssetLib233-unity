@@ -18,6 +18,7 @@ namespace AssetLib233.Runtime
         private readonly Dictionary<string, AssetPackage233> _packages = new Dictionary<string, AssetPackage233>(16);
         private readonly List<AssetInfo233> _assetQueryCache = new List<AssetInfo233>(256);
         private readonly List<AssetLib233DownloadRequest> _downloadRequestCache = new List<AssetLib233DownloadRequest>(256);
+        private readonly AssetLib233AssetGcService _assetGcService = new AssetLib233AssetGcService();
         private bool _isInitialized;
 
         private AssetLib233()
@@ -40,6 +41,11 @@ namespace AssetLib233.Runtime
         public int PackageCount
         {
             get { return _packages.Count; }
+        }
+
+        public AssetLib233AssetGcService AssetGcService
+        {
+            get { return _assetGcService; }
         }
 
         /// <summary>
@@ -134,6 +140,32 @@ namespace AssetLib233.Runtime
         }
 
         /// <summary>
+        /// 资源系统主线程 Tick。建议由宿主在 Update 中调用，用于自动 Asset GC、下载器推进和后续 Provider 推进。
+        /// </summary>
+        public void Tick()
+        {
+            _assetGcService.Tick();
+        }
+
+        /// <summary>
+        /// 手动资源 GC。force 为 true 时忽略宽限期，适合切大场景或退出玩法后调用。
+        /// </summary>
+        public void CollectAssets(bool force)
+        {
+            _assetGcService.Collect(force);
+        }
+
+        public void RetainAsset(string groupName, string address, Object assetObject)
+        {
+            _assetGcService.Retain(groupName, address, assetObject);
+        }
+
+        public void ReleaseAsset(string groupName, string address)
+        {
+            _assetGcService.Release(groupName, address);
+        }
+
+        /// <summary>
         /// 设置主线程异步操作时间片。WebGL / 小游戏可调大，减少资源初始化长尾等待。
         /// </summary>
         public void SetOperationTimeSlice(long milliseconds)
@@ -155,6 +187,7 @@ namespace AssetLib233.Runtime
             _packages.Clear();
             _assetQueryCache.Clear();
             _downloadRequestCache.Clear();
+            _assetGcService.Collect(true);
             _isInitialized = false;
         }
 

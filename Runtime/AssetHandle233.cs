@@ -50,6 +50,10 @@ namespace AssetLib233.Runtime
             _assetObject = assetObject;
             _progress = 1f;
             _isDone = true;
+            if (_assetObject != null)
+            {
+                AssetLib233.Instance.RetainAsset(_groupName, _location, _assetObject);
+            }
         }
 
         public void SetFailed(string error)
@@ -60,6 +64,11 @@ namespace AssetLib233.Runtime
 
         public void Release()
         {
+            if (_assetObject != null)
+            {
+                AssetLib233.Instance.ReleaseAsset(_groupName, _location);
+            }
+
             _assetObject = null;
         }
     }
