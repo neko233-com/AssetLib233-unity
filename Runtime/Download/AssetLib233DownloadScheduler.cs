@@ -15,6 +15,7 @@ namespace AssetLib233.Runtime
         private readonly AssetLib233DownloadSchedulerOptions _options = new AssetLib233DownloadSchedulerOptions();
         private IAssetLib233DownloadTransport _transport;
         private bool _isStarted;
+        private int _pendingReadIndex;
         private string _lastError = string.Empty;
 
         public AssetLib233UnifiedLoadingProgress Progress
@@ -59,7 +60,7 @@ namespace AssetLib233.Runtime
                 }
             }
 
-            _progress.TotalFileCount = _pendingRequests.Count + _runningRequests.Count + _finishedRequests.Count;
+            _progress.TotalFileCount = (_pendingRequests.Count - _pendingReadIndex) + _runningRequests.Count + _finishedRequests.Count;
         }
 
         public void Start()
@@ -70,7 +71,7 @@ namespace AssetLib233.Runtime
         public bool IsDone()
         {
             return _isStarted &&
-                   _pendingRequests.Count == 0 &&
+                   _pendingReadIndex >= _pendingRequests.Count &&
                    _runningRequests.Count == 0;
         }
 
@@ -92,10 +93,10 @@ namespace AssetLib233.Runtime
                 ? 1
                 : _options.MaxConcurrentCount;
 
-            while (_runningRequests.Count < maxConcurrentCount && _pendingRequests.Count > 0)
+            while (_runningRequests.Count < maxConcurrentCount && _pendingReadIndex < _pendingRequests.Count)
             {
-                AssetLib233DownloadRequest request = _pendingRequests[0];
-                _pendingRequests.RemoveAt(0);
+                AssetLib233DownloadRequest request = _pendingRequests[_pendingReadIndex];
+                _pendingReadIndex++;
                 if (!_transport.CanStartRequest(request))
                 {
                     _lastError = "传输层拒绝下载: " + request.CurrentFileName;
@@ -108,6 +109,8 @@ namespace AssetLib233.Runtime
                 _progress.CurrentGroupName = request.GroupName;
                 _progress.CurrentFileName = request.CurrentFileName;
             }
+
+            CompactPendingRequestsIfNeeded();
         }
 
         private void UpdateRunningRequests()
@@ -161,6 +164,17 @@ namespace AssetLib233.Runtime
             }
 
             _progress.DownloadedBytes = downloadedBytes;
+        }
+
+        private void CompactPendingRequestsIfNeeded()
+        {
+            if (_pendingReadIndex <= 256 || _pendingReadIndex * 2 < _pendingRequests.Count)
+            {
+                return;
+            }
+
+            _pendingRequests.RemoveRange(0, _pendingReadIndex);
+            _pendingReadIndex = 0;
         }
     }
 }

@@ -7,6 +7,7 @@ namespace AssetLib233.Runtime
         public string MainUrl;
         public string FallbackUrl;
         public int RetryCount;
+        public object UserData;
 
         public string CurrentFileName
         {

@@ -1,8 +1,8 @@
 Library/
 Temp/
 Obj/
-Build/
-Builds/
+/Build/
+/Builds/
 Logs/
 UserSettings/
 .vs/

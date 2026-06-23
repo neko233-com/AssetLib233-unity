@@ -1,5 +1,7 @@
 {
   "buildOutputRoot": "D:/Build/AssetLib233",
+  "nativeBuildProfilePath": "Assets/neko233/AssetLib233/AssetLib233BuildProfile.asset",
+  "nativeBuildTarget": "WebGL",
   "reportRoot": "Library/AssetLib233/PublishReports",
   "buildToolPath": "D:/Tools/assetlib233-build/assetlib233-build.exe",
   "buildWorkingDirectory": "D:/Tools/assetlib233-build",

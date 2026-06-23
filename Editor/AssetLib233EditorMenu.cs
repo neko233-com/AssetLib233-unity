@@ -29,5 +29,29 @@ namespace AssetLib233.Editor
             Selection.activeObject = settings;
             EditorGUIUtility.PingObject(settings);
         }
+
+        [MenuItem("neko233/AssetLib233/构建选中 BuildProfile")]
+        public static void BuildSelectedProfile()
+        {
+            AssetBuildProfile233 profile = Selection.activeObject as AssetBuildProfile233;
+            if (profile == null)
+            {
+                Debug.LogError("[AssetLib233] 请先在 Project 面板选中 AssetBuildProfile233");
+                return;
+            }
+
+            string outputRoot = "AssetBundles/AssetLib233/" + EditorUserBuildSettings.activeBuildTarget;
+            if (!AssetLib233EditorBuildPipeline.BuildProfile(
+                    profile,
+                    outputRoot,
+                    EditorUserBuildSettings.activeBuildTarget,
+                    out string error))
+            {
+                Debug.LogError("[AssetLib233] 构建失败: " + error);
+                return;
+            }
+
+            AssetDatabase.Refresh();
+        }
     }
 }

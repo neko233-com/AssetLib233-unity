@@ -6,5 +6,7 @@ namespace AssetLib233.Runtime
         public const long WebGLOperationTimeSliceMs = 30;
         public const string DefaultPackageName = "default";
         public const string LoginPackageName = "login";
+        public const string VersionFileExtension = ".version";
+        public const string ManifestFileExtension = ".manifest";
     }
 }

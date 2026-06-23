@@ -7,6 +7,7 @@ namespace AssetLib233.Runtime
     {
         public string BundleName;
         public string FileName;
+        public string LocalPath;
         public long FileSize;
         public int ReferenceCount;
         public bool IsLoaded;

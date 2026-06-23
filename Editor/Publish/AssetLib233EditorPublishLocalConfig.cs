@@ -11,6 +11,8 @@ namespace AssetLib233.Editor
     public sealed class AssetLib233EditorPublishLocalConfig
     {
         public string buildOutputRoot = "";
+        public string nativeBuildProfilePath = "";
+        public string nativeBuildTarget = "";
         public string reportRoot = "Library/AssetLib233/PublishReports";
         public string buildToolPath = "";
         public string buildWorkingDirectory = "";

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using AssetLib233.Runtime;
 using UnityEditor;
 using UnityEngine;
 
@@ -39,6 +40,7 @@ namespace AssetLib233.Editor
             AssetLib233EditorPublishReport report = CreateReport(config);
             bool success = true;
 
+            success &= RunNativeBuildStep(config, report);
             success &= RunExternalStep(config, report, "Build", config.buildToolPath, config.buildArguments, config.buildWorkingDirectory);
             success &= RunExternalStep(config, report, "UploadCDN", config.uploadToolPath, config.uploadArguments, config.uploadWorkingDirectory);
             success &= RunExternalStep(config, report, "RefreshCDN", config.refreshToolPath, config.refreshArguments, config.refreshWorkingDirectory);
@@ -60,6 +62,54 @@ namespace AssetLib233.Editor
             report.buildOutputRoot = config.buildOutputRoot;
             report.cdnRootUrl = config.cdnRootUrl;
             return report;
+        }
+
+        private static bool RunNativeBuildStep(AssetLib233EditorPublishLocalConfig config, AssetLib233EditorPublishReport report)
+        {
+            AssetLib233EditorPublishReportStep step = new AssetLib233EditorPublishReportStep();
+            step.name = "NativeAssetLib233Build";
+            step.startTimeUtc = DateTime.UtcNow.ToString("O");
+            if (string.IsNullOrWhiteSpace(config.nativeBuildProfilePath))
+            {
+                step.message = "未配置，跳过";
+                step.endTimeUtc = step.startTimeUtc;
+                report.AddStep(step);
+                return true;
+            }
+
+            AssetBuildProfile233 profile = AssetDatabase.LoadAssetAtPath<AssetBuildProfile233>(config.nativeBuildProfilePath);
+            if (profile == null)
+            {
+                step.exitCode = -1;
+                step.message = "找不到 BuildProfile: " + config.nativeBuildProfilePath;
+                step.endTimeUtc = DateTime.UtcNow.ToString("O");
+                report.AddStep(step);
+                return false;
+            }
+
+            BuildTarget buildTarget = EditorUserBuildSettings.activeBuildTarget;
+            if (!string.IsNullOrWhiteSpace(config.nativeBuildTarget))
+            {
+                if (!Enum.TryParse<BuildTarget>(config.nativeBuildTarget, out buildTarget))
+                {
+                    step.exitCode = -1;
+                    step.message = "nativeBuildTarget 无法解析: " + config.nativeBuildTarget;
+                    step.endTimeUtc = DateTime.UtcNow.ToString("O");
+                    report.AddStep(step);
+                    return false;
+                }
+            }
+
+            string outputRoot = string.IsNullOrWhiteSpace(config.buildOutputRoot)
+                ? "AssetBundles/AssetLib233/" + buildTarget
+                : config.buildOutputRoot;
+            bool success = AssetLib233EditorBuildPipeline.BuildProfile(profile, outputRoot, buildTarget, out string error);
+            step.exitCode = success ? 0 : -1;
+            step.command = "AssetLib233EditorBuildPipeline.BuildProfile";
+            step.message = success ? "构建成功: " + outputRoot : error;
+            step.endTimeUtc = DateTime.UtcNow.ToString("O");
+            report.AddStep(step);
+            return success;
         }
 
         private static bool RunExternalStep(

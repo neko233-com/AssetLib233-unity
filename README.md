@@ -38,6 +38,9 @@ powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.c
 - `IAssetLib233BuildPackRule`: 打包规则接口。
 - `IAssetLib233BuildVerifier`: 打包产物校验接口，确认 AB / Manifest / hash / size 完整。
 - `AssetLib233ObsoleteBundleCleaner`: 清理新版本不再使用的废弃 AB。
+- `AssetLib233PreparePackageOperation`: `.version -> .manifest -> Manifest 注入` 主线程异步流程。
+- `AssetLib233PackageDownloadOperation`: Manifest 就绪后全量 / tag 下载到本地 cache。
+- `AssetController_AssetLib233`: 当前项目 `AssetManager233` 默认后端，业务代码不用改加载入口。
 
 ## 快速示例
 
@@ -85,6 +88,22 @@ $env:ASSETLIB233_LOCAL_CONFIG="D:/Private/AssetLib233.publish.local.json"
 powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-publish.ps1 -UnityPath "D:/Unity/Editor/Unity.exe" -ProjectRoot "D:/Project"
 ```
 
+若 `.local` 配置了 `nativeBuildProfilePath`，发布流水线会先调用 AssetLib233 原生构建：
+
+```json
+{
+  "nativeBuildProfilePath": "Assets/neko233/AssetLib233/AssetLib233BuildProfile.asset",
+  "nativeBuildTarget": "WebGL",
+  "buildOutputRoot": "D:/Build/AssetLib233"
+}
+```
+
+构建输出按 `buildOutputRoot/{AssetGroup}` 组织，每个组包含：
+
+- `{group}.version`: `version|manifestFileName|manifestHash|manifestSize`
+- `{group}.manifest`: AssetLib233 二进制 Manifest
+- `*.ab`: AssetBundle 文件
+
 发布完成后会在 `.local` 的 `reportRoot` 下生成独立报告 JSON，可回溯每次 build / upload / refresh 的命令、日志、退出码。
 
 若配置了 `cdnTraceServerUrl`，发布报告会以 JSON POST 到溯源服务器。鉴权 token 从 `cdnTraceTokenEnvName` 指向的环境变量读取，不写入仓库。
@@ -96,3 +115,14 @@ powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-
 - 默认下载并发 10，小游戏平台优先。
 - 框架内部热路径使用 NonAlloc / ListPool。
 - 稳定优先，不为了零 GC 牺牲可维护性和排障能力。
+
+## 真机诊断
+
+项目中可直接输出：
+
+```csharp
+string report = AssetManager233.Instance.BuildAssetLib233RuntimeDiagnosticString();
+Debug.Log(report);
+```
+
+诊断串包含平台、并发、AssetGroup、Manifest、Bundle 本地路径、最近下载 / 加载事件，方便复制真机日志定位 AB 下载失败或资源为空。

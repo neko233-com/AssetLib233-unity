@@ -16,6 +16,8 @@ namespace AssetLib233.Runtime
         private static readonly AssetLib233 _instance = new AssetLib233();
 
         private readonly Dictionary<string, AssetPackage233> _packages = new Dictionary<string, AssetPackage233>(16);
+        private readonly List<AssetPackage233> _packageList = new List<AssetPackage233>(16);
+        private readonly List<AssetLib233Operation> _runningOperations = new List<AssetLib233Operation>(16);
         private readonly List<AssetInfo233> _assetQueryCache = new List<AssetInfo233>(256);
         private readonly List<AssetLib233DownloadRequest> _downloadRequestCache = new List<AssetLib233DownloadRequest>(256);
         private readonly AssetLib233AssetGcService _assetGcService = new AssetLib233AssetGcService();
@@ -79,6 +81,7 @@ namespace AssetLib233.Runtime
 
             assetPackage = new AssetPackage233(safeGroupName);
             _packages.Add(safeGroupName, assetPackage);
+            _packageList.Add(assetPackage);
             return assetPackage;
         }
 
@@ -141,6 +144,24 @@ namespace AssetLib233.Runtime
             AssetLib233MultiGroupDownloadOperation operation =
                 new AssetLib233MultiGroupDownloadOperation(batch, loadingSink);
             operation.Start();
+            _runningOperations.Add(operation);
+            return operation;
+        }
+
+        public AssetLib233PreparePackageOperation CreatePreparePackageOperation(string groupName)
+        {
+            AssetLib233PreparePackageOperation operation = new AssetLib233PreparePackageOperation(groupName);
+            operation.Start();
+            _runningOperations.Add(operation);
+            return operation;
+        }
+
+        public AssetLib233PackageDownloadOperation CreatePackageDownloadOperation(string groupName, string tag)
+        {
+            AssetLib233PackageDownloadOperation operation =
+                new AssetLib233PackageDownloadOperation(groupName, tag);
+            operation.Start();
+            _runningOperations.Add(operation);
             return operation;
         }
 
@@ -149,7 +170,9 @@ namespace AssetLib233.Runtime
         /// </summary>
         public AssetLib233DebugSnapshot CaptureDebugSnapshot()
         {
-            return AssetLib233DebugService.CaptureSnapshot();
+            AssetLib233DebugSnapshot snapshot = AssetLib233DebugService.CaptureSnapshot();
+            FillDebugSnapshot(snapshot);
+            return snapshot;
         }
 
         /// <summary>
@@ -158,6 +181,20 @@ namespace AssetLib233.Runtime
         public void Tick()
         {
             _assetGcService.Tick();
+            for (int i = _runningOperations.Count - 1; i >= 0; i--)
+            {
+                AssetLib233Operation operation = _runningOperations[i];
+                operation.Update();
+                if (operation.IsDone)
+                {
+                    _runningOperations.RemoveAt(i);
+                }
+            }
+
+            for (int i = 0; i < _packageList.Count; i++)
+            {
+                _packageList[i].Update();
+            }
         }
 
         /// <summary>
@@ -198,10 +235,32 @@ namespace AssetLib233.Runtime
         public void ClearRuntimeCache()
         {
             _packages.Clear();
+            _packageList.Clear();
+            _runningOperations.Clear();
             _assetQueryCache.Clear();
             _downloadRequestCache.Clear();
             _assetGcService.Collect(true);
             _isInitialized = false;
+        }
+
+        public string BuildRuntimeDiagnosticString()
+        {
+            return AssetLib233RuntimeDiagnostic.BuildCopyableReport();
+        }
+
+        internal void FillDebugSnapshot(AssetLib233DebugSnapshot snapshot)
+        {
+            if (snapshot == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _packageList.Count; i++)
+            {
+                AssetLib233DebugGroupSnapshot groupSnapshot = new AssetLib233DebugGroupSnapshot();
+                _packageList[i].FillDebugSnapshot(groupSnapshot);
+                snapshot.Groups.Add(groupSnapshot);
+            }
         }
 
         public static AssetPackage233 GetOrCreatePackage(string packageName)
