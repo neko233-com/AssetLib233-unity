@@ -22,9 +22,6 @@ namespace AssetLib233.Plugin_MiniGame_WX
         public void BeforeInitializePackage(AssetLib233PackageConfig config)
         {
             AssetLib233RuntimeOptions.DownloadConcurrency = AssetLib233DownloadPolicy.MaxDownloadConcurrency;
-#if WX
-            WXDownloadSettings.SetMaxConcurrent(AssetLib233DownloadPolicy.MaxDownloadConcurrency);
-#endif
         }
 
         public string GetPersistentRootPath(AssetLib233PackageConfig config)

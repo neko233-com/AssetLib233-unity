@@ -29,7 +29,7 @@
 
 ## 平台能力
 
-- 微信小游戏：只使用 `WX` 单宏识别平台，MiniGame FS，`WXDownloadSettings.SetMaxConcurrent(10)`。
+- 微信小游戏：只使用 `WX` 单宏识别平台，MiniGame FS，AssetLib233 内置下载队列固定并发 10。
 - 抖音小游戏：`DOUYINMINIGAME`，Tiktok MiniGame FS。
 - TapTap 小游戏：`TAPMINIGAME`，TapTap MiniGame FS。
 - iOS / Android / PC / PS5：Host / Offline，后续接平台 BuiltinFileAccessor。

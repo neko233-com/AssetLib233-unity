@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AssetLib233 架构设计</title>
+  <style>
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
+    header{background:#17212b;color:#fff;padding:36px 28px}nav{background:#fff;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}nav a{color:#1769d8;text-decoration:none;font-weight:700;margin-right:18px}main{max-width:1120px;margin:0 auto;padding:28px}section{background:#fff;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}h1,h2{line-height:1.28;margin-top:0}code,pre{font-family:Consolas,"SFMono-Regular",monospace}pre{background:#101826;color:#e8edf5;padding:16px;border-radius:8px;overflow:auto}
+  </style>
+</head>
+<body>
+<header><h1>架构设计</h1><p>AssetGroup 是边界，Manifest 是事实，Provider 是平台差异出口。</p></header>
+<nav><a href="index.html">首页</a><a href="quickstart.html">快速上手</a><a href="comparison.html">对比其他框架</a><a href="architecture.html">架构设计</a><a href="manual.html">详细文档</a><a href="qa.html">QA问题</a><a href="contact.html">联系我们</a></nav>
+<main>
+  <section>
+    <h2>分层</h2>
+    <pre>AssetLib233 facade
+  AssetPackage233
+    AssetManifest233
+    IAssetLib233AssetProvider
+      EditorAssetDatabaseProvider
+      AssetBundleProvider
+    IAssetLib233PlatformPlugin
+      Default / WX / DouYin / TapTap
+    IAssetLib233DownloadTransport
+      UnityWebRequest / MiniGame custom transport</pre>
+  </section>
+  <section>
+    <h2>热更流水线</h2>
+    <pre>.version -> .manifest -> hash/size 校验 -> 下载缺失 Bundle -> 注入 provider -> 加载 Asset -> 引用计数 -> Asset GC -> 废弃 Bundle 清理</pre>
+  </section>
+  <section>
+    <h2>打包模型</h2>
+    <p><code>AssetBuildProfile233</code> 配置多个 AssetGroup。每个 Group 下有多个 Collector。Collector 决定地址规则、标签、PackRule、压缩模式。构建结束后生成 AB、Manifest、Version、构建报告。</p>
+  </section>
+  <section>
+    <h2>平台宏</h2>
+    <p>微信小游戏只要求 <code>WX</code>。编辑器中没有 WX SDK 时仍能编译和模拟；所有微信 SDK 类型、using、字段、签名、方法体都放在 <code>#if WX</code> 内。</p>
+  </section>
+</main>
+</body>
+</html>

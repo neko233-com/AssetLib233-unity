@@ -42,8 +42,8 @@ namespace AssetLib233.Editor
 
             success &= RunNativeBuildStep(config, report);
             success &= RunExternalStep(config, report, "Build", config.buildToolPath, config.buildArguments, config.buildWorkingDirectory);
-            success &= RunExternalStep(config, report, "UploadCDN", config.uploadToolPath, config.uploadArguments, config.uploadWorkingDirectory);
-            success &= RunExternalStep(config, report, "RefreshCDN", config.refreshToolPath, config.refreshArguments, config.refreshWorkingDirectory);
+            success &= RunCdnStep(config, report, true);
+            success &= RunCdnStep(config, report, false);
             success &= RunTraceStep(config, report);
 
             report.success = success;
@@ -60,6 +60,10 @@ namespace AssetLib233.Editor
             report.startTimeUtc = DateTime.UtcNow.ToString("O");
             report.projectPath = Directory.GetParent(Application.dataPath).FullName;
             report.buildOutputRoot = config.buildOutputRoot;
+            report.cdnProvider = config.cdnProvider;
+            report.cdnRegion = config.cdnRegion;
+            report.cdnBucket = config.cdnBucket;
+            report.cdnPathPrefix = config.cdnPathPrefix;
             report.cdnRootUrl = config.cdnRootUrl;
             return report;
         }
@@ -110,6 +114,22 @@ namespace AssetLib233.Editor
             step.endTimeUtc = DateTime.UtcNow.ToString("O");
             report.AddStep(step);
             return success;
+        }
+
+        private static bool RunCdnStep(
+            AssetLib233EditorPublishLocalConfig config,
+            AssetLib233EditorPublishReport report,
+            bool isUpload)
+        {
+            string reportRoot = ResolveReportRoot(config);
+            AssetLib233CdnProviderContext context = new AssetLib233CdnProviderContext(
+                config,
+                report,
+                reportRoot,
+                DefaultTimeoutMilliseconds);
+            IAssetLib233CdnProvider provider = AssetLib233CdnProviderFactory.Create(config);
+            Debug.Log("[AssetLib233-CDN] 使用 provider: " + provider.DisplayName);
+            return isUpload ? provider.Upload(context) : provider.Refresh(context);
         }
 
         private static bool RunExternalStep(

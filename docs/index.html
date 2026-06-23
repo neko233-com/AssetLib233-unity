@@ -3,52 +3,64 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AssetLib233-unity 文档</title>
+  <title>AssetLib233-unity 首页</title>
   <style>
-    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#182026;background:#f6f8fb;line-height:1.7}
-    header{background:#182026;color:white;padding:40px 28px}
-    nav{background:white;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}
-    nav a{margin-right:18px;color:#1b65d8;text-decoration:none;font-weight:600}
-    main{max-width:1080px;margin:0 auto;padding:28px}
-    section{background:white;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}
-    h1,h2,h3{line-height:1.3}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
+    header{background:#17212b;color:#fff;padding:44px 28px}
+    nav{background:#fff;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}
+    nav a{color:#1769d8;text-decoration:none;font-weight:700;margin-right:18px;white-space:nowrap}
+    main{max-width:1120px;margin:0 auto;padding:28px}
+    section{background:#fff;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}
+    h1,h2,h3{line-height:1.28;margin-top:0}
     code,pre{font-family:Consolas,"SFMono-Regular",monospace}
-    pre{background:#111827;color:#e5e7eb;padding:16px;border-radius:8px;overflow:auto}
+    pre{background:#101826;color:#e8edf5;padding:16px;border-radius:8px;overflow:auto}
     table{width:100%;border-collapse:collapse}
-    th,td{border:1px solid #d8dee8;padding:10px;text-align:left}
+    th,td{border:1px solid #d8dee8;padding:10px;text-align:left;vertical-align:top}
     th{background:#eef3fb}
-    .tag{display:inline-block;background:#e8f1ff;color:#1b65d8;border-radius:999px;padding:2px 10px;margin-right:6px}
+    .pill{display:inline-block;background:#e8f1ff;color:#1769d8;border-radius:999px;padding:3px 10px;margin:0 8px 8px 0;font-weight:700}
   </style>
 </head>
 <body>
 <header>
   <h1>AssetLib233-unity</h1>
-  <p>独立 Unity / 团结引擎资源系统。目标是完全替代 YooAsset，优先服务微信小游戏 / WebGL / HybridCLR / 多 AssetGroup 热更场景。</p>
+  <p>独立 Unity / 团结引擎资源热更库。目标：替代 YooAsset，原生服务微信小游戏、WebGL、HybridCLR、多 AssetGroup 热更、CDN 一条龙发布。</p>
 </header>
 <nav>
-  <a href="#quickstart">快速开始</a>
-  <a href="#architecture">架构</a>
-  <a href="#hotupdate">热更</a>
-  <a href="#collector">收集器</a>
-  <a href="#platform">平台</a>
-  <a href="#async">异步</a>
-  <a href="#editor-sim">编辑器模拟</a>
-  <a href="#debug">调试</a>
+  <a href="index.html">首页</a>
+  <a href="quickstart.html">快速上手</a>
+  <a href="comparison.html">对比其他框架</a>
+  <a href="architecture.html">架构设计</a>
+  <a href="manual.html">详细文档</a>
+  <a href="qa.html">QA问题</a>
+  <a href="contact.html">联系我们</a>
 </nav>
 <main>
-  <section id="quickstart"><h2>快速开始</h2><p>用户侧只访问单例 <code>AssetLib233.Instance</code>。</p></section>
-  <section id="install"><h2>安装</h2><p>UPM Git 地址：<code>https://github.com/neko233-com/AssetLib233-unity.git</code></p><p>无 Git 导入：运行 <code>Tools/install-assetlib233.ps1</code>，脚本会下载 GitHub zip 并复制到 <code>Assets/neko233/AssetLib233</code>。</p></section>
-  <section id="architecture"><h2>核心架构</h2><table><tr><th>模块</th><th>职责</th></tr><tr><td>AssetGroup</td><td>顶层资源组，承载 login / default / story 等独立热更域。</td></tr><tr><td>AssetCollector</td><td>配置资源根目录、地址规则、标签、打包规则。</td></tr><tr><td>AssetManifest</td><td>二进制清单，记录 asset 到 bundle、bundle 依赖、hash、crc、size、tags。</td></tr></table></section>
-  <section id="hotupdate"><h2>热更流程</h2><p><span class="tag">请求版本</span><span class="tag">加载 Manifest</span><span class="tag">生成下载计划</span><span class="tag">单文件 / 并发下载</span><span class="tag">统一 Loading</span><span class="tag">校验缓存</span><span class="tag">清理废弃 AB</span></p></section>
-  <section id="publish"><h2>打包上传刷新一条龙</h2><p><code>AssetLib233EditorPublishPipeline</code> 支持原生 AssetLib233 构建、SSH/工具上传 CDN、CDN 刷新、报告生成、溯源服务器 HTTP 上报。私密配置来自 <code>AssetLib233.publish.local.json</code> 或环境变量 <code>ASSETLIB233_LOCAL_CONFIG</code>，不会进入 GitHub。</p><p>原生构建输出：<code>{group}.version</code>、<code>{group}.manifest</code>、<code>*.ab</code>。版本文件格式：<code>version|manifestFileName|manifestHash|manifestSize</code>。</p></section>
-  <section id="startup"><h2>login 快启与登录后资源组</h2><p><code>AssetLib233StartupPlan</code> 原生支持一个 <code>LoginFast</code> 首组和 N 个登录后资源组。业务 Loading 可通过 <code>IAssetLib233LoadingSink</code> 以后接入；不接时流水线静默运行。</p></section>
-  <section id="collector"><h2>收集器规则</h2><p>Collector 支持 PackTogether、PackSeparately、PackByTopDirectory、PackBySecondDirectory、PackByFileExtension、RawFile、ArchiveFile。</p></section>
-  <section id="extension"><h2>扩展点</h2><p>压缩策略、打包规则、打包验证、下载传输层、CDN 工具、溯源上报均接口化。框架本体 0 依赖；UniTask 为可选插件。</p></section>
-  <section id="platform"><h2>平台插件</h2><table><tr><th>插件</th><th>平台</th><th>能力</th></tr><tr><td>Plugin_MiniGame_WX</td><td>微信小游戏</td><td>只使用 WX 宏识别平台，下载并发 10、微信缓存根路径、小游戏加载方式。</td></tr><tr><td>Plugin_MiniGame_DouYin</td><td>抖音小游戏</td><td>下载并发 10、抖音缓存根路径、小游戏加载方式。</td></tr><tr><td>Plugin_MiniGame_TapTap</td><td>TapTap 小游戏</td><td>Tap.env 缓存根路径、下载并发 10。</td></tr></table></section>
-  <section id="async"><h2>异步模型</h2><p>AssetLib233 原生支持 callback 和 C# async/await。UniTask 通过 <code>Plugin_UniTask</code> 接入。</p></section>
-  <section id="editor-sim"><h2>编辑器真机下载模拟</h2><p><code>EnumAssetLib233PlayMode.EditorRemoteSimulation</code> 用于 Editor 内模拟真机远端下载，不绑定业务 Loading。</p></section>
-  <section id="debug"><h2>调试工具</h2><p>调试层输出 <code>AssetLib233DebugSnapshot</code>，用于编辑器窗口、运行时控制台、远端诊断。项目接入后可调用 <code>AssetManager233.Instance.BuildAssetLib233RuntimeDiagnosticString()</code> 输出可复制真机诊断串，定位 AB 下载失败、Manifest 缺失、资源加载为空等问题。</p></section>
-  <section id="gc"><h2>Asset GC</h2><p>AssetLib233 内置自动和手动 Asset GC。自动 GC 通过 <code>AssetLib233.Instance.Tick()</code> 推进；手动 GC 使用 <code>AssetLib233.Instance.CollectAssets(true)</code>。</p></section>
+  <section>
+    <h2>一句话</h2>
+    <p><code>AssetLib233.Instance</code> 是用户唯一入口。AssetGroup 对标 YooAsset Package，但更贴合 login 首组、登录后 N 个内容包、统一 Loading、微信小游戏真机排障、CDN 打包上传刷新溯源完整链路。</p>
+    <p><span class="pill">微信小游戏优先</span><span class="pill">默认并发 10</span><span class="pill">Runtime 0 依赖</span><span class="pill">UniTask 可选</span><span class="pill">纯 HTML 文档</span></p>
+  </section>
+  <section>
+    <h2>能力入口</h2>
+    <table>
+      <tr><th>能力</th><th>入口</th><th>说明</th></tr>
+      <tr><td>运行时加载</td><td><code>AssetLib233.Instance.LoadAssetAsync&lt;T&gt;</code></td><td>支持 callback、C# await、可选 UniTask。</td></tr>
+      <tr><td>多组下载</td><td><code>CreateMultiGroupDownloadOperation</code></td><td>多个 AssetGroup 汇总成一个进度，适合登录后 default + story。</td></tr>
+      <tr><td>真机诊断</td><td><code>BuildRuntimeDiagnosticString</code></td><td>输出平台、Manifest、缓存路径、下载和加载事件，便于复制日志。</td></tr>
+      <tr><td>打包发布</td><td><code>AssetLib233EditorPublishPipeline</code></td><td>原生构建、外部上传、CDN 刷新、报告、溯源服务器。</td></tr>
+    </table>
+  </section>
+  <section>
+    <h2>安装</h2>
+    <p>UPM Git 地址：</p>
+    <pre>https://github.com/neko233-com/AssetLib233-unity.git</pre>
+    <p>无 Git 一行导入：</p>
+    <pre>powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/neko233-com/AssetLib233-unity/main/Tools/install-assetlib233.ps1 -OutFile $env:TEMP/install-assetlib233.ps1; & $env:TEMP/install-assetlib233.ps1 -ProjectRoot (Get-Location).Path"</pre>
+  </section>
+  <section>
+    <h2>核心链路</h2>
+    <p><code>AssetGroup</code> 包含 N 个 <code>AssetCollector</code>，每个 Collector 产出 N 个 AB / RawBundle / ArchiveBundle。每个 AssetGroup 产出独立 <code>.version</code> 和二进制 <code>.manifest</code>，运行时按 Manifest 下载、校验、加载、清理废弃包。</p>
+  </section>
 </main>
 </body>
 </html>

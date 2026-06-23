@@ -1,7 +1,7 @@
 using AssetLib233.Runtime;
 using UnityEngine;
 
-#if (UNITY_WEBGL || UNITY_MINIGAME) && TAPMINIGAME
+#if TAPMINIGAME
 using TapTapMiniGame;
 #endif
 
@@ -25,7 +25,7 @@ namespace AssetLib233.Plugin_MiniGame_TapTap
 
         public string GetPersistentRootPath(AssetLib233PackageConfig config)
         {
-#if (UNITY_WEBGL || UNITY_MINIGAME) && TAPMINIGAME
+#if TAPMINIGAME
             return Tap.env.USER_DATA_PATH + "/AssetLib233_TapTap/" + config.PackageName;
 #else
             return Application.persistentDataPath + "/AssetLib233_TapTap/" + config.PackageName;

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AssetLib233 详细文档</title>
+  <style>
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
+    header{background:#17212b;color:#fff;padding:36px 28px}nav{background:#fff;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}nav a{color:#1769d8;text-decoration:none;font-weight:700;margin-right:18px}main{max-width:1120px;margin:0 auto;padding:28px}section{background:#fff;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}h1,h2{line-height:1.28;margin-top:0}code,pre{font-family:Consolas,"SFMono-Regular",monospace}pre{background:#101826;color:#e8edf5;padding:16px;border-radius:8px;overflow:auto}table{width:100%;border-collapse:collapse}th,td{border:1px solid #d8dee8;padding:10px;text-align:left;vertical-align:top}th{background:#eef3fb}
+  </style>
+</head>
+<body>
+<header><h1>详细文档</h1><p>运行时、编辑器、CDN、调试、清理、扩展点。</p></header>
+<nav><a href="index.html">首页</a><a href="quickstart.html">快速上手</a><a href="comparison.html">对比其他框架</a><a href="architecture.html">架构设计</a><a href="manual.html">详细文档</a><a href="qa.html">QA问题</a><a href="contact.html">联系我们</a></nav>
+<main>
+  <section>
+    <h2>PlayMode</h2>
+    <table><tr><th>模式</th><th>用途</th></tr><tr><td>EditorSimulate</td><td>编辑器直接走 AssetDatabase。</td></tr><tr><td>EditorRemoteSimulation</td><td>编辑器模拟真机远端下载，不绑定业务 Loading。</td></tr><tr><td>Host</td><td>标准热更，远端 Manifest + 本地缓存。</td></tr><tr><td>Web</td><td>WebGL / Web Play 远端加载。</td></tr><tr><td>Offline</td><td>内置包运行。</td></tr></table>
+  </section>
+  <section>
+    <h2>CDN provider</h2>
+    <p>内置 <code>VolcengineChina</code>、<code>Aliyun</code>、<code>TencentCloud</code>、<code>Aws</code>、<code>Custom</code>。默认火山引擎中国。所有 provider 默认复用 .local 中的上传/刷新命令，用户可注册自定义 <code>IAssetLib233CdnProvider</code>。</p>
+    <pre>{
+  "cdnProvider": "VolcengineChina",
+  "cdnRegion": "cn",
+  "cdnBucket": "your-volcengine-tos-bucket",
+  "cdnPathPrefix": "project/env/weixin/minigame/StreamingAssets",
+  "uploadToolPath": "D:/Tools/upload.exe",
+  "refreshToolPath": "D:/Tools/refresh.cmd"
+}</pre>
+  </section>
+  <section>
+    <h2>Agent-first 发布</h2>
+    <pre>powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-publish.ps1 -UnityPath "D:/Unity/Editor/Unity.exe" -ProjectRoot "D:/Project"</pre>
+    <p>产物报告保存到 <code>reportRoot</code>，报告包含 provider、bucket、路径前缀、每一步命令、日志路径、退出码、溯源结果。</p>
+  </section>
+  <section>
+    <h2>清理废弃 Bundle</h2>
+    <p><code>AssetLib233ObsoleteBundleCleaner</code> 根据最新 Manifest 和本地 CacheIndex 生成清理计划。可先 dry-run 输出报告，再执行删除，避免误删当前版本仍在引用的 AB。</p>
+  </section>
+  <section>
+    <h2>真机诊断</h2>
+    <pre>string report = AssetLib233.Instance.BuildRuntimeDiagnosticString();
+Debug.Log(report);</pre>
+    <p>诊断串会输出平台、Package、Manifest 版本、缓存根路径、最近下载事件、Bundle 加载事件、错误信息。</p>
+  </section>
+</main>
+</body>
+</html>

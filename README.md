@@ -2,7 +2,7 @@
 
 独立 Unity / 团结引擎资源热更库。
 
-文档: https://neko233-com.github.io/AssetLib233-unity/
+文档首页: https://neko233-com.github.io/AssetLib233-unity/
 
 仓库: https://github.com/neko233-com/AssetLib233-unity
 
@@ -33,6 +33,7 @@ powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.c
 - `AssetLib233StartupPlan`: 一个 login 快速首组 + 登录后 N 个 AssetGroup。
 - `AssetLib233AssetGcService`: 自动 Asset GC + 手动 Asset GC。
 - `AssetLib233EditorPublishPipeline`: 打包、上传 CDN、刷新 CDN、报告、溯源的一条龙发布流水线。
+- `IAssetLib233CdnProvider`: CDN 策略接口，内置火山引擎中国、阿里云、腾讯云、AWS、Custom，默认火山引擎中国。
 - `AssetLib233DownloadScheduler`: 单文件下载 + 多 AssetGroup 并发下载 + 统一 Loading。
 - `IAssetLib233BuildCompressionStrategy`: 压缩策略接口。
 - `IAssetLib233BuildPackRule`: 打包规则接口。
@@ -66,7 +67,15 @@ AssetHandle233<GameObject> handle =
 
 ## 文档
 
-纯 HTML 文档位于 `docs/index.html`，可直接作为 GitHub Pages 使用。
+纯 HTML 文档位于 `docs/`，可直接作为 GitHub Pages 使用：
+
+- 首页：`docs/index.html`
+- 快速上手：`docs/quickstart.html`
+- 对比其他框架：`docs/comparison.html`
+- 架构设计：`docs/architecture.html`
+- 详细文档：`docs/manual.html`
+- QA问题：`docs/qa.html`
+- 联系我们：`docs/contact.html`
 
 ## .local 私密配置
 
@@ -94,7 +103,9 @@ powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-
 {
   "nativeBuildProfilePath": "Assets/neko233/AssetLib233/AssetLib233BuildProfile.asset",
   "nativeBuildTarget": "WebGL",
-  "buildOutputRoot": "D:/Build/AssetLib233"
+  "buildOutputRoot": "D:/Build/AssetLib233",
+  "cdnProvider": "VolcengineChina",
+  "cdnRegion": "cn"
 }
 ```
 

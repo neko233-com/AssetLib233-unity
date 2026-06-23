@@ -62,7 +62,7 @@ namespace AssetLib233.Runtime
             }
         }
 
-        public bool TryRetainLoadedBundle(string bundleName, out AssetLib233LoadedBundle loadedBundle)
+        internal bool TryRetainLoadedBundle(string bundleName, out AssetLib233LoadedBundle loadedBundle)
         {
             if (_loadedBundleByName.TryGetValue(bundleName, out loadedBundle) && loadedBundle.Bundle != null)
             {
@@ -79,7 +79,7 @@ namespace AssetLib233.Runtime
             return _bundleLoadErrorByName.TryGetValue(bundleName, out error);
         }
 
-        public void EnsureBundleLoading(AssetBundleInfo233 bundleInfo)
+        internal void EnsureBundleLoading(AssetBundleInfo233 bundleInfo)
         {
             if (bundleInfo == null || string.IsNullOrEmpty(bundleInfo.BundleName))
             {
@@ -112,7 +112,7 @@ namespace AssetLib233.Runtime
                 builtinPath);
         }
 
-        public void ReleaseBundles(List<AssetLib233LoadedBundle> loadedBundles)
+        internal void ReleaseBundles(List<AssetLib233LoadedBundle> loadedBundles)
         {
             if (loadedBundles == null)
             {

@@ -10,9 +10,9 @@ namespace AssetLib233.Runtime
             return EnumAssetLib233RuntimePlatform.Editor;
 #elif WX
             return EnumAssetLib233RuntimePlatform.WechatMiniGame;
-#elif (UNITY_WEBGL || UNITY_MINIGAME) && (DOUYIN || TT || DOUYINMINIGAME)
+#elif DOUYIN || TT || DOUYINMINIGAME
             return EnumAssetLib233RuntimePlatform.DouyinMiniGame;
-#elif (UNITY_WEBGL || UNITY_MINIGAME) && TAPMINIGAME
+#elif TAPMINIGAME
             return EnumAssetLib233RuntimePlatform.TapTapMiniGame;
 #elif UNITY_WEBGL
             return EnumAssetLib233RuntimePlatform.WebGL;

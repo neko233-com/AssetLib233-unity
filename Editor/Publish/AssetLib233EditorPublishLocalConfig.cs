@@ -23,6 +23,12 @@ namespace AssetLib233.Editor
         public string refreshToolPath = "";
         public string refreshWorkingDirectory = "";
         public string refreshArguments = "";
+        public string cdnProvider = "VolcengineChina";
+        public string cdnRegion = "cn";
+        public string cdnBucket = "";
+        public string cdnPathPrefix = "";
+        public string cdnRefreshMode = "Directory";
+        public string cdnProviderProfile = "";
         public string cdnRootUrl = "";
         public string cdnTraceServerUrl = "";
         public string cdnTraceTokenEnvName = "";
@@ -33,6 +39,9 @@ namespace AssetLib233.Editor
         {
             AssetLib233EditorPublishLocalConfig config = new AssetLib233EditorPublishLocalConfig();
             config.reportRoot = "Library/AssetLib233/PublishReports";
+            config.cdnProvider = "VolcengineChina";
+            config.cdnRegion = "cn";
+            config.cdnRefreshMode = "Directory";
             return config;
         }
     }

@@ -15,6 +15,10 @@ namespace AssetLib233.Editor
         public string endTimeUtc = "";
         public string projectPath = "";
         public string buildOutputRoot = "";
+        public string cdnProvider = "";
+        public string cdnRegion = "";
+        public string cdnBucket = "";
+        public string cdnPathPrefix = "";
         public string cdnRootUrl = "";
         public bool success;
         public List<AssetLib233EditorPublishReportStep> steps =
