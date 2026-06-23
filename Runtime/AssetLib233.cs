@@ -132,6 +132,19 @@ namespace AssetLib233.Runtime
         }
 
         /// <summary>
+        /// 创建多 AssetGroup 统一下载操作。所有进度聚合为一条 Loading。
+        /// </summary>
+        public AssetLib233MultiGroupDownloadOperation CreateMultiGroupDownloadOperation(
+            AssetLib233GroupDownloadBatch batch,
+            IAssetLib233LoadingSink loadingSink)
+        {
+            AssetLib233MultiGroupDownloadOperation operation =
+                new AssetLib233MultiGroupDownloadOperation(batch, loadingSink);
+            operation.Start();
+            return operation;
+        }
+
+        /// <summary>
         /// 捕获调试快照。调试窗口 / 运行时控制台 / 远端诊断都可以读取该结构。
         /// </summary>
         public AssetLib233DebugSnapshot CaptureDebugSnapshot()

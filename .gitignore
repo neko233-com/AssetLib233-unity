@@ -15,3 +15,6 @@ UserSettings/
 *.svd
 *.pdb
 *.mdb
+*.local.json
+*.local
+AssetLib233.publish.local.json
