@@ -48,5 +48,20 @@ namespace AssetLib233.Runtime
                 results.Add(_collectors[i]);
             }
         }
+
+        public void ClearCollectors()
+        {
+            _collectors.Clear();
+        }
+
+        public void AddCollector(AssetCollector233 collector)
+        {
+            if (collector == null)
+            {
+                return;
+            }
+
+            _collectors.Add(collector);
+        }
     }
 }

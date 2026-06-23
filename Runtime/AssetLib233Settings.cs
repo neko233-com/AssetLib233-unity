@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace AssetLib233.Runtime
 {
-    [CreateAssetMenu(menuName = "neko233/AssetLib233/Settings", fileName = "AssetLib233Settings")]
+    [CreateAssetMenu(menuName = "AssetLib233/Settings", fileName = "AssetLib233Settings")]
     public sealed class AssetLib233Settings : ScriptableObject
     {
         [SerializeField] private List<AssetLib233PackageConfig> _packages = new List<AssetLib233PackageConfig>();

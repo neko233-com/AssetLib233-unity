@@ -9,6 +9,9 @@ namespace AssetLib233.Runtime
         [SerializeField] private string _collectorName;
         [SerializeField] private string _assetRootPath;
         [SerializeField] private string _addressPrefix;
+        [SerializeField] private string _addressRuleName = "AddressByFileName";
+        [SerializeField] private string _filterRuleName = "CollectAll";
+        [SerializeField] private string _legacyPackRuleName = "PackCollector";
         [SerializeField] private string _tagText;
         [SerializeField] private bool _enabled = true;
         [SerializeField] private EnumAssetLib233CollectorPackRule _packRule = EnumAssetLib233CollectorPackRule.PackTogether;
@@ -29,6 +32,24 @@ namespace AssetLib233.Runtime
         {
             get { return _addressPrefix; }
             set { _addressPrefix = value; }
+        }
+
+        public string AddressRuleName
+        {
+            get { return string.IsNullOrEmpty(_addressRuleName) ? "AddressByFileName" : _addressRuleName; }
+            set { _addressRuleName = value; }
+        }
+
+        public string FilterRuleName
+        {
+            get { return string.IsNullOrEmpty(_filterRuleName) ? "CollectAll" : _filterRuleName; }
+            set { _filterRuleName = value; }
+        }
+
+        public string LegacyPackRuleName
+        {
+            get { return string.IsNullOrEmpty(_legacyPackRuleName) ? "PackCollector" : _legacyPackRuleName; }
+            set { _legacyPackRuleName = value; }
         }
 
         public string TagText

@@ -13,7 +13,6 @@ namespace AssetLib233.Editor
         private ObjectField _profileField;
         private ListView _groupListView;
 
-        [MenuItem("neko233/AssetLib233/打开收集配置窗口")]
         public static void Open()
         {
             AssetLib233BuildProfileWindow window = GetWindow<AssetLib233BuildProfileWindow>();
