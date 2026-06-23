@@ -23,7 +23,7 @@ namespace AssetLib233.Editor
             return path;
         }
 
-        [MenuItem("AssetLib233/Publish/Open Reports")]
+        [MenuItem("AssetLib233/Publish - Open Reports")]
         public static void OpenReports()
         {
             if (!AssetLib233EditorPublishLocalConfigLoader.TryLoad(

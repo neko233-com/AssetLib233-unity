@@ -21,7 +21,7 @@ namespace AssetLib233.Editor
         private static readonly HashSet<string> _groupNameSet = new HashSet<string>();
         private static readonly StringBuilder _messageBuilder = new StringBuilder(4096);
 
-        [MenuItem("AssetLib233/Agent/Validate Without Build")]
+        [MenuItem("AssetLib233/Agent - Validate Without Build")]
         public static void RunAgentFirstValidationMenu()
         {
             RunAgentFirstValidation();

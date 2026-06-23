@@ -71,7 +71,7 @@ namespace AssetLib233.Editor
             return true;
         }
 
-        [MenuItem("AssetLib233/Publish/Create .local Example")]
+        [MenuItem("AssetLib233/Publish - Create .local Example")]
         public static void CreateLocalExample()
         {
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;

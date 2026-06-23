@@ -9,33 +9,20 @@ namespace AssetLib233.Editor
         private const string DefaultSettingsPath = "Assets/neko233/AssetLib233/AssetLib233Settings.asset";
         private const string DefaultBuildOutputRoot = "AssetBundles/AssetLib233";
         private const string TopMenuRoot = "AssetLib233/";
-        private const string LegacyMenuRoot = "neko233/AssetLib233/";
 
-        [MenuItem(TopMenuRoot + "面板/打开运行设置窗口", priority = 10)]
+        [MenuItem(TopMenuRoot + "Panel - Open Runtime Settings", priority = 10)]
         public static void OpenSettingsWindow()
         {
             AssetLib233SettingsWindow.Open();
         }
 
-        [MenuItem(LegacyMenuRoot + "打开设置窗口", priority = 10)]
-        public static void LegacyOpenSettingsWindow()
-        {
-            OpenSettingsWindow();
-        }
-
-        [MenuItem(TopMenuRoot + "面板/打开收集配置窗口", priority = 11)]
+        [MenuItem(TopMenuRoot + "Panel - Open BuildProfile Window", priority = 11)]
         public static void OpenBuildProfileWindow()
         {
             AssetLib233BuildProfileWindow.Open();
         }
 
-        [MenuItem(LegacyMenuRoot + "打开收集配置窗口", priority = 11)]
-        public static void LegacyOpenBuildProfileWindow()
-        {
-            OpenBuildProfileWindow();
-        }
-
-        [MenuItem(TopMenuRoot + "配置/创建默认运行设置资产", priority = 30)]
+        [MenuItem(TopMenuRoot + "Config - Create Default Runtime Settings", priority = 30)]
         public static void CreateDefaultSettingsAsset()
         {
             AssetLib233Settings settings = AssetDatabase.LoadAssetAtPath<AssetLib233Settings>(DefaultSettingsPath);
@@ -51,13 +38,7 @@ namespace AssetLib233.Editor
             EditorGUIUtility.PingObject(settings);
         }
 
-        [MenuItem(LegacyMenuRoot + "创建默认设置资产", priority = 30)]
-        public static void LegacyCreateDefaultSettingsAsset()
-        {
-            CreateDefaultSettingsAsset();
-        }
-
-        [MenuItem(TopMenuRoot + "配置/从旧 YooAsset Collector 生成 BuildProfile", priority = 31)]
+        [MenuItem(TopMenuRoot + "Config - Generate BuildProfile From Collector", priority = 31)]
         public static void CreateBuildProfileFromLegacyCollector()
         {
             string profilePath = "Assets/neko233/AssetLib233/AssetLib233BuildProfile.asset";
@@ -66,7 +47,7 @@ namespace AssetLib233.Editor
             {
                 bool isOverwrite = EditorUtility.DisplayDialog(
                     "AssetLib233",
-                    "已存在 AssetLib233BuildProfile.asset，是否用旧 YooAsset Collector 重新生成？",
+                    "已存在 AssetLib233BuildProfile.asset，是否用当前 Collector 配置重新生成？",
                     "重新生成",
                     "取消");
                 if (!isOverwrite)
@@ -85,7 +66,7 @@ namespace AssetLib233.Editor
                     out AssetBuildProfile233 profile,
                     out string error))
             {
-                Debug.LogError("[AssetLib233] 旧 YooAsset Collector 转 BuildProfile 失败: " + error);
+                Debug.LogError("[AssetLib233] Collector 转 BuildProfile 失败: " + error);
                 return;
             }
 
@@ -97,13 +78,7 @@ namespace AssetLib233.Editor
             Debug.Log("[AssetLib233] 已生成 BuildProfile: " + profilePath);
         }
 
-        [MenuItem(LegacyMenuRoot + "从旧 YooAsset Collector 生成 BuildProfile", priority = 31)]
-        public static void LegacyCreateBuildProfileFromLegacyCollector()
-        {
-            CreateBuildProfileFromLegacyCollector();
-        }
-
-        [MenuItem(TopMenuRoot + "构建/构建选中 BuildProfile", priority = 100)]
+        [MenuItem(TopMenuRoot + "Build - From Current BuildProfile", priority = 100)]
         public static void BuildSelectedProfile()
         {
             AssetBuildProfile233 profile = Selection.activeObject as AssetBuildProfile233;
@@ -116,31 +91,25 @@ namespace AssetLib233.Editor
             BuildProfileWithProjectCrypto(profile, GetDefaultBuildOutputRoot(), "选中 BuildProfile");
         }
 
-        [MenuItem(LegacyMenuRoot + "构建选中 BuildProfile", priority = 100)]
-        public static void LegacyBuildSelectedProfile()
-        {
-            BuildSelectedProfile();
-        }
-
-        [MenuItem(TopMenuRoot + "构建/从旧 YooAsset Collector 构建全部 AssetGroup", priority = 110)]
+        [MenuItem(TopMenuRoot + "Build - From Collector All AssetGroups", priority = 110)]
         public static void BuildAllGroupsFromLegacyCollector()
         {
-            BuildLegacyCollectorGroups("全部 AssetGroup", null);
+            BuildCollectorGroups("全部 AssetGroup", null);
         }
 
-        [MenuItem(TopMenuRoot + "构建/从旧 YooAsset Collector 构建 login 首包", priority = 111)]
+        [MenuItem(TopMenuRoot + "Build - From Collector Login", priority = 111)]
         public static void BuildLoginGroupFromLegacyCollector()
         {
-            BuildLegacyCollectorGroups("login 首包", new[] { "login" });
+            BuildCollectorGroups("login 首包", new[] { "login" });
         }
 
-        [MenuItem(TopMenuRoot + "构建/从旧 YooAsset Collector 构建 default+story 内容包", priority = 112)]
+        [MenuItem(TopMenuRoot + "Build - From Collector Required Content", priority = 112)]
         public static void BuildRequiredContentGroupsFromLegacyCollector()
         {
-            BuildLegacyCollectorGroups("default+story 内容包", new[] { "default", "story" });
+            BuildCollectorGroups("default+story 内容包", new[] { "default", "story" });
         }
 
-        [MenuItem(TopMenuRoot + "报告/打开构建报告目录", priority = 200)]
+        [MenuItem(TopMenuRoot + "Report - Open BuildReports Folder", priority = 200)]
         public static void OpenBuildReportDirectory()
         {
             string reportDirectory = "Library/AssetLib233/BuildReports";
@@ -152,7 +121,7 @@ namespace AssetLib233.Editor
             EditorUtility.RevealInFinder(reportDirectory);
         }
 
-        private static void BuildLegacyCollectorGroups(string buildTitle, string[] packageFilters)
+        private static void BuildCollectorGroups(string buildTitle, string[] packageFilters)
         {
             if (!AssetLib233YooAssetCollectorCompat.TryCreateProfile(
                     AssetLib233YooAssetCollectorCompat.DefaultCollectorSettingPath,
@@ -160,13 +129,13 @@ namespace AssetLib233.Editor
                     out AssetBuildProfile233 profile,
                     out string error))
             {
-                Debug.LogError("[AssetLib233] 旧 YooAsset Collector 转换失败: " + error);
+                Debug.LogError("[AssetLib233] Collector 转换失败: " + error);
                 return;
             }
 
             try
             {
-                BuildProfileWithProjectCrypto(profile, GetDefaultBuildOutputRoot(), "旧 Collector -> " + buildTitle);
+                BuildProfileWithProjectCrypto(profile, GetDefaultBuildOutputRoot(), "Collector -> " + buildTitle);
             }
             finally
             {

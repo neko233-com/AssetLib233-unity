@@ -15,7 +15,7 @@ namespace AssetLib233.Editor
     {
         private const int DefaultTimeoutMilliseconds = 60 * 60 * 1000;
 
-        [MenuItem("AssetLib233/Publish/Run Agent First Pipeline")]
+        [MenuItem("AssetLib233/Publish - Run Agent First Pipeline")]
         public static void RunAgentFirstPipelineMenu()
         {
             RunAgentFirstPipeline();
