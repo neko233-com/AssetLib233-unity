@@ -1,0 +1,17 @@
+{
+  "name": "com.neko233.assetlib233",
+  "version": "0.1.0",
+  "displayName": "AssetLib233",
+  "description": "Independent Unity asset hot update library with AssetGroup, Collector, binary Manifest, platform plugins, callback, async/await and UniTask support.",
+  "unity": "2021.3",
+  "keywords": [
+    "assetbundle",
+    "hotupdate",
+    "minigame",
+    "manifest",
+    "unity"
+  ],
+  "author": {
+    "name": "neko233"
+  }
+}

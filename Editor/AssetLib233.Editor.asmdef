@@ -1,0 +1,19 @@
+{
+  "name": "AssetLib233.Editor",
+  "rootNamespace": "AssetLib233.Editor",
+  "references": [
+    "AssetLib233.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "useGUIDs": false
+}

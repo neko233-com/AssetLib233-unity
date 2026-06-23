@@ -1,0 +1,17 @@
+{
+  "name": "AssetLib233.Plugin_MiniGame_TapTap",
+  "rootNamespace": "AssetLib233.Plugin_MiniGame_TapTap",
+  "references": [
+    "AssetLib233.Runtime"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "useGUIDs": false
+}

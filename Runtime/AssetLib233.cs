@@ -1,0 +1,171 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace AssetLib233.Runtime
+{
+    /// <summary>
+    /// AssetLib233 用户 facade。
+    /// 设计目标：
+    /// 1. 用户只需要访问 AssetLib233.Instance，不关心 Manifest、下载器、文件系统、Provider 的内部细节。
+    /// 2. AssetGroup 是热更资源组，等价项目语义中的 login / default / story / voice / cg 等独立包。
+    /// 3. Collector 决定 AssetGroup 内资源如何切成 N 个 AB / RawBundle / ArchiveBundle。
+    /// 4. 全流程按主线程异步模型设计，适配 WebGL / 小游戏单线程主循环。
+    /// </summary>
+    public sealed class AssetLib233
+    {
+        private static readonly AssetLib233 _instance = new AssetLib233();
+
+        private readonly Dictionary<string, AssetPackage233> _packages = new Dictionary<string, AssetPackage233>(16);
+        private readonly List<AssetInfo233> _assetQueryCache = new List<AssetInfo233>(256);
+        private readonly List<AssetLib233DownloadRequest> _downloadRequestCache = new List<AssetLib233DownloadRequest>(256);
+        private bool _isInitialized;
+
+        private AssetLib233()
+        {
+        }
+
+        /// <summary>
+        /// 全局单例入口。业务层统一通过该入口访问 AssetLib233。
+        /// </summary>
+        public static AssetLib233 Instance
+        {
+            get { return _instance; }
+        }
+
+        public bool IsInitialized
+        {
+            get { return _isInitialized; }
+        }
+
+        public int PackageCount
+        {
+            get { return _packages.Count; }
+        }
+
+        /// <summary>
+        /// 初始化资源系统。只安装插件和设置全局参数，不主动下载任何资源。
+        /// </summary>
+        public void Initialize()
+        {
+            if (_isInitialized)
+            {
+                return;
+            }
+
+            AssetLib233PluginRegistry.InstallDefaultPlugins();
+            EnumAssetLib233RuntimePlatform runtimePlatform = AssetLib233PlatformDetector.GetRuntimePlatform();
+            AssetLib233RuntimeOptions.DownloadConcurrency = AssetLib233DownloadPolicy.GetDownloadConcurrency(runtimePlatform);
+            _isInitialized = true;
+        }
+
+        /// <summary>
+        /// 获取或创建 AssetGroup 运行时对象。
+        /// </summary>
+        public AssetPackage233 GetOrCreateGroup(string groupName)
+        {
+            Initialize();
+
+            string safeGroupName = AssetLib233NameUtility.NormalizePackageName(groupName);
+            if (_packages.TryGetValue(safeGroupName, out AssetPackage233 assetPackage))
+            {
+                return assetPackage;
+            }
+
+            assetPackage = new AssetPackage233(safeGroupName);
+            _packages.Add(safeGroupName, assetPackage);
+            return assetPackage;
+        }
+
+        /// <summary>
+        /// 尝试获取 AssetGroup。
+        /// </summary>
+        public bool TryGetGroup(string groupName, out AssetPackage233 assetPackage)
+        {
+            string safeGroupName = AssetLib233NameUtility.NormalizePackageName(groupName);
+            return _packages.TryGetValue(safeGroupName, out assetPackage);
+        }
+
+        /// <summary>
+        /// 初始化指定 AssetGroup。初始化只建立运行上下文，Manifest 加载和下载由热更流水线负责。
+        /// </summary>
+        public AssetPackage233 InitializeGroup(AssetLib233PackageConfig config)
+        {
+            AssetPackage233 assetPackage = GetOrCreateGroup(config.PackageName);
+            assetPackage.Initialize(config);
+            return assetPackage;
+        }
+
+        /// <summary>
+        /// 设置 AssetGroup 的 Manifest。通常由热更版本检查完成后调用。
+        /// </summary>
+        public void SetManifest(string groupName, AssetManifest233 manifest)
+        {
+            AssetPackage233 assetPackage = GetOrCreateGroup(groupName);
+            assetPackage.SetManifest(manifest);
+        }
+
+        /// <summary>
+        /// 按 group + address 加载资源。当前 Provider 骨架已独立，后续接真实 AB 加载器。
+        /// </summary>
+        public AssetHandle233<TObject> LoadAssetAsync<TObject>(string groupName, string address) where TObject : Object
+        {
+            AssetPackage233 assetPackage = GetOrCreateGroup(groupName);
+            return assetPackage.LoadAssetAsync<TObject>(address);
+        }
+
+        /// <summary>
+        /// 按 tag 创建热更下载计划。调用方传入 results，避免高频路径分配。
+        /// </summary>
+        public void CreateHotUpdatePlanByTagNonAlloc(
+            string groupName,
+            string tag,
+            List<AssetLib233DownloadRequest> results)
+        {
+            AssetPackage233 assetPackage = GetOrCreateGroup(groupName);
+            assetPackage.BuildDownloadRequestsNonAlloc(tag, results, _assetQueryCache);
+        }
+
+        /// <summary>
+        /// 捕获调试快照。调试窗口 / 运行时控制台 / 远端诊断都可以读取该结构。
+        /// </summary>
+        public AssetLib233DebugSnapshot CaptureDebugSnapshot()
+        {
+            return AssetLib233DebugService.CaptureSnapshot();
+        }
+
+        /// <summary>
+        /// 设置主线程异步操作时间片。WebGL / 小游戏可调大，减少资源初始化长尾等待。
+        /// </summary>
+        public void SetOperationTimeSlice(long milliseconds)
+        {
+            if (milliseconds <= 0)
+            {
+                Debug.LogError("[AssetLib233] OperationTimeSlice 必须大于 0");
+                return;
+            }
+
+            AssetLib233RuntimeOptions.OperationTimeSliceMs = milliseconds;
+        }
+
+        /// <summary>
+        /// 清空运行态缓存。仅用于测试或完整重启资源系统，不会删除磁盘缓存。
+        /// </summary>
+        public void ClearRuntimeCache()
+        {
+            _packages.Clear();
+            _assetQueryCache.Clear();
+            _downloadRequestCache.Clear();
+            _isInitialized = false;
+        }
+
+        public static AssetPackage233 GetOrCreatePackage(string packageName)
+        {
+            return Instance.GetOrCreateGroup(packageName);
+        }
+
+        public static AssetHandle233<TObject> LoadAsync<TObject>(string groupName, string address) where TObject : Object
+        {
+            return Instance.LoadAssetAsync<TObject>(groupName, address);
+        }
+    }
+}

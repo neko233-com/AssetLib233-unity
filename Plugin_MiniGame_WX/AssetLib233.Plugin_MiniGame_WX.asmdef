@@ -1,0 +1,17 @@
+{
+  "name": "AssetLib233.Plugin_MiniGame_WX",
+  "rootNamespace": "AssetLib233.Plugin_MiniGame_WX",
+  "references": [
+    "AssetLib233.Runtime"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "useGUIDs": false
+}
