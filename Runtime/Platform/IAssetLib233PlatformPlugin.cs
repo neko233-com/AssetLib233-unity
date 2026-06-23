@@ -12,5 +12,7 @@ namespace AssetLib233.Runtime
         string GetPersistentRootPath(AssetLib233PackageConfig config);
 
         EnumAssetLib233LoadMethod GetPreferredLoadMethod(AssetLib233PackageConfig config);
+
+        IAssetLib233DownloadTransport CreateDownloadTransport(AssetLib233PackageConfig config);
     }
 }

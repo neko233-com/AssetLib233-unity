@@ -43,7 +43,9 @@ namespace AssetLib233.Runtime
                 AssetLib233.Instance.CreateHotUpdatePlanByTagNonAlloc(_groupName, _tag, _requests);
             }
 
-            _scheduler.SetTransport(new AssetLib233UnityWebRequestDownloadTransport());
+            IAssetLib233PlatformPlugin plugin =
+                AssetLib233PluginRegistry.GetPlugin(AssetLib233PlatformDetector.GetRuntimePlatform());
+            _scheduler.SetTransport(plugin.CreateDownloadTransport(assetPackage.Config));
             _scheduler.Options.MaxConcurrentCount = AssetLib233RuntimeOptions.DownloadConcurrency;
             _scheduler.AddRequests(_requests);
             _scheduler.Start();

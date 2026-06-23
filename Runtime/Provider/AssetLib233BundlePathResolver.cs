@@ -9,6 +9,14 @@ namespace AssetLib233.Runtime
 
         public static string GetCacheRoot(string packageName)
         {
+            if (AssetLib233.Instance.TryGetGroup(packageName, out AssetPackage233 assetPackage) &&
+                assetPackage.Config != null)
+            {
+                IAssetLib233PlatformPlugin plugin =
+                    AssetLib233PluginRegistry.GetPlugin(AssetLib233PlatformDetector.GetRuntimePlatform());
+                return plugin.GetPersistentRootPath(assetPackage.Config);
+            }
+
             return Path.Combine(Application.persistentDataPath, CacheFolderName, packageName);
         }
 

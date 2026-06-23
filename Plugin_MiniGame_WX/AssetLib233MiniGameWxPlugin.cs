@@ -29,12 +29,21 @@ namespace AssetLib233.Plugin_MiniGame_WX
 
         public string GetPersistentRootPath(AssetLib233PackageConfig config)
         {
+#if WX
+            return WX.env.USER_DATA_PATH + "/AssetLib233_WX/" + config.PackageName;
+#else
             return Application.persistentDataPath + "/AssetLib233_WX/" + config.PackageName;
+#endif
         }
 
         public EnumAssetLib233LoadMethod GetPreferredLoadMethod(AssetLib233PackageConfig config)
         {
             return EnumAssetLib233LoadMethod.MiniGameSdk;
+        }
+
+        public IAssetLib233DownloadTransport CreateDownloadTransport(AssetLib233PackageConfig config)
+        {
+            return new AssetLib233MiniGameWxDownloadTransport();
         }
     }
 }

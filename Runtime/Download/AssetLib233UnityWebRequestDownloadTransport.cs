@@ -17,7 +17,7 @@ namespace AssetLib233.Runtime
     /// <summary>
     /// 默认 HTTP 下载传输层。0 依赖，Host / Web / EditorRemoteSimulation 都可复用。
     /// </summary>
-    public sealed class AssetLib233UnityWebRequestDownloadTransport : IAssetLib233DownloadTransport
+    public class AssetLib233UnityWebRequestDownloadTransport : IAssetLib233DownloadTransport
     {
         public bool CanStartRequest(AssetLib233DownloadRequest request)
         {
@@ -64,8 +64,7 @@ namespace AssetLib233.Runtime
                 }
 
                 string url = string.IsNullOrEmpty(request.MainUrl) ? request.FallbackUrl : request.MainUrl;
-                state.Request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET);
-                state.Request.downloadHandler = new DownloadHandlerFile(state.TempPath);
+                state.Request = CreateRequest(url, state.TempPath);
                 state.Request.SendWebRequest();
                 AssetLib233RuntimeDiagnostic.RecordEvent("download-start file=" + request.CurrentFileName + " url=" + url + " path=" + state.TargetPath);
             }
@@ -164,6 +163,13 @@ namespace AssetLib233.Runtime
 #else
             return request.isNetworkError || request.isHttpError;
 #endif
+        }
+
+        protected virtual UnityWebRequest CreateRequest(string url, string tempPath)
+        {
+            UnityWebRequest request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET);
+            request.downloadHandler = new DownloadHandlerFile(tempPath);
+            return request;
         }
 
         private void CompleteRequest(AssetLib233DownloadRequest request, AssetLib233UnityWebRequestDownloadState state)

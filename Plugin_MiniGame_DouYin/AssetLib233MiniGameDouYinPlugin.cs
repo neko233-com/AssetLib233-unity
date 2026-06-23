@@ -28,5 +28,10 @@ namespace AssetLib233.Plugin_MiniGame_DouYin
         {
             return EnumAssetLib233LoadMethod.MiniGameSdk;
         }
+
+        public IAssetLib233DownloadTransport CreateDownloadTransport(AssetLib233PackageConfig config)
+        {
+            return new AssetLib233UnityWebRequestDownloadTransport();
+        }
     }
 }

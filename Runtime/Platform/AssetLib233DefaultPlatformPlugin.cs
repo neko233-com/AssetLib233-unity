@@ -37,5 +37,10 @@ namespace AssetLib233.Runtime
 
             return EnumAssetLib233LoadMethod.LoadFromFile;
         }
+
+        public IAssetLib233DownloadTransport CreateDownloadTransport(AssetLib233PackageConfig config)
+        {
+            return new AssetLib233UnityWebRequestDownloadTransport();
+        }
     }
 }
