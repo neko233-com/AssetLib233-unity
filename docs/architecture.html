@@ -53,7 +53,7 @@
   </section>
   <section>
     <h2>平台宏</h2>
-    <p>微信小游戏只要求 <code>WX</code>。编辑器中没有 WX SDK 时仍能编译和模拟；所有微信 SDK 类型、using、字段、签名、方法体都放在 <code>#if WX</code> 内。</p>
+    <p>小游戏插件使用 asmdef <code>defineConstraints</code> 做硬隔离：没有对应宏时不会参与编译和打包。微信推荐主宏 <code>WX</code>，兼容 <code>WEIXINMINIGAME</code>；TapTap 推荐 <code>TAPMINIGAME</code>，兼容 <code>TAPTAP</code>；抖音推荐 <code>DOUYINMINIGAME</code>，兼容 <code>DOUYIN</code> / <code>TT</code>。</p>
   </section>
 </main>
 </body>

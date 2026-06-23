@@ -9,8 +9,10 @@
   "allowUnsafeCode": false,
   "overrideReferences": false,
   "precompiledReferences": [],
-  "autoReferenced": false,
-  "defineConstraints": [],
+  "autoReferenced": true,
+  "defineConstraints": [
+    "WX || WEIXINMINIGAME"
+  ],
   "versionDefines": [],
   "noEngineReferences": false,
   "useGUIDs": false

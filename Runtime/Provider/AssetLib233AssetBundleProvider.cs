@@ -102,17 +102,23 @@ namespace AssetLib233.Runtime
             string cryptoPassword = _assetPackage.Config == null
                 ? AssetLib233Constants.DefaultBundleCryptoPassword
                 : _assetPackage.Config.BundleCryptoPassword;
+            IAssetLib233PlatformPlugin plugin =
+                AssetLib233PluginRegistry.GetPlugin(AssetLib233PlatformDetector.GetRuntimePlatform());
+            EnumAssetLib233LoadMethod loadMethod = plugin.GetPreferredLoadMethod(_assetPackage.Config);
             AssetLib233BundleLoadSlot slot = new AssetLib233BundleLoadSlot(
                 bundleInfo,
                 localPath,
                 builtinPath,
-                cryptoPassword);
+                cryptoPassword,
+                loadMethod);
             _loadingSlotByName.Add(bundleInfo.BundleName, slot);
             AssetLib233RuntimeDiagnostic.RecordEvent(
                 "bundle-load-start group=" +
                 _assetPackage.PackageName +
                 " bundle=" +
                 bundleInfo.BundleName +
+                " method=" +
+                loadMethod +
                 " cache=" +
                 localPath +
                 " builtin=" +

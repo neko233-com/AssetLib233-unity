@@ -14,7 +14,7 @@
 <header><h1>QA问题</h1><p>常见接入、真机、构建报告、缓存问题。</p></header>
 <nav><a href="index.html">首页</a><a href="quickstart.html">快速上手</a><a href="comparison.html">对比其他框架</a><a href="architecture.html">架构设计</a><a href="manual.html">详细文档</a><a href="qa.html">QA问题</a><a href="contact.html">联系我们</a></nav>
 <main>
-  <section><h2>微信小游戏需要哪些宏？</h2><p>只需要 <code>WX</code>。微信 SDK 类型引用全部包在 <code>#if WX</code> 内，编辑器可继续模拟非 WX 环境。</p></section>
+  <section><h2>微信小游戏需要哪些宏？</h2><p>推荐只维护主宏 <code>WX</code>；为了兼容旧链路，插件 asmdef 也接受 <code>WEIXINMINIGAME</code>。没有平台宏时，微信插件不会编译进包，编辑器仍走默认平台模拟。</p></section>
   <section><h2>Editor 正常，真机资源为空怎么办？</h2><p>先打印 <code>BuildRuntimeDiagnosticString</code>。重点看 Manifest 版本、Bundle 是否下载成功、缓存路径、hash/size、Bundle 依赖是否加载、地址是否命中。</p></section>
   <section><h2>多个 AssetGroup 怎么显示一个 Loading？</h2><p>使用多组下载 operation，把 default、story、voice 等多个 group 汇总到一个 <code>IAssetLib233LoadingSink</code>。</p></section>
   <section><h2>可以不用 UniTask 吗？</h2><p>可以。Runtime 原生 callback 和 C# await；UniTask 在 <code>Plugin_UniTask</code> 中可选安装。</p></section>

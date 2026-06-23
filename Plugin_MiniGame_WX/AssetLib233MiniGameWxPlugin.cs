@@ -1,16 +1,13 @@
 using AssetLib233.Runtime;
 using UnityEngine;
 
-#if WX
-using WeChatWASM;
-#endif
-
 namespace AssetLib233.Plugin_MiniGame_WX
 {
     /// <summary>
     /// 微信小游戏平台插件。
     /// 只处理微信宿主相关能力：下载并发、小游戏缓存根路径、首选加载方式。
-    /// 不依赖第三方资源系统，不创建外部 FileSystem。
+    /// 这里刻意不直接引用微信 SDK 静态入口：不同微信 SDK 版本的 env API 差异较大，
+    /// Unity 在小游戏平台会把 Application.persistentDataPath 映射到可写目录，先保证全平台可编译。
     /// </summary>
     public sealed class AssetLib233MiniGameWxPlugin : IAssetLib233PlatformPlugin
     {
@@ -26,11 +23,7 @@ namespace AssetLib233.Plugin_MiniGame_WX
 
         public string GetPersistentRootPath(AssetLib233PackageConfig config)
         {
-#if WX
-            return WX.env.USER_DATA_PATH + "/AssetLib233_WX/" + config.PackageName;
-#else
             return Application.persistentDataPath + "/AssetLib233_WX/" + config.PackageName;
-#endif
         }
 
         public EnumAssetLib233LoadMethod GetPreferredLoadMethod(AssetLib233PackageConfig config)

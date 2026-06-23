@@ -10,6 +10,7 @@ namespace AssetLib233.Runtime
         private readonly string _localPath;
         private readonly string _builtinPath;
         private readonly string _cryptoPassword;
+        private readonly EnumAssetLib233LoadMethod _loadMethod;
         private AssetBundleCreateRequest _fileRequest;
         private AssetLib233XorBundleStream _xorStream;
         private UnityWebRequest _webRequest;
@@ -24,12 +25,14 @@ namespace AssetLib233.Runtime
             AssetBundleInfo233 bundleInfo,
             string localPath,
             string builtinPath,
-            string cryptoPassword)
+            string cryptoPassword,
+            EnumAssetLib233LoadMethod loadMethod)
         {
             _bundleInfo = bundleInfo;
             _localPath = localPath;
             _builtinPath = builtinPath;
             _cryptoPassword = cryptoPassword;
+            _loadMethod = loadMethod;
         }
 
         public void Update()
@@ -116,6 +119,11 @@ namespace AssetLib233.Runtime
                 _xorStream = new AssetLib233XorBundleStream(path, _cryptoPassword);
                 _fileRequest = AssetBundle.LoadFromStreamAsync(_xorStream, _bundleInfo.FileCrc);
                 return;
+            }
+
+            if (_loadMethod == EnumAssetLib233LoadMethod.MiniGameSdk)
+            {
+                AssetLib233RuntimeDiagnostic.RecordEvent("bundle-load-minigame path=" + path);
             }
 
             _fileRequest = AssetBundle.LoadFromFileAsync(path, _bundleInfo.FileCrc);

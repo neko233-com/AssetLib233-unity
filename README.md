@@ -40,7 +40,7 @@ flowchart LR
 - `AssetGroup`: 顶层热更资源组。
 - `AssetCollector`: 一个资源组内的收集器，决定资源如何切成 AB / RawBundle / ArchiveBundle。
 - `AssetManifest`: 二进制清单，保存地址、标签、依赖、hash、crc、size。
-- `Plugin_MiniGame_WX` / `Plugin_MiniGame_DouYin` / `Plugin_MiniGame_TapTap`: 小游戏平台插件。
+- `Plugin_MiniGame_WX` / `Plugin_MiniGame_DouYin` / `Plugin_MiniGame_TapTap`: 小游戏平台插件，均由 asmdef `defineConstraints` 宏控制；未定义对应平台宏时不会参与编译和打包。
 - `Plugin_UniTask`: UniTask 扩展，Runtime 不强依赖 UniTask。
 - `AssetLib233StartupPlan`: 一个 login 快速首组 + 登录后 N 个 AssetGroup。
 - `AssetLib233AssetGcService`: 自动 Asset GC + 手动 Asset GC。
@@ -55,6 +55,16 @@ flowchart LR
 - `AssetLib233PreparePackageOperation`: `.version -> .manifest -> Manifest 注入` 主线程异步流程。
 - `AssetLib233PackageDownloadOperation`: Manifest 就绪后全量 / tag 下载到本地 cache。
 - `AssetController_AssetLib233`: 当前项目 `AssetManager233` 默认后端，业务代码不用改加载入口。
+
+小游戏插件宏：
+
+| 插件 | 编译宏 |
+|---|---|
+| `Plugin_MiniGame_WX` | `WX`，兼容 `WEIXINMINIGAME` |
+| `Plugin_MiniGame_TapTap` | `TAPMINIGAME`，兼容 `TAPTAP` |
+| `Plugin_MiniGame_DouYin` | `DOUYINMINIGAME`，兼容 `DOUYIN` / `TT` |
+
+推荐项目只维护每个平台的主宏，构建工具可以额外补历史别名；AssetLib233 插件会按宏自动注册平台能力。
 
 ## 快速示例
 

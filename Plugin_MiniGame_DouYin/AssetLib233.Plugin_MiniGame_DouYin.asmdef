@@ -9,8 +9,10 @@
   "allowUnsafeCode": false,
   "overrideReferences": false,
   "precompiledReferences": [],
-  "autoReferenced": false,
-  "defineConstraints": [],
+  "autoReferenced": true,
+  "defineConstraints": [
+    "DOUYIN || TT || DOUYINMINIGAME"
+  ],
   "versionDefines": [],
   "noEngineReferences": false,
   "useGUIDs": false

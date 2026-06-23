@@ -9,8 +9,10 @@
   "allowUnsafeCode": false,
   "overrideReferences": false,
   "precompiledReferences": [],
-  "autoReferenced": false,
-  "defineConstraints": [],
+  "autoReferenced": true,
+  "defineConstraints": [
+    "TAPMINIGAME || TAPTAP"
+  ],
   "versionDefines": [],
   "noEngineReferences": false,
   "useGUIDs": false
