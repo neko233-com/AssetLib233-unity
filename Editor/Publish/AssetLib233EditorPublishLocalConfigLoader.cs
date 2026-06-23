@@ -12,6 +12,7 @@ namespace AssetLib233.Editor
     {
         private const string EnvName = "ASSETLIB233_LOCAL_CONFIG";
         private const string DefaultFileName = "AssetLib233.publish.local.json";
+        private const string ProjectFileName = "AssetLib233.publish.project.json";
 
         public static string GetDefaultLocalConfigPath()
         {
@@ -22,7 +23,19 @@ namespace AssetLib233.Editor
             }
 
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
-            return Path.Combine(projectRoot, DefaultFileName);
+            string localPath = Path.Combine(projectRoot, DefaultFileName);
+            if (File.Exists(localPath))
+            {
+                return localPath;
+            }
+
+            string projectConfigPath = Path.Combine(projectRoot, ProjectFileName);
+            if (File.Exists(projectConfigPath))
+            {
+                return projectConfigPath;
+            }
+
+            return localPath;
         }
 
         public static bool TryLoad(out AssetLib233EditorPublishLocalConfig config, out string error)

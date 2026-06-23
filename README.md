@@ -24,6 +24,18 @@ powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.c
 
 核心模型：
 
+```mermaid
+flowchart LR
+  U["业务代码<br/>AssetLib233.Instance"] --> G["AssetGroup<br/>login / default / story"]
+  G --> C["N 个 AssetCollector"]
+  C --> B["N 个 AB / RawBundle / ArchiveBundle"]
+  B --> M["二进制 Manifest<br/>hash / crc / size / deps"]
+  M --> D["下载调度器<br/>并发 10 / 统一 Loading"]
+  D --> P["平台插件<br/>WX / DouYin / TapTap / Host"]
+  P --> L["加载 Provider<br/>Editor / AssetBundle"]
+  L --> GC["自动 + 手动 Asset GC"]
+```
+
 - `AssetLib233.Instance`: 用户 facade 单例。
 - `AssetGroup`: 顶层热更资源组。
 - `AssetCollector`: 一个资源组内的收集器，决定资源如何切成 AB / RawBundle / ArchiveBundle。
@@ -96,6 +108,16 @@ $env:ASSETLIB233_LOCAL_CONFIG="D:/Private/AssetLib233.publish.local.json"
 
 ## Agent-first 发布
 
+```mermaid
+flowchart TD
+  A["AssetLib233.publish.local.json<br/>或项目级 project config"] --> B["BuildProfile 校验"]
+  B --> C["AssetLib233 原生打包"]
+  C --> D["单台 SSH CDN 上传工具"]
+  D --> E["火山 DCDN Go 工具刷新/预热"]
+  E --> F["publish_verify CDN 校验"]
+  F --> G["JSON 报告 + 可选溯源服务器"]
+```
+
 ```powershell
 powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-publish.ps1 -UnityPath "D:/Unity/Editor/Unity.exe" -ProjectRoot "D:/Project"
 ```
@@ -156,6 +178,15 @@ Debug.Log(report);
 诊断串包含平台、并发、AssetGroup、Manifest、Bundle 本地路径、最近下载 / 加载事件，方便复制真机日志定位 AB 下载失败或资源为空。
 
 ## 免打包 Agent 验证
+
+```mermaid
+flowchart LR
+  A["不打包"] --> B["检查 BuildProfile / Collector"]
+  B --> C["Editor 加载资源地址"]
+  C --> D["检查 Required Groups"]
+  D --> E["运行 CDN Go publish_verify"]
+  E --> F["输出完整报告"]
+```
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File Assets/neko233/AssetLib233/Tools/agent-validate.ps1 -UnityPath "D:/Unity/Editor/Unity.exe" -ProjectRoot "D:/Project"

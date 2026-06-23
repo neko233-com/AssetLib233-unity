@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AssetLib233-unity 首页</title>
+  <title>AssetLib233-unity 首页</title>`r`n  <link rel="icon" href="data:,">
   <style>
     body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
     header{background:#17212b;color:#fff;padding:44px 28px}
@@ -18,6 +18,11 @@
     th,td{border:1px solid #d8dee8;padding:10px;text-align:left;vertical-align:top}
     th{background:#eef3fb}
     .pill{display:inline-block;background:#e8f1ff;color:#1769d8;border-radius:999px;padding:3px 10px;margin:0 8px 8px 0;font-weight:700}
+    .diagram{width:100%;max-width:980px;height:auto;display:block;margin:8px auto 0}
+    .node{fill:#eef3fb;stroke:#1769d8;stroke-width:2}
+    .node2{fill:#eaf8f1;stroke:#16865a;stroke-width:2}
+    .arrow{stroke:#334155;stroke-width:2;marker-end:url(#arrow)}
+    .label{font-size:14px;font-weight:700;fill:#17212b}
   </style>
 </head>
 <body>
@@ -39,6 +44,23 @@
     <h2>一句话</h2>
     <p><code>AssetLib233.Instance</code> 是用户唯一入口。AssetGroup 对标 YooAsset Package，但更贴合 login 首组、登录后 N 个内容包、统一 Loading、微信小游戏真机排障、CDN 打包上传刷新溯源完整链路。</p>
     <p><span class="pill">微信小游戏优先</span><span class="pill">默认并发 10</span><span class="pill">Runtime 0 依赖</span><span class="pill">UniTask 可选</span><span class="pill">纯 HTML 文档</span></p>
+    <svg class="diagram" viewBox="0 0 980 230" role="img" aria-label="AssetLib233 总览图">
+      <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#334155"></path></marker></defs>
+      <rect class="node" x="20" y="36" width="160" height="76" rx="8"></rect>
+      <text class="label" x="52" y="68">AssetLib233</text><text class="label" x="58" y="92">Facade 单例</text>
+      <line class="arrow" x1="180" y1="74" x2="238" y2="74"></line>
+      <rect class="node2" x="240" y="36" width="160" height="76" rx="8"></rect>
+      <text class="label" x="270" y="68">AssetGroup</text><text class="label" x="268" y="92">login/default/story</text>
+      <line class="arrow" x1="400" y1="74" x2="458" y2="74"></line>
+      <rect class="node" x="460" y="36" width="160" height="76" rx="8"></rect>
+      <text class="label" x="492" y="68">Collectors</text><text class="label" x="489" y="92">N 个 AB 包</text>
+      <line class="arrow" x1="620" y1="74" x2="678" y2="74"></line>
+      <rect class="node2" x="680" y="36" width="160" height="76" rx="8"></rect>
+      <text class="label" x="714" y="68">Manifest</text><text class="label" x="707" y="92">hash/size/deps</text>
+      <line class="arrow" x1="760" y1="112" x2="760" y2="154"></line>
+      <rect class="node" x="570" y="156" width="380" height="52" rx="8"></rect>
+      <text class="label" x="612" y="188">并发下载 10 + 统一 Loading + 真机诊断 + Asset GC</text>
+    </svg>
   </section>
   <section>
     <h2>能力入口</h2>
@@ -64,3 +86,4 @@
 </main>
 </body>
 </html>
+

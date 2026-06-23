@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using UnityEngine;
 
 namespace AssetLib233.Editor
 {
@@ -19,31 +20,33 @@ namespace AssetLib233.Editor
             int timeoutMilliseconds,
             AssetLib233EditorPublishReportStep reportStep)
         {
+            string resolvedFileName = ResolveProjectRelativePath(fileName);
+            string resolvedWorkingDirectory = ResolveProjectRelativePath(workingDirectory);
             reportStep.name = stepName;
-            reportStep.command = fileName + " " + arguments;
-            reportStep.workingDirectory = workingDirectory;
+            reportStep.command = resolvedFileName + " " + arguments;
+            reportStep.workingDirectory = resolvedWorkingDirectory;
             reportStep.logPath = logPath;
             reportStep.startTimeUtc = DateTime.UtcNow.ToString("O");
 
-            if (string.IsNullOrWhiteSpace(fileName) || !File.Exists(fileName))
+            if (string.IsNullOrWhiteSpace(resolvedFileName) || !File.Exists(resolvedFileName))
             {
                 reportStep.exitCode = -1;
-                reportStep.message = "工具不存在: " + fileName;
+                reportStep.message = "工具不存在: " + resolvedFileName;
                 reportStep.endTimeUtc = DateTime.UtcNow.ToString("O");
                 return reportStep.exitCode;
             }
 
-            if (string.IsNullOrWhiteSpace(workingDirectory))
+            if (string.IsNullOrWhiteSpace(resolvedWorkingDirectory))
             {
-                workingDirectory = Path.GetDirectoryName(fileName);
+                resolvedWorkingDirectory = Path.GetDirectoryName(resolvedFileName);
             }
 
             Directory.CreateDirectory(Path.GetDirectoryName(logPath));
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = fileName;
+            startInfo.FileName = resolvedFileName;
             startInfo.Arguments = arguments ?? string.Empty;
-            startInfo.WorkingDirectory = workingDirectory;
+            startInfo.WorkingDirectory = resolvedWorkingDirectory;
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
             startInfo.RedirectStandardOutput = true;
@@ -87,6 +90,22 @@ namespace AssetLib233.Editor
                 File.WriteAllText(logPath, exception.ToString());
                 return reportStep.exitCode;
             }
+        }
+
+        private static string ResolveProjectRelativePath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return string.Empty;
+            }
+
+            if (Path.IsPathRooted(path))
+            {
+                return path;
+            }
+
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+            return Path.GetFullPath(Path.Combine(projectRoot, path));
         }
     }
 }
