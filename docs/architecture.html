@@ -1,60 +1,565 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AssetLib233 架构设计</title>
-  <link rel="icon" href="data:,">
-  <style>
-    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
-    header{background:#17212b;color:#fff;padding:36px 28px}nav{background:#fff;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}nav a{color:#1769d8;text-decoration:none;font-weight:700;margin-right:18px}main{max-width:1120px;margin:0 auto;padding:28px}section{background:#fff;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}h1,h2{line-height:1.28;margin-top:0}code,pre{font-family:Consolas,"SFMono-Regular",monospace}pre{background:#101826;color:#e8edf5;padding:16px;border-radius:8px;overflow:auto}.diagram{width:100%;max-width:980px;height:auto;display:block;margin:8px auto 0}.box{fill:#eef3fb;stroke:#1769d8;stroke-width:2}.box2{fill:#fff7ed;stroke:#ea7a12;stroke-width:2}.arrow{stroke:#334155;stroke-width:2;marker-end:url(#arrow)}.label{font-size:14px;font-weight:700;fill:#17212b}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AssetLib233 - 架构设计</title>
+<link rel="icon" href="favicon.ico">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;color:#1a1a2e;background:#f0f2f8;line-height:1.8;font-size:15px}
+a{color:#4f6df5;text-decoration:none}
+a:hover{text-decoration:underline}
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:#0f1629;color:#c8cee0;overflow-y:auto;z-index:100;display:flex;flex-direction:column}
+.sidebar-brand{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sidebar-brand h2{font-size:17px;color:#fff;font-weight:700;letter-spacing:-.3px}
+.sidebar-brand span{font-size:12px;color:#6b7899;display:block;margin-top:2px}
+.sidebar-nav{flex:1;padding:16px 0}
+.sidebar-nav a{display:flex;align-items:center;padding:10px 24px;color:#8892b0;font-size:14px;font-weight:500;transition:all .15s;border-left:3px solid transparent}
+.sidebar-nav a:hover{color:#e2e8f0;background:rgba(79,109,245,.06);text-decoration:none}
+.sidebar-nav a.active{color:#fff;background:rgba(79,109,245,.12);border-left-color:#4f6df5}
+.sidebar-nav a svg{width:18px;height:18px;margin-right:12px;flex-shrink:0;opacity:.7}
+.sidebar-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,.06);font-size:12px;color:#4a5578}
+.main{margin-left:260px;min-height:100vh}
+.page-header{background:linear-gradient(135deg,#0f1629 0%,#1e2a4a 100%);color:#fff;padding:48px 48px 44px}
+.page-header h1{font-size:30px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
+.page-header p{font-size:15px;color:#8892b0;max-width:640px;line-height:1.7}
+.content{padding:36px 48px 64px;max-width:1080px}
+.card{background:#fff;border:1px solid #e2e6ef;border-radius:12px;padding:28px 32px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card h2{font-size:20px;font-weight:700;color:#0f1629;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #f0f2f8}
+.card h3{font-size:16px;font-weight:700;color:#1e2a4a;margin:20px 0 10px}
+.card p{margin-bottom:12px;color:#374151}
+.card ul,.card ol{margin:0 0 12px 20px;color:#374151}
+.card li{margin-bottom:6px}
+code{font-family:"JetBrains Mono",Consolas,"SFMono-Regular",monospace;font-size:13px;background:#f0f2f8;padding:2px 6px;border-radius:4px;color:#4f6df5}
+pre{background:#0f1629;color:#e2e8f0;padding:20px 24px;border-radius:10px;overflow-x:auto;margin:16px 0;line-height:1.6;font-size:13px}
+pre code{background:none;padding:0;color:inherit}
+table{width:100%;border-collapse:collapse;margin:16px 0}
+th,td{border:1px solid #e2e6ef;padding:10px 14px;text-align:left;font-size:14px;vertical-align:top}
+th{background:#f7f8fc;font-weight:600;color:#0f1629}
+td{color:#374151}
+tr:hover td{background:#fafbfe}
+.diagram-wrap{margin:20px 0;overflow-x:auto;text-align:center}
+.diagram-wrap svg{max-width:100%;height:auto}
+.diagram-caption{font-size:13px;color:#6b7899;text-align:center;margin-top:8px}
+.box-blue{fill:#eef2ff;stroke:#4f6df5;stroke-width:1.8}
+.box-green{fill:#ecfdf5;stroke:#10b981;stroke-width:1.8}
+.box-orange{fill:#fff7ed;stroke:#f59e0b;stroke-width:1.8}
+.box-purple{fill:#f5f3ff;stroke:#8b5cf6;stroke-width:1.8}
+.box-red{fill:#fef2f2;stroke:#ef4444;stroke-width:1.8}
+.box-gray{fill:#f9fafb;stroke:#9ca3af;stroke-width:1.8}
+.arr{stroke:#64748b;stroke-width:1.5;fill:none;marker-end:url(#arr)}
+.arr-dash{stroke:#94a3b8;stroke-width:1.5;fill:none;stroke-dasharray:6 3;marker-end:url(#arr)}
+.lbl{font-size:12px;font-weight:600;fill:#0f1629;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.lbl-sm{font-size:10.5px;font-weight:500;fill:#64748b;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.lbl-w{font-size:12px;font-weight:600;fill:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:6px;margin:2px 4px 2px 0}
+.badge-blue{background:#eef2ff;color:#4f6df5}
+.badge-green{background:#ecfdf5;color:#059669}
+.badge-orange{background:#fff7ed;color:#d97706}
+.badge-purple{background:#f5f3ff;color:#7c3aed}
+.toc{background:#f7f8fc;border:1px solid #e2e6ef;border-radius:10px;padding:20px 24px;margin-bottom:24px}
+.toc h4{font-size:14px;font-weight:700;color:#0f1629;margin-bottom:10px}
+.toc a{display:block;font-size:13px;color:#4f6df5;padding:3px 0}
+@media(max-width:900px){
+.sidebar{width:100%;height:auto;position:relative;flex-direction:row;flex-wrap:wrap}
+.sidebar-brand{padding:16px 20px}
+.sidebar-nav{padding:8px;display:flex;flex-wrap:wrap;gap:4px}
+.sidebar-nav a{padding:8px 14px;border-left:none;border-radius:6px;font-size:13px}
+.sidebar-footer{display:none}
+.main{margin-left:0}
+.page-header{padding:32px 24px}
+.content{padding:24px}
+.card{padding:20px}
+}
+</style>
 </head>
 <body>
-<header><h1>架构设计</h1><p>AssetGroup 是边界，Manifest 是事实，Provider 是平台差异出口。</p></header>
-<nav><a href="index.html">首页</a><a href="quickstart.html">快速上手</a><a href="comparison.html">对比其他框架</a><a href="architecture.html">架构设计</a><a href="manual.html">详细文档</a><a href="qa.html">QA问题</a><a href="contact.html">联系我们</a></nav>
-<main>
-  <section>
-    <h2>分层</h2>
-    <svg class="diagram" viewBox="0 0 980 360" role="img" aria-label="AssetLib233 架构分层图">
-      <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#334155"></path></marker></defs>
-      <rect class="box" x="390" y="18" width="200" height="54" rx="8"></rect><text class="label" x="430" y="52">AssetLib233 facade</text>
-      <line class="arrow" x1="490" y1="72" x2="490" y2="102"></line>
-      <rect class="box2" x="390" y="104" width="200" height="54" rx="8"></rect><text class="label" x="426" y="138">AssetPackage233</text>
-      <line class="arrow" x1="490" y1="158" x2="490" y2="188"></line>
-      <rect class="box" x="70" y="190" width="190" height="68" rx="8"></rect><text class="label" x="106" y="220">Manifest</text><text class="label" x="98" y="242">地址 / 依赖 / hash</text>
-      <rect class="box" x="296" y="190" width="190" height="68" rx="8"></rect><text class="label" x="332" y="220">Download</text><text class="label" x="320" y="242">并发 / 重试 / 进度</text>
-      <rect class="box" x="522" y="190" width="190" height="68" rx="8"></rect><text class="label" x="562" y="220">Provider</text><text class="label" x="552" y="242">Editor / AB 加载</text>
-      <rect class="box" x="748" y="190" width="190" height="68" rx="8"></rect><text class="label" x="790" y="220">Platform</text><text class="label" x="786" y="242">WX / DY / TapTap</text>
-      <line class="arrow" x1="490" y1="158" x2="164" y2="188"></line>
-      <line class="arrow" x1="490" y1="158" x2="390" y2="188"></line>
-      <line class="arrow" x1="490" y1="158" x2="616" y2="188"></line>
-      <line class="arrow" x1="490" y1="158" x2="842" y2="188"></line>
-      <rect class="box2" x="290" y="292" width="400" height="46" rx="8"></rect><text class="label" x="340" y="321">Debug Snapshot / Copyable Runtime Diagnostic</text>
-    </svg>
-    <pre>AssetLib233 facade
-  AssetPackage233
-    AssetManifest233
-    IAssetLib233AssetProvider
-      EditorAssetDatabaseProvider
-      AssetBundleProvider
-    IAssetLib233PlatformPlugin
-      Default / WX / DouYin / TapTap
-    IAssetLib233DownloadTransport
-      UnityWebRequest / MiniGame custom transport</pre>
-  </section>
-  <section>
-    <h2>热更流水线</h2>
-    <pre>.version -> .manifest -> hash/size 校验 -> 下载缺失 Bundle -> 注入 provider -> 加载 Asset -> 引用计数 -> Asset GC -> 废弃 Bundle 清理</pre>
-  </section>
-  <section>
-    <h2>打包模型</h2>
-    <p><code>AssetBuildProfile233</code> 配置多个 AssetGroup。每个 Group 下有多个 Collector。Collector 决定地址规则、标签、PackRule、压缩模式。构建结束后生成 AB、Manifest、Version、构建报告。</p>
-  </section>
-  <section>
-    <h2>平台宏</h2>
-    <p>小游戏插件使用 asmdef <code>defineConstraints</code> 做硬隔离：没有对应宏时不会参与编译和打包。微信推荐主宏 <code>WX</code>，兼容 <code>WEIXINMINIGAME</code>；TapTap 推荐 <code>TAPMINIGAME</code>，兼容 <code>TAPTAP</code>；抖音推荐 <code>DOUYINMINIGAME</code>，兼容 <code>DOUYIN</code> / <code>TT</code>。</p>
-  </section>
-</main>
+<aside class="sidebar">
+<div class="sidebar-brand"><h2>AssetLib233</h2><span>v0.1.0 · Unity 资源热更库</span></div>
+<nav class="sidebar-nav">
+<a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>首页</a>
+<a href="quickstart.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>快速上手</a>
+<a href="architecture.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>架构设计</a>
+<a href="manual.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>详细文档</a>
+<a href="comparison.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>框架对比</a>
+<a href="terminology.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>术语迁移</a>
+<a href="qa.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>QA 问答</a>
+<a href="contact.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>联系我们</a>
+</nav>
+<div class="sidebar-footer"><a href="https://github.com/neko233-com/AssetLib233-unity" style="color:#6b7899">GitHub 仓库</a></div>
+</aside>
+<div class="main">
+<div class="page-header">
+<h1>架构设计</h1>
+<p>AssetGroup 是边界，Manifest 是事实，Provider 是平台差异出口。本文档详细描述 AssetLib233 的分层架构、核心子系统和数据流。</p>
+</div>
+<div class="content">
+<div class="toc">
+<h4>本页目录</h4>
+<a href="#overview">系统总览</a>
+<a href="#layers">分层架构</a>
+<a href="#hotupdate">热更流水线</a>
+<a href="#download">下载子系统</a>
+<a href="#cache">缓存子系统</a>
+<a href="#provider">Provider 加载子系统</a>
+<a href="#platform">平台插件体系</a>
+<a href="#gc">Asset GC 子系统</a>
+<a href="#build">构建流水线</a>
+<a href="#dataflow">端到端数据流</a>
+<a href="#design">设计原则</a>
+</div>
+
+<div class="card" id="overview">
+<h2>1. 系统总览</h2>
+<p>AssetLib233 是一个<strong>单线程异步</strong>资源热更库。所有运行时操作通过主线程 <code>Tick()</code> 驱动，不使用线程、锁或并发容器，天然兼容 WebGL、微信小游戏、抖音小游戏、TapTap 小游戏等受限运行时。</p>
+<div class="diagram-wrap">
+<svg viewBox="0 0 920 340" role="img" aria-label="AssetLib233 系统总览">
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker></defs>
+<rect class="box-blue" x="320" y="12" width="280" height="56" rx="10"/>
+<text class="lbl" x="380" y="38">AssetLib233.Instance</text>
+<text class="lbl-sm" x="404" y="54">Facade 单例 · 用户唯一入口</text>
+<line class="arr" x1="460" y1="68" x2="460" y2="100"/>
+<rect class="box-green" x="300" y="102" width="320" height="56" rx="10"/>
+<text class="lbl" x="372" y="128">AssetPackage233</text>
+<text class="lbl-sm" x="348" y="146">每个 AssetGroup 对应一个 Package 实例</text>
+<line class="arr" x1="360" y1="158" x2="120" y2="196"/>
+<line class="arr" x1="420" y1="158" x2="320" y2="196"/>
+<line class="arr" x1="500" y1="158" x2="520" y2="196"/>
+<line class="arr" x1="560" y1="158" x2="720" y2="196"/>
+<rect class="box-blue" x="20" y="198" width="200" height="60" rx="8"/>
+<text class="lbl" x="62" y="224">Manifest</text>
+<text class="lbl-sm" x="40" y="244">地址 / 标签 / 依赖 / hash</text>
+<rect class="box-orange" x="240" y="198" width="200" height="60" rx="8"/>
+<text class="lbl" x="282" y="224">Download</text>
+<text class="lbl-sm" x="264" y="244">并发调度 / 重试 / 进度</text>
+<rect class="box-purple" x="460" y="198" width="200" height="60" rx="8"/>
+<text class="lbl" x="510" y="224">Provider</text>
+<text class="lbl-sm" x="476" y="244">Editor / AssetBundle 加载</text>
+<rect class="box-green" x="680" y="198" width="220" height="60" rx="8"/>
+<text class="lbl" x="724" y="224">Platform Plugin</text>
+<text class="lbl-sm" x="700" y="244">WX / DouYin / TapTap / Default</text>
+<line class="arr" x1="120" y1="258" x2="120" y2="290"/>
+<line class="arr" x1="340" y1="258" x2="340" y2="290"/>
+<line class="arr" x1="560" y1="258" x2="560" y2="290"/>
+<rect class="box-gray" x="20" y="292" width="200" height="40" rx="6"/>
+<text class="lbl-sm" x="56" y="316">CacheIndex · 缓存管理</text>
+<rect class="box-gray" x="240" y="292" width="200" height="40" rx="6"/>
+<text class="lbl-sm" x="262" y="316">DownloadTransport · 传输</text>
+<rect class="box-gray" x="460" y="292" width="200" height="40" rx="6"/>
+<text class="lbl-sm" x="490" y="316">AssetGcService · GC</text>
+</svg>
+</div>
+<p class="diagram-caption">图 1：系统总览 — Facade 单例管理多个 AssetPackage，每个 Package 内含 Manifest / Download / Provider / Platform 四大子系统</p>
+</div>
+
+<div class="card" id="layers">
+<h2>2. 分层架构</h2>
+<p>AssetLib233 分为五层，从上到下依赖方向单一，禁止反向引用。</p>
+<div class="diagram-wrap">
+<svg viewBox="0 0 860 520" role="img" aria-label="AssetLib233 分层架构">
+<defs><marker id="arr2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker></defs>
+<rect class="box-blue" x="40" y="12" width="780" height="64" rx="10"/>
+<text class="lbl" x="60" y="36">应用层 Application</text>
+<text class="lbl-sm" x="60" y="56">业务代码 · 上层资源管理器 · 启动任务 · UI Loading</text>
+<text class="lbl-sm" x="620" y="36" style="fill:#4f6df5">只调用 Facade API</text>
+<line class="arr" x1="430" y1="76" x2="430" y2="100"/>
+<rect class="box-green" x="40" y="102" width="780" height="64" rx="10"/>
+<text class="lbl" x="60" y="126">门面层 Facade</text>
+<text class="lbl-sm" x="60" y="146">AssetLib233.Instance · AssetPackage233 · StartupPlan · Operation</text>
+<text class="lbl-sm" x="640" y="126" style="fill:#059669">编排子系统</text>
+<line class="arr" x1="430" y1="166" x2="430" y2="190"/>
+<rect class="box-orange" x="40" y="192" width="780" height="90" rx="10"/>
+<text class="lbl" x="60" y="216">子系统层 Subsystems</text>
+<rect x="60" y="230" width="120" height="36" rx="6" fill="#fff" stroke="#f59e0b" stroke-width="1.2"/>
+<text class="lbl-sm" x="82" y="252">Manifest</text>
+<rect x="196" y="230" width="120" height="36" rx="6" fill="#fff" stroke="#f59e0b" stroke-width="1.2"/>
+<text class="lbl-sm" x="218" y="252">Download</text>
+<rect x="332" y="230" width="120" height="36" rx="6" fill="#fff" stroke="#f59e0b" stroke-width="1.2"/>
+<text class="lbl-sm" x="358" y="252">Cache</text>
+<rect x="468" y="230" width="120" height="36" rx="6" fill="#fff" stroke="#f59e0b" stroke-width="1.2"/>
+<text class="lbl-sm" x="494" y="252">Provider</text>
+<rect x="604" y="230" width="120" height="36" rx="6" fill="#fff" stroke="#f59e0b" stroke-width="1.2"/>
+<text class="lbl-sm" x="640" y="252">GC</text>
+<line class="arr" x1="430" y1="282" x2="430" y2="310"/>
+<rect class="box-purple" x="40" y="312" width="780" height="80" rx="10"/>
+<text class="lbl" x="60" y="336">平台抽象层 Platform Abstraction</text>
+<rect x="60" y="348" width="150" height="30" rx="6" fill="#fff" stroke="#8b5cf6" stroke-width="1.2"/>
+<text class="lbl-sm" x="86" y="368">Default Plugin</text>
+<rect x="226" y="348" width="150" height="30" rx="6" fill="#fff" stroke="#8b5cf6" stroke-width="1.2"/>
+<text class="lbl-sm" x="256" y="368">WX Plugin</text>
+<rect x="392" y="348" width="150" height="30" rx="6" fill="#fff" stroke="#8b5cf6" stroke-width="1.2"/>
+<text class="lbl-sm" x="418" y="368">DouYin Plugin</text>
+<rect x="558" y="348" width="150" height="30" rx="6" fill="#fff" stroke="#8b5cf6" stroke-width="1.2"/>
+<text class="lbl-sm" x="586" y="368">TapTap Plugin</text>
+<line class="arr" x1="430" y1="392" x2="430" y2="420"/>
+<rect class="box-gray" x="40" y="422" width="780" height="64" rx="10"/>
+<text class="lbl" x="60" y="446">运行时 / 引擎层 Runtime Engine</text>
+<text class="lbl-sm" x="60" y="466">Unity AssetBundle · UnityWebRequest · 微信 MiniGame FS · WebGL · HybridCLR</text>
+</svg>
+</div>
+<p class="diagram-caption">图 2：五层架构 — 应用层 → 门面层 → 子系统层 → 平台抽象层 → 运行时引擎层</p>
+<table>
+<tr><th>层</th><th>职责</th><th>关键类型</th></tr>
+<tr><td>应用层</td><td>业务逻辑、启动编排、UI Loading</td><td>项目代码、上层资源管理器</td></tr>
+<tr><td>门面层</td><td>统一 API 入口、Operation 编排</td><td><code>AssetLib233</code>, <code>AssetPackage233</code>, <code>AssetLib233StartupPlan</code></td></tr>
+<tr><td>子系统层</td><td>Manifest 解析、下载调度、缓存管理、资源加载、GC</td><td><code>AssetManifest233</code>, <code>DownloadScheduler</code>, <code>CacheIndex</code>, <code>AssetBundleProvider</code>, <code>AssetGcService</code></td></tr>
+<tr><td>平台抽象层</td><td>平台差异隔离：文件系统、下载传输、Bundle 加载方式</td><td><code>IAssetLib233PlatformPlugin</code>, <code>IAssetLib233DownloadTransport</code></td></tr>
+<tr><td>引擎层</td><td>Unity / Tuanjie / 小游戏 SDK 原生能力</td><td>AssetBundle, UnityWebRequest, WX FileSystem</td></tr>
+</table>
+</div>
+
+<div class="card" id="hotupdate">
+<h2>3. 热更流水线</h2>
+<p>热更流水线由 <code>PreparePackageOperation</code> 和 <code>PackageDownloadOperation</code> 两步组成，全部在主线程 Tick 中异步驱动。</p>
+<div class="diagram-wrap">
+<svg viewBox="0 0 900 560" role="img" aria-label="热更流水线">
+<defs><marker id="arr3" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker></defs>
+<rect x="10" y="20" width="90" height="28" rx="6" fill="#4f6df5"/>
+<text class="lbl-w" x="20" y="39">Phase 1</text>
+<text class="lbl" x="112" y="39">版本检测</text>
+<rect class="box-blue" x="110" y="52" width="160" height="52" rx="8"/>
+<text class="lbl-sm" x="130" y="74">请求 {group}.version</text>
+<text class="lbl-sm" x="130" y="90">CDN 主地址 + 备用地址</text>
+<line class="arr" x1="190" y1="104" x2="190" y2="126"/>
+<rect class="box-blue" x="110" y="128" width="160" height="52" rx="8"/>
+<text class="lbl-sm" x="130" y="150">解析 version 文本</text>
+<text class="lbl-sm" x="130" y="166">版本号 / manifest 名 / hash</text>
+<rect x="10" y="204" width="90" height="28" rx="6" fill="#10b981"/>
+<text class="lbl-w" x="20" y="223">Phase 2</text>
+<text class="lbl" x="112" y="223">Manifest 下载与解析</text>
+<line class="arr" x1="190" y1="180" x2="190" y2="240"/>
+<rect class="box-green" x="110" y="242" width="350" height="88" rx="8"/>
+<text class="lbl-sm" x="130" y="262">候选 Manifest 文件（按优先级）:</text>
+<text class="lbl-sm" x="140" y="280">1. {group}.manifest（AssetLib233 原生）</text>
+<text class="lbl-sm" x="140" y="296">2. {group}_{version}.bytes（YooAsset 标准）</text>
+<text class="lbl-sm" x="140" y="312">3. PackageManifest_{group}*.bytes（兼容别名）</text>
+<line class="arr" x1="285" y1="330" x2="285" y2="354"/>
+<rect class="box-green" x="110" y="356" width="350" height="52" rx="8"/>
+<text class="lbl-sm" x="130" y="376">反序列化 → 原生解析 或 YooAsset 转换</text>
+<text class="lbl-sm" x="130" y="394">hash/size 校验 → 注入 AssetPackage233</text>
+<rect x="500" y="20" width="90" height="28" rx="6" fill="#f59e0b"/>
+<text class="lbl-w" x="510" y="39">Phase 3</text>
+<text class="lbl" x="600" y="39">差异下载</text>
+<rect class="box-orange" x="500" y="52" width="380" height="80" rx="8"/>
+<text class="lbl-sm" x="520" y="72">生成下载计划</text>
+<text class="lbl-sm" x="520" y="90">· 遍历 Manifest 中所有 Bundle</text>
+<text class="lbl-sm" x="520" y="106">· 按 tag / 全量 / 指定 asset 过滤</text>
+<text class="lbl-sm" x="520" y="122">· 跳过已缓存 + 平台已下载判定</text>
+<line class="arr" x1="690" y1="132" x2="690" y2="158"/>
+<rect class="box-orange" x="500" y="160" width="380" height="80" rx="8"/>
+<text class="lbl-sm" x="520" y="180">DownloadScheduler 调度</text>
+<text class="lbl-sm" x="520" y="198">· 并发上限 10（可配置）</text>
+<text class="lbl-sm" x="520" y="214">· 同 fileName 去重</text>
+<text class="lbl-sm" x="520" y="230">· 失败重试 + fallback URL</text>
+<line class="arr" x1="690" y1="240" x2="690" y2="266"/>
+<rect class="box-orange" x="500" y="268" width="380" height="52" rx="8"/>
+<text class="lbl-sm" x="520" y="288">Transport 传输层</text>
+<text class="lbl-sm" x="520" y="306">HTTP Range / WX Preload / DouYin / TapTap</text>
+<rect x="500" y="348" width="90" height="28" rx="6" fill="#8b5cf6"/>
+<text class="lbl-w" x="510" y="367">Phase 4</text>
+<text class="lbl" x="600" y="367">加载就绪</text>
+<rect class="box-purple" x="500" y="380" width="380" height="72" rx="8"/>
+<text class="lbl-sm" x="520" y="400">Bundle 下载完成 → 写入缓存</text>
+<text class="lbl-sm" x="520" y="418">CacheIndex 更新 → hash/size 校验</text>
+<text class="lbl-sm" x="520" y="436">Provider 可加载 → AssetHandle233 就绪</text>
+<rect class="box-gray" x="110" y="440" width="350" height="72" rx="8"/>
+<text class="lbl-sm" x="130" y="462">废弃 Bundle 清理</text>
+<text class="lbl-sm" x="130" y="480">ObsoleteBundleCleaner 对比新旧 Manifest</text>
+<text class="lbl-sm" x="130" y="498">dry-run 报告 → 执行删除</text>
+</svg>
+</div>
+<p class="diagram-caption">图 3：热更流水线 — 版本检测 → Manifest 下载 → 差异下载 → 加载就绪 → 废弃清理</p>
+</div>
+
+<div class="card" id="download">
+<h2>4. 下载子系统</h2>
+<p>下载子系统由 <code>AssetLib233DownloadScheduler</code> 驱动，支持单组下载和多组统一进度。</p>
+<div class="diagram-wrap">
+<svg viewBox="0 0 860 360" role="img" aria-label="下载子系统架构">
+<defs><marker id="arr4" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker></defs>
+<rect class="box-blue" x="20" y="16" width="250" height="56" rx="8"/>
+<text class="lbl" x="44" y="38">PackageDownloadOperation</text>
+<text class="lbl-sm" x="44" y="56">单组下载 · 按 tag / 全量 / asset</text>
+<rect class="box-blue" x="290" y="16" width="280" height="56" rx="8"/>
+<text class="lbl" x="308" y="38">MultiGroupDownloadOperation</text>
+<text class="lbl-sm" x="308" y="56">多组统一进度 · StartupPlan 编排</text>
+<rect class="box-blue" x="590" y="16" width="250" height="56" rx="8"/>
+<text class="lbl" x="630" y="38">LoadingSink</text>
+<text class="lbl-sm" x="614" y="56">统一 Loading UI 出口</text>
+<line class="arr" x1="145" y1="72" x2="145" y2="104"/>
+<line class="arr" x1="430" y1="72" x2="430" y2="104"/>
+<rect class="box-orange" x="60" y="106" width="740" height="80" rx="10"/>
+<text class="lbl" x="80" y="130">AssetLib233DownloadScheduler</text>
+<rect x="80" y="142" width="100" height="28" rx="5" fill="#fff" stroke="#f59e0b" stroke-width="1"/>
+<text class="lbl-sm" x="96" y="160">Pending</text>
+<rect x="196" y="142" width="100" height="28" rx="5" fill="#fff" stroke="#f59e0b" stroke-width="1"/>
+<text class="lbl-sm" x="212" y="160">Running</text>
+<rect x="312" y="142" width="100" height="28" rx="5" fill="#fff" stroke="#f59e0b" stroke-width="1"/>
+<text class="lbl-sm" x="326" y="160">Finished</text>
+<rect x="428" y="142" width="100" height="28" rx="5" fill="#fff" stroke="#f59e0b" stroke-width="1"/>
+<text class="lbl-sm" x="448" y="160">Failed</text>
+<rect x="544" y="142" width="120" height="28" rx="5" fill="#fff" stroke="#f59e0b" stroke-width="1"/>
+<text class="lbl-sm" x="556" y="160">Retry Queue</text>
+<text class="lbl-sm" x="700" y="130" style="fill:#d97706">并发 ≤ 10</text>
+<line class="arr" x1="430" y1="186" x2="430" y2="216"/>
+<rect class="box-purple" x="60" y="218" width="740" height="56" rx="10"/>
+<text class="lbl" x="80" y="242">IAssetLib233DownloadTransport（可替换传输层）</text>
+<text class="lbl-sm" x="80" y="260">HTTP Range · 断点续传 · fallback URL · hash/size 校验 · .download 临时文件</text>
+<line class="arr" x1="200" y1="274" x2="200" y2="300"/>
+<line class="arr" x1="430" y1="274" x2="430" y2="300"/>
+<line class="arr" x1="660" y1="274" x2="660" y2="300"/>
+<rect class="box-gray" x="100" y="302" width="200" height="40" rx="6"/>
+<text class="lbl-sm" x="118" y="326">UnityWebRequest Transport</text>
+<rect class="box-gray" x="330" y="302" width="200" height="40" rx="6"/>
+<text class="lbl-sm" x="354" y="326">WX Preload Transport</text>
+<rect class="box-gray" x="560" y="302" width="200" height="40" rx="6"/>
+<text class="lbl-sm" x="574" y="326">DouYin / TapTap Transport</text>
+</svg>
+</div>
+<p class="diagram-caption">图 4：下载子系统 — Operation → Scheduler (Pending/Running/Finished/Failed) → Transport</p>
+<h3>关键特性</h3>
+<ul>
+<li><strong>并发控制</strong>：默认 10 并发，同 fileName 去重避免重复下载</li>
+<li><strong>失败重试</strong>：失败请求进入 Retry Queue，延迟 1s 后重新调度</li>
+<li><strong>Fallback URL</strong>：主 CDN 失败自动切换备用地址</li>
+<li><strong>进度聚合</strong>：<code>UnifiedLoadingProgress</code> 将多组下载汇总为单一进度条</li>
+<li><strong>磁盘预检</strong>：下载前检查剩余空间是否充足</li>
+</ul>
+</div>
+
+<div class="card" id="cache">
+<h2>5. 缓存子系统</h2>
+<div class="diagram-wrap">
+<svg viewBox="0 0 820 240" role="img" aria-label="缓存子系统">
+<defs><marker id="arr5" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker></defs>
+<rect class="box-green" x="20" y="20" width="240" height="80" rx="8"/>
+<text class="lbl" x="64" y="46">CacheIndex</text>
+<text class="lbl-sm" x="40" y="66">内存 dict&lt;bundleName, CacheRecord&gt;</text>
+<text class="lbl-sm" x="40" y="84">记录每个 Bundle 的本地路径 / hash / size</text>
+<rect class="box-blue" x="290" y="20" width="240" height="80" rx="8"/>
+<text class="lbl" x="320" y="46">BundlePathResolver</text>
+<text class="lbl-sm" x="310" y="66">cache: persistentData/{group}/</text>
+<text class="lbl-sm" x="310" y="84">builtin: StreamingAssets/{group}/</text>
+<rect class="box-orange" x="560" y="20" width="240" height="80" rx="8"/>
+<text class="lbl" x="586" y="46">CacheCleaner233</text>
+<text class="lbl-sm" x="580" y="66">按 group / tag / asset 清理</text>
+<text class="lbl-sm" x="580" y="84">ObsoleteBundleCleaner 废弃清理</text>
+<line class="arr" x1="260" y1="60" x2="288" y2="60"/>
+<line class="arr" x1="530" y1="60" x2="558" y2="60"/>
+<rect class="box-gray" x="20" y="130" width="780" height="80" rx="8"/>
+<text class="lbl" x="40" y="156">缓存文件验证链路</text>
+<text class="lbl-sm" x="40" y="178">FileVerifyUtility: hash 校验 → size 校验 → CRC 校验（可选）</text>
+<text class="lbl-sm" x="40" y="196">缓存命中: CacheIndex 查找 → BundlePathResolver 解析路径 → 文件存在且校验通过 → 跳过下载</text>
+</svg>
+</div>
+<p class="diagram-caption">图 5：缓存子系统 — CacheIndex 内存索引 + BundlePathResolver 路径解析 + CacheCleaner 清理</p>
+</div>
+
+<div class="card" id="provider">
+<h2>6. Provider 加载子系统</h2>
+<div class="diagram-wrap">
+<svg viewBox="0 0 860 380" role="img" aria-label="Provider 加载子系统">
+<defs><marker id="arr6" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker></defs>
+<rect class="box-blue" x="280" y="12" width="300" height="50" rx="8"/>
+<text class="lbl" x="310" y="34">LoadAssetAsync&lt;T&gt;(group, address)</text>
+<text class="lbl-sm" x="356" y="50">用户调用入口</text>
+<line class="arr" x1="430" y1="62" x2="430" y2="88"/>
+<rect class="box-green" x="280" y="90" width="300" height="50" rx="8"/>
+<text class="lbl" x="316" y="112">Manifest.ResolveAssetInfo</text>
+<text class="lbl-sm" x="302" y="130">地址 / 路径 / 标签 → AssetInfo233</text>
+<line class="arr" x1="430" y1="140" x2="430" y2="170"/>
+<text class="lbl-sm" x="300" y="165" style="fill:#059669">Editor</text>
+<text class="lbl-sm" x="500" y="165" style="fill:#4f6df5">Runtime</text>
+<line class="arr-dash" x1="340" y1="168" x2="200" y2="190"/>
+<line class="arr" x1="500" y1="168" x2="600" y2="190"/>
+<rect class="box-green" x="40" y="192" width="280" height="70" rx="8"/>
+<text class="lbl" x="56" y="214">EditorAssetDatabaseProvider</text>
+<text class="lbl-sm" x="56" y="234">直接走 AssetDatabase.LoadAssetAtPath</text>
+<text class="lbl-sm" x="56" y="250">EditorSimulate 模式专用</text>
+<rect class="box-blue" x="480" y="192" width="340" height="70" rx="8"/>
+<text class="lbl" x="508" y="214">AssetBundleProvider</text>
+<text class="lbl-sm" x="500" y="234">BundleLoadSlot → LoadFromFileAsync</text>
+<text class="lbl-sm" x="500" y="250">或 LoadFromStreamAsync（XOR 加密包）</text>
+<line class="arr" x1="650" y1="262" x2="650" y2="292"/>
+<rect class="box-purple" x="480" y="294" width="340" height="68" rx="8"/>
+<text class="lbl" x="516" y="316">AssetBundleLoadOperation</text>
+<text class="lbl-sm" x="500" y="336">加载 Asset / SubAsset / Scene</text>
+<text class="lbl-sm" x="500" y="352">LoadedBundle 引用计数 + 依赖保留</text>
+</svg>
+</div>
+<p class="diagram-caption">图 6：Provider 加载子系统 — Manifest 解析 → Editor/Runtime 分支 → Bundle 加载 → Asset 提取</p>
+<h3>Handle 生命周期</h3>
+<table>
+<tr><th>Handle 类型</th><th>释放行为</th></tr>
+<tr><td><code>AssetHandle233&lt;T&gt;</code></td><td>释放 asset retain，GC 可回收</td></tr>
+<tr><td><code>AssetSceneHandle233</code></td><td>卸载场景 + 释放依赖 Bundle</td></tr>
+<tr><td><code>AssetRawFileHandle233</code></td><td>清除 bytes/text 引用</td></tr>
+</table>
+</div>
+
+<div class="card" id="platform">
+<h2>7. 平台插件体系</h2>
+<p>平台插件通过 <code>IAssetLib233PlatformPlugin</code> 接口隔离平台差异。每个小游戏平台有独立 asmdef 和编译宏，未定义宏时不参与编译。</p>
+<div class="diagram-wrap">
+<svg viewBox="0 0 860 320" role="img" aria-label="平台插件体系">
+<defs><marker id="arr7" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker></defs>
+<rect class="box-blue" x="240" y="12" width="380" height="56" rx="10"/>
+<text class="lbl" x="312" y="34">AssetLib233PluginRegistry</text>
+<text class="lbl-sm" x="278" y="54">注册/查找平台插件 · 自动安装 Built-in 插件</text>
+<line class="arr" x1="300" y1="68" x2="140" y2="104"/>
+<line class="arr" x1="380" y1="68" x2="340" y2="104"/>
+<line class="arr" x1="480" y1="68" x2="540" y2="104"/>
+<line class="arr" x1="560" y1="68" x2="740" y2="104"/>
+<rect class="box-green" x="20" y="106" width="200" height="80" rx="8"/>
+<text class="lbl" x="52" y="128">Default Plugin</text>
+<text class="lbl-sm" x="40" y="148">PC / iOS / Android</text>
+<text class="lbl-sm" x="40" y="164">HTTP + FileSystem</text>
+<text class="lbl-sm" x="40" y="178">LoadFromFile</text>
+<rect class="box-orange" x="240" y="106" width="200" height="80" rx="8"/>
+<text class="lbl" x="288" y="128">WX Plugin</text>
+<text class="lbl-sm" x="260" y="148">宏: WX</text>
+<text class="lbl-sm" x="260" y="164">MiniGame FS + Preload</text>
+<text class="lbl-sm" x="260" y="178">wechatminigame-preload</text>
+<rect class="box-purple" x="460" y="106" width="200" height="80" rx="8"/>
+<text class="lbl" x="500" y="128">DouYin Plugin</text>
+<text class="lbl-sm" x="480" y="148">宏: DOUYINMINIGAME</text>
+<text class="lbl-sm" x="480" y="164">TikTok MiniGame FS</text>
+<text class="lbl-sm" x="480" y="178">自定义 Transport</text>
+<rect class="box-red" x="680" y="106" width="160" height="80" rx="8"/>
+<text class="lbl" x="706" y="128">TapTap Plugin</text>
+<text class="lbl-sm" x="700" y="148">宏: TAPMINIGAME</text>
+<text class="lbl-sm" x="700" y="164">TapTap MiniGame FS</text>
+<text class="lbl-sm" x="700" y="178">自定义 Transport</text>
+<rect class="box-gray" x="20" y="214" width="820" height="88" rx="8"/>
+<text class="lbl" x="40" y="238">IAssetLib233PlatformPlugin 接口方法</text>
+<text class="lbl-sm" x="40" y="260">GetPersistentRoot() · GetPreferredLoadMethod() · CreateDownloadTransport()</text>
+<text class="lbl-sm" x="40" y="278">IsBundleDownloaded() · CreateCryptoBundleLoadOperation() · BeforeInitializePackage()</text>
+<text class="lbl-sm" x="40" y="296">AfterInitializePackage() · BeforePreparePackage() · AfterPreparePackage()</text>
+</svg>
+</div>
+<p class="diagram-caption">图 7：平台插件体系 — PluginRegistry 管理四个内置插件，每个插件通过统一接口注入平台能力</p>
+<h3>双层插件模型</h3>
+<table>
+<tr><th>插件类型</th><th>接口</th><th>职责</th></tr>
+<tr><td>Platform Plugin</td><td><code>IAssetLib233PlatformPlugin</code></td><td>文件系统、下载传输、Bundle 加载方式、加密策略</td></tr>
+<tr><td>Runtime Plugin</td><td><code>IAssetLib233RuntimePlugin</code></td><td>观察者模式：监听操作开始/完成、资源加载/释放、下载事件</td></tr>
+</table>
+</div>
+
+<div class="card" id="gc">
+<h2>8. Asset GC 子系统</h2>
+<p><code>AssetLib233AssetGcService</code> 基于引用计数实现自动 + 手动资源回收，支持宽限期和每帧释放上限。</p>
+<div class="diagram-wrap">
+<svg viewBox="0 0 780 260" role="img" aria-label="Asset GC 子系统">
+<defs><marker id="arr8" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker></defs>
+<rect class="box-green" x="20" y="20" width="220" height="60" rx="8"/>
+<text class="lbl" x="64" y="46">Retain(group, addr)</text>
+<text class="lbl-sm" x="40" y="66">加载资源 → 引用计数 +1</text>
+<rect class="box-orange" x="280" y="20" width="220" height="60" rx="8"/>
+<text class="lbl" x="316" y="46">Release(group, addr)</text>
+<text class="lbl-sm" x="300" y="66">释放 Handle → 引用计数 -1</text>
+<line class="arr" x1="130" y1="80" x2="130" y2="112"/>
+<line class="arr" x1="390" y1="80" x2="390" y2="112"/>
+<rect class="box-blue" x="20" y="114" width="480" height="60" rx="8"/>
+<text class="lbl" x="40" y="138">AssetRecord 记录表</text>
+<text class="lbl-sm" x="40" y="158">group + address → { refCount, zeroRefTime, assetObject, memorySize }</text>
+<line class="arr" x1="260" y1="174" x2="260" y2="204"/>
+<rect class="box-purple" x="20" y="206" width="480" height="44" rx="8"/>
+<text class="lbl-sm" x="40" y="232">Auto Collect: Tick() → 间隔检查 → 超宽限期 → 释放 ≤ MaxPerTick 个</text>
+<rect class="box-red" x="540" y="114" width="220" height="60" rx="8"/>
+<text class="lbl" x="570" y="138">Collect(force=true)</text>
+<text class="lbl-sm" x="560" y="158">手动强制 GC · 场景切换</text>
+<rect class="box-gray" x="540" y="206" width="220" height="44" rx="8"/>
+<text class="lbl-sm" x="560" y="232">Memory Snapshot · Top-N</text>
+</svg>
+</div>
+<p class="diagram-caption">图 8：Asset GC — Retain/Release 引用计数 + 自动定时回收 + 手动强制回收</p>
+<h3>GC 配置项</h3>
+<table>
+<tr><th>参数</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>AutoCollectIntervalSeconds</code></td><td>60</td><td>自动 GC 检查间隔</td></tr>
+<tr><td><code>UnusedGraceSeconds</code></td><td>30</td><td>零引用宽限期</td></tr>
+<tr><td><code>MaxReleaseCountPerTick</code></td><td>10</td><td>每次 Tick 最多释放数量</td></tr>
+<tr><td><code>GcMode</code></td><td>Auto</td><td>Auto / Manual / Disabled</td></tr>
+</table>
+</div>
+
+<div class="card" id="build">
+<h2>9. 构建流水线</h2>
+<div class="diagram-wrap">
+<svg viewBox="0 0 860 280" role="img" aria-label="构建流水线">
+<defs><marker id="arr9" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker></defs>
+<rect class="box-blue" x="20" y="28" width="160" height="60" rx="8"/>
+<text class="lbl" x="40" y="52">BuildProfile</text>
+<text class="lbl-sm" x="40" y="72">Group + Collector</text>
+<line class="arr" x1="180" y1="58" x2="210" y2="58"/>
+<rect class="box-green" x="212" y="28" width="160" height="60" rx="8"/>
+<text class="lbl" x="232" y="52">Collector Scan</text>
+<text class="lbl-sm" x="228" y="72">路径枚举 · 非 GUID</text>
+<line class="arr" x1="372" y1="58" x2="402" y2="58"/>
+<rect class="box-orange" x="404" y="28" width="160" height="60" rx="8"/>
+<text class="lbl" x="418" y="52">BuildPipeline</text>
+<text class="lbl-sm" x="418" y="72">AB + RawFile 构建</text>
+<line class="arr" x1="564" y1="58" x2="594" y2="58"/>
+<rect class="box-purple" x="596" y="28" width="120" height="60" rx="8"/>
+<text class="lbl" x="616" y="52">Manifest</text>
+<text class="lbl-sm" x="610" y="72">二进制序列化</text>
+<line class="arr" x1="716" y1="58" x2="746" y2="58"/>
+<rect class="box-red" x="748" y="28" width="92" height="60" rx="8"/>
+<text class="lbl" x="760" y="52">Version</text>
+<text class="lbl-sm" x="758" y="72">+ Hash</text>
+<rect class="box-gray" x="20" y="118" width="820" height="64" rx="8"/>
+<text class="lbl" x="40" y="140">构建产物</text>
+<text class="lbl-sm" x="40" y="162">{group}.version · {group}.manifest · {group}_{ver}.bytes · {group}_{ver}.hash · {group}_{ver}.json · {fileHash}.bundle · *.raw</text>
+<rect class="box-gray" x="20" y="210" width="820" height="56" rx="8"/>
+<text class="lbl" x="40" y="232">扩展点</text>
+<text class="lbl-sm" x="40" y="252">IAssetLib233BuildPackRule · IAssetLib233BuildCompressionStrategy · IAssetLib233BuildVerifier · IAssetLib233EditorBuildNotifier</text>
+</svg>
+</div>
+<p class="diagram-caption">图 9：构建流水线 — Profile → Scan → Build → Manifest → Version + 扩展点</p>
+</div>
+
+<div class="card" id="dataflow">
+<h2>10. 端到端数据流</h2>
+<p>从 CDN 到渲染完成，一个资源的完整生命周期：</p>
+<pre><code>CDN
+  │  .version → .manifest / .bytes → .bundle
+  ▼
+PreparePackageOperation（版本 + Manifest 注入）
+  │
+  ▼
+PackageDownloadOperation（差异 Bundle 下载 + 缓存写入）
+  │
+  ▼
+LoadAssetAsync&lt;T&gt;（Manifest 查地址 → Bundle 加载 → Asset 提取）
+  │
+  ▼
+AssetHandle233&lt;T&gt;（引用计数 Retain）
+  │
+  ▼
+业务使用（handle.AssetObject）
+  │
+  ▼
+handle.Release()（引用计数 Release → GC 回收 → Bundle 卸载）</code></pre>
+</div>
+
+<div class="card" id="design">
+<h2>11. 设计原则</h2>
+<table>
+<tr><th>原则</th><th>说明</th></tr>
+<tr><td>单线程异步</td><td>所有运行时操作通过主线程 <code>Tick()</code> 驱动，不使用 Thread / Task.Run / 锁 / 并发容器</td></tr>
+<tr><td>零 Runtime 依赖</td><td>框架本体不依赖第三方库；UniTask 为可选插件</td></tr>
+<tr><td>平台可插拔</td><td>通过 <code>IAssetLib233PlatformPlugin</code> 隔离平台差异，新平台只需实现接口</td></tr>
+<tr><td>CDN 向下兼容</td><td>Runtime 可直接读取 YooAsset 标准 CDN 产物，不要求额外适配</td></tr>
+<tr><td>稳定优先</td><td>不为零 GC 牺牲可维护性和排障能力；热路径使用 NonAlloc / ListPool</td></tr>
+<tr><td>AssetGroup 是边界</td><td>框架不预设业务阶段名称；login / default / story 等完全由项目决定</td></tr>
+<tr><td>Manifest 是事实</td><td>所有加载、下载、缓存判定以 Manifest 为唯一真相源</td></tr>
+<tr><td>Provider 是出口</td><td>Editor / Runtime / 小游戏差异统一从 Provider 接口输出</td></tr>
+</table>
+</div>
+
+</div>
+</div>
 </body>
 </html>

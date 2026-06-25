@@ -3,33 +3,284 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AssetLib233 联系我们</title>
-  <link rel="icon" href="data:,">
+  <title>AssetLib233 - 联系我们</title>
+  <link rel="icon" href="favicon.ico">
   <style>
-    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
-    header{background:#17212b;color:#fff;padding:36px 28px}nav{background:#fff;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}nav a{color:#1769d8;text-decoration:none;font-weight:700;margin-right:18px}main{max-width:1120px;margin:0 auto;padding:28px}section{background:#fff;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}h1,h2{line-height:1.28;margin-top:0}code,pre{font-family:Consolas,"SFMono-Regular",monospace}pre{background:#101826;color:#e8edf5;padding:16px;border-radius:8px;overflow:auto}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
+    a{color:#4e8cff;text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* ── Sidebar ── */
+    .sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#0f1629;color:#c8cee0;display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+    .sidebar-brand{padding:28px 24px 18px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .sidebar-brand h2{font-size:20px;color:#fff;margin:0 0 4px;letter-spacing:.5px}
+    .sidebar-brand span{font-size:12px;color:#6b7899}
+    .sidebar-nav{flex:1;padding:16px 0;display:flex;flex-direction:column;gap:2px}
+    .sidebar-nav a{display:flex;align-items:center;gap:12px;padding:10px 24px;color:#8892a8;font-size:14px;font-weight:500;transition:all .15s;border-left:3px solid transparent}
+    .sidebar-nav a:hover{color:#e0e4ee;background:rgba(255,255,255,.04);text-decoration:none}
+    .sidebar-nav a.active{color:#fff;background:rgba(78,140,255,.12);border-left-color:#4e8cff}
+    .sidebar-nav a svg{width:18px;height:18px;flex-shrink:0;opacity:.7}
+    .sidebar-nav a.active svg{opacity:1}
+    .sidebar-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,.06);font-size:12px}
+
+    /* ── Main ── */
+    .main{margin-left:260px;min-height:100vh}
+    .page-header{background:linear-gradient(135deg,#0f1629,#1e2a4a);color:#fff;padding:48px}
+    .page-header h1{font-size:32px;font-weight:700;margin:0 0 8px}
+    .page-header p{font-size:15px;color:#8892a8;margin:0}
+    .content{max-width:1080px;padding:36px 48px}
+
+    /* ── Cards ── */
+    .card{background:#fff;border:1px solid #e2e6ef;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+    .card h2{font-size:20px;font-weight:700;margin:0 0 16px;color:#0f1629;display:flex;align-items:center;gap:10px}
+    .card h2 .badge{font-size:11px;background:#4e8cff;color:#fff;padding:2px 10px;border-radius:999px;font-weight:600}
+    .card h3{font-size:16px;font-weight:600;margin:20px 0 10px;color:#1e2a4a}
+    .card p{margin:8px 0;color:#3d4c5c}
+    .card ul,.card ol{margin:8px 0 8px 20px;color:#3d4c5c}
+    .card li{margin:4px 0}
+
+    /* ── Link Card ── */
+    .link-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin:16px 0}
+    .link-card{display:flex;align-items:flex-start;gap:16px;padding:22px 24px;background:#f8f9fc;border:1px solid #e2e6ef;border-radius:10px;transition:all .2s}
+    .link-card:hover{border-color:#4e8cff;background:#f0f6ff;text-decoration:none}
+    .link-card-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .link-card-icon svg{width:22px;height:22px}
+    .link-card-icon.gh{background:#17212b;color:#fff}
+    .link-card-icon.doc{background:#4e8cff;color:#fff}
+    .link-card-text h4{font-size:15px;font-weight:600;color:#0f1629;margin:0 0 4px}
+    .link-card-text span{font-size:13px;color:#6b7899}
+
+    /* ── Template ── */
+    .template-block{background:#f8f9fc;border:1px solid #e2e6ef;border-radius:10px;padding:20px 24px;margin:12px 0}
+    .template-block h4{font-size:14px;font-weight:600;color:#0f1629;margin:0 0 12px}
+    .template-row{display:flex;gap:8px;margin-bottom:8px;font-size:14px}
+    .template-label{min-width:140px;font-weight:600;color:#1e2a4a}
+    .template-value{color:#6b7899;font-style:italic}
+
+    /* ── Tables ── */
+    table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+    th{background:#f7f8fc;font-weight:600;text-align:left;padding:10px 14px;border:1px solid #e2e6ef;color:#0f1629}
+    td{padding:10px 14px;border:1px solid #e2e6ef;vertical-align:top;color:#3d4c5c}
+    tr:hover td{background:#fafbfd}
+
+    /* ── Code ── */
+    code{font-family:Consolas,"SFMono-Regular",monospace;font-size:13px;background:#eef1f7;padding:2px 6px;border-radius:4px;color:#1e2a4a}
+    pre{background:#0f1629;color:#e2e8f0;padding:18px 22px;border-radius:10px;overflow-x:auto;margin:12px 0;font-size:13px;line-height:1.6}
+    pre code{background:none;padding:0;color:inherit}
+
+    /* ── Utility ── */
+    .note{background:#f0f6ff;border-left:4px solid #4e8cff;padding:14px 18px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#1e2a4a}
+    .warn{background:#fff8ec;border-left:4px solid #d97706;padding:14px 18px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#7c5a00}
+
+    /* ── Responsive ── */
+    @media(max-width:900px){
+      .sidebar{position:relative;width:100%;height:auto;flex-direction:row;flex-wrap:wrap;overflow-y:visible}
+      .sidebar-brand{padding:14px 18px;border-bottom:none;border-right:1px solid rgba(255,255,255,.06)}
+      .sidebar-nav{flex-direction:row;flex-wrap:wrap;padding:8px;gap:4px}
+      .sidebar-nav a{padding:6px 12px;border-left:none;border-bottom:2px solid transparent;font-size:13px}
+      .sidebar-nav a.active{border-left-color:transparent;border-bottom-color:#4e8cff}
+      .sidebar-footer{display:none}
+      .main{margin-left:0}
+      .page-header{padding:28px 20px}
+      .content{padding:20px 16px}
+      .link-grid{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
-<header><h1>联系我们</h1><p>问题优先带真机诊断串、Manifest 版本、平台、CDN URL、复现步骤。</p></header>
-<nav><a href="index.html">首页</a><a href="quickstart.html">快速上手</a><a href="comparison.html">对比其他框架</a><a href="architecture.html">架构设计</a><a href="manual.html">详细文档</a><a href="qa.html">QA问题</a><a href="contact.html">联系我们</a></nav>
-<main>
-  <section>
-    <h2>GitHub</h2>
-    <p>仓库：<a href="https://github.com/neko233-com/AssetLib233-unity">https://github.com/neko233-com/AssetLib233-unity</a></p>
-    <p>文档：<a href="https://neko233-com.github.io/AssetLib233-unity/">https://neko233-com.github.io/AssetLib233-unity/</a></p>
-  </section>
-  <section>
-    <h2>反馈模板</h2>
-    <pre>平台：WX / DouYin / TapTap / WebGL / Android / iOS / PC
-AssetGroup：
-PlayMode：
-Manifest 版本：
-资源地址：
-CDN URL：
-诊断串：
-复现步骤：</pre>
-  </section>
-</main>
+
+<aside class="sidebar">
+  <div class="sidebar-brand"><h2>AssetLib233</h2><span>v0.1.0 · Unity 资源热更库</span></div>
+  <nav class="sidebar-nav">
+    <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>首页</a>
+    <a href="quickstart.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>快速上手</a>
+    <a href="architecture.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>架构设计</a>
+    <a href="manual.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>详细文档</a>
+    <a href="comparison.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>框架对比</a>
+    <a href="terminology.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>术语迁移</a>
+    <a href="qa.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>QA 问答</a>
+    <a href="contact.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>联系我们</a>
+  </nav>
+  <div class="sidebar-footer"><a href="https://github.com/neko233-com/AssetLib233-unity" style="color:#6b7899">GitHub 仓库</a></div>
+</aside>
+
+<div class="main">
+  <div class="page-header">
+    <h1>联系我们</h1>
+    <p>问题反馈、功能建议、贡献代码 — 欢迎通过以下渠道与我们取得联系</p>
+  </div>
+
+  <div class="content">
+
+    <!-- 1. GitHub 链接 -->
+    <div class="card">
+      <h2><span class="badge">1</span> 项目链接</h2>
+      <p>AssetLib233 是一个开源项目，所有源码和文档均托管在 GitHub 上。</p>
+      <div class="link-grid">
+        <a href="https://github.com/neko233-com/AssetLib233-unity" class="link-card" target="_blank">
+          <div class="link-card-icon gh">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </div>
+          <div class="link-card-text">
+            <h4>GitHub 仓库</h4>
+            <span>github.com/neko233-com/AssetLib233-unity</span>
+          </div>
+        </a>
+        <a href="https://neko233-com.github.io/AssetLib233-unity/" class="link-card" target="_blank">
+          <div class="link-card-icon doc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div class="link-card-text">
+            <h4>在线文档</h4>
+            <span>neko233-com.github.io/AssetLib233-unity</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- 2. Issue 反馈模板 -->
+    <div class="card">
+      <h2><span class="badge">2</span> Issue 反馈模板</h2>
+      <p>提交 Issue 时请尽量包含以下信息，帮助我们快速定位问题：</p>
+
+      <div class="template-block">
+        <h4>Issue 模板 — Bug 报告</h4>
+        <div class="template-row">
+          <span class="template-label">运行平台</span>
+          <span class="template-value">如：微信小游戏 Android / iOS / PC Windows</span>
+        </div>
+        <div class="template-row">
+          <span class="template-label">AssetGroup</span>
+          <span class="template-value">出问题的 AssetGroup 名称，如 login / default / story</span>
+        </div>
+        <div class="template-row">
+          <span class="template-label">PlayMode</span>
+          <span class="template-value">如 Host / Web / Offline / EditorSimulate</span>
+        </div>
+        <div class="template-row">
+          <span class="template-label">Manifest 版本</span>
+          <span class="template-value">诊断输出中的 Manifest 哈希值</span>
+        </div>
+        <div class="template-row">
+          <span class="template-label">CDN 地址</span>
+          <span class="template-value">DefaultHostServer / FallbackHostServer 配置</span>
+        </div>
+        <div class="template-row">
+          <span class="template-label">CDN URL</span>
+          <span class="template-value">实际请求的 Bundle 完整 URL</span>
+        </div>
+        <div class="template-row">
+          <span class="template-label">诊断字符串</span>
+          <span class="template-value">BuildRuntimeDiagnosticString() 的完整输出</span>
+        </div>
+        <div class="template-row">
+          <span class="template-label">复现步骤</span>
+          <span class="template-value">详细的复现步骤描述</span>
+        </div>
+      </div>
+
+      <h3>示例</h3>
+<pre><code>## 平台
+微信小游戏，Android 真机（微信 8.0.x）
+
+## AssetGroup
+default
+
+## PlayMode
+Web
+
+## Manifest 版本
+a3f8c2d1e5b7
+
+## CDN 地址
+https://cdn.example.com/res/default/
+
+## 诊断字符串
+（粘贴 BuildRuntimeDiagnosticString() 输出）
+
+## 复现步骤
+1. 启动游戏
+2. 登录成功后进入主城
+3. default 包下载进度卡在 45%，Console 无报错
+
+## 期望行为
+default 包应完整下载并进入主城
+
+## 实际行为
+下载卡住，Loading 动画持续播放</code></pre>
+
+      <div class="note">
+        <strong>提示：</strong>诊断字符串是定位问题的关键。请在问题发生时立即调用 <code>BuildRuntimeDiagnosticString()</code> 并粘贴完整输出。
+      </div>
+    </div>
+
+    <!-- 3. Contributing -->
+    <div class="card">
+      <h2><span class="badge">3</span> 贡献指南</h2>
+      <p>我们欢迎各种形式的贡献，无论是 Bug 修复、功能增强还是文档改进。</p>
+
+      <h3>贡献流程</h3>
+      <ol>
+        <li><strong>Fork</strong> — Fork 仓库到个人 GitHub 账号</li>
+        <li><strong>Branch</strong> — 从 <code>main</code> 创建功能分支（如 <code>feature/xxx</code> 或 <code>fix/xxx</code>）</li>
+        <li><strong>Develop</strong> — 编写代码并确保本地测试通过</li>
+        <li><strong>PR</strong> — 提交 Pull Request，描述修改内容和原因</li>
+        <li><strong>Review</strong> — 等待代码审查和合并</li>
+      </ol>
+
+      <h3>编码规范</h3>
+      <table>
+        <tr>
+          <th>规则</th>
+          <th>说明</th>
+        </tr>
+        <tr>
+          <td>语言</td>
+          <td>C# 代码，注释使用简体中文</td>
+        </tr>
+        <tr>
+          <td>命名</td>
+          <td>PascalCase（类/方法/属性），camelCase（局部变量），_camelCase（私有字段）</td>
+        </tr>
+        <tr>
+          <td>类型声明</td>
+          <td>显式类型，避免隐式 <code>var</code></td>
+        </tr>
+        <tr>
+          <td>循环</td>
+          <td>热路径使用 <code>for</code> 循环，避免 <code>foreach</code>（减少 GC）</td>
+        </tr>
+        <tr>
+          <td>线程</td>
+          <td>单线程主循环模型，禁止 <code>Thread</code> / <code>Task.Run</code> / 并发容器</td>
+        </tr>
+        <tr>
+          <td>异步</td>
+          <td>使用 <code>UniTask</code> 或原生 <code>AsyncOperation</code>，禁止 <code>Task.Run</code></td>
+        </tr>
+        <tr>
+          <td>资源加载</td>
+          <td>统一走 <code>AssetLib233.Instance</code> API，禁止绕过框架直接调用底层</td>
+        </tr>
+        <tr>
+          <td>平台宏</td>
+          <td>平台相关代码必须用 <code>#if</code> 宏完整包裹，不留裸引用</td>
+        </tr>
+      </table>
+
+      <h3>PR 检查清单</h3>
+      <ul>
+        <li>代码能通过编译，无 warning</li>
+        <li>新增 API 有对应的文档更新</li>
+        <li>涉及运行时的修改有对应的测试覆盖或验证说明</li>
+        <li>不涉及 <code>.meta</code> 文件的手动修改</li>
+        <li>PR 描述清晰说明修改目的和影响范围</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>

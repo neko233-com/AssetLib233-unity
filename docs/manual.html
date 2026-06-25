@@ -3,61 +3,459 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AssetLib233 详细文档</title>
-  <link rel="icon" href="data:,">
+  <title>AssetLib233 - 详细文档</title>
+  <link rel="icon" href="favicon.ico">
   <style>
-    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
-    header{background:#17212b;color:#fff;padding:36px 28px}nav{background:#fff;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}nav a{color:#1769d8;text-decoration:none;font-weight:700;margin-right:18px}main{max-width:1120px;margin:0 auto;padding:28px}section{background:#fff;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}h1,h2{line-height:1.28;margin-top:0}code,pre{font-family:Consolas,"SFMono-Regular",monospace}pre{background:#101826;color:#e8edf5;padding:16px;border-radius:8px;overflow:auto}table{width:100%;border-collapse:collapse}th,td{border:1px solid #d8dee8;padding:10px;text-align:left;vertical-align:top}th{background:#eef3fb}.diagram{width:100%;max-width:980px;height:auto;display:block;margin:8px auto 0}.box{fill:#eef3fb;stroke:#1769d8;stroke-width:2}.box2{fill:#eaf8f1;stroke:#16865a;stroke-width:2}.arrow{stroke:#334155;stroke-width:2;marker-end:url(#arrow)}.label{font-size:14px;font-weight:700;fill:#17212b}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
+    a{color:#4e8cff;text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* ── Sidebar ── */
+    .sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#0f1629;color:#c8cee0;display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+    .sidebar-brand{padding:28px 24px 18px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .sidebar-brand h2{font-size:20px;color:#fff;margin:0 0 4px;letter-spacing:.5px}
+    .sidebar-brand span{font-size:12px;color:#6b7899}
+    .sidebar-nav{flex:1;padding:16px 0;display:flex;flex-direction:column;gap:2px}
+    .sidebar-nav a{display:flex;align-items:center;gap:12px;padding:10px 24px;color:#8892a8;font-size:14px;font-weight:500;transition:all .15s;border-left:3px solid transparent}
+    .sidebar-nav a:hover{color:#e0e4ee;background:rgba(255,255,255,.04);text-decoration:none}
+    .sidebar-nav a.active{color:#fff;background:rgba(78,140,255,.12);border-left-color:#4e8cff}
+    .sidebar-nav a svg{width:18px;height:18px;flex-shrink:0;opacity:.7}
+    .sidebar-nav a.active svg{opacity:1}
+    .sidebar-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,.06);font-size:12px}
+
+    /* ── Main ── */
+    .main{margin-left:260px;min-height:100vh}
+    .page-header{background:linear-gradient(135deg,#0f1629,#1e2a4a);color:#fff;padding:48px}
+    .page-header h1{font-size:32px;font-weight:700;margin:0 0 8px}
+    .page-header p{font-size:15px;color:#8892a8;margin:0}
+    .content{max-width:1080px;padding:36px 48px}
+
+    /* ── Cards ── */
+    .card{background:#fff;border:1px solid #e2e6ef;border-radius:12px;padding:28px 32px;margin-bottom:24px}
+    .card h2{font-size:20px;font-weight:700;margin:0 0 16px;color:#0f1629;display:flex;align-items:center;gap:10px}
+    .card h2 .badge{font-size:11px;background:#4e8cff;color:#fff;padding:2px 10px;border-radius:999px;font-weight:600}
+    .card h3{font-size:16px;font-weight:600;margin:20px 0 10px;color:#1e2a4a}
+    .card p{margin:8px 0;color:#3d4c5c}
+    .card ul,.card ol{margin:8px 0 8px 20px;color:#3d4c5c}
+    .card li{margin:4px 0}
+
+    /* ── Tables ── */
+    table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+    th{background:#f7f8fc;font-weight:600;text-align:left;padding:10px 14px;border:1px solid #e2e6ef;color:#0f1629}
+    td{padding:10px 14px;border:1px solid #e2e6ef;vertical-align:top;color:#3d4c5c}
+    tr:hover td{background:#fafbfd}
+
+    /* ── Code ── */
+    code{font-family:Consolas,"SFMono-Regular",monospace;font-size:13px;background:#eef1f7;padding:2px 6px;border-radius:4px;color:#1e2a4a}
+    pre{background:#0f1629;color:#e2e8f0;padding:18px 22px;border-radius:10px;overflow-x:auto;margin:12px 0;font-size:13px;line-height:1.6}
+    pre code{background:none;padding:0;color:inherit}
+
+    /* ── Utility ── */
+    .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 10px;border-radius:999px;margin-right:6px}
+    .tag-blue{background:#e8f0ff;color:#2563eb}
+    .tag-green{background:#e6f9ee;color:#16a34a}
+    .tag-orange{background:#fff4e5;color:#d97706}
+    .tag-red{background:#ffeaea;color:#dc2626}
+    .divider{border:none;border-top:1px solid #e2e6ef;margin:24px 0}
+    .note{background:#f0f6ff;border-left:4px solid #4e8cff;padding:14px 18px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#1e2a4a}
+    .warn{background:#fff8ec;border-left:4px solid #d97706;padding:14px 18px;border-radius:0 8px 8px 0;margin:12px 0;font-size:14px;color:#7c5a00}
+
+    /* ── Responsive ── */
+    @media(max-width:900px){
+      .sidebar{position:relative;width:100%;height:auto;flex-direction:row;flex-wrap:wrap;overflow-y:visible}
+      .sidebar-brand{padding:14px 18px;border-bottom:none;border-right:1px solid rgba(255,255,255,.06)}
+      .sidebar-nav{flex-direction:row;flex-wrap:wrap;padding:8px;gap:4px}
+      .sidebar-nav a{padding:6px 12px;border-left:none;border-bottom:2px solid transparent;font-size:13px}
+      .sidebar-nav a.active{border-left-color:transparent;border-bottom-color:#4e8cff}
+      .sidebar-footer{display:none}
+      .main{margin-left:0}
+      .page-header{padding:28px 20px}
+      .content{padding:20px 16px}
+    }
   </style>
 </head>
 <body>
-<header><h1>详细文档</h1><p>运行时、编辑器、构建报告、调试、清理、扩展点。</p></header>
-<nav><a href="index.html">首页</a><a href="quickstart.html">快速上手</a><a href="comparison.html">对比其他框架</a><a href="architecture.html">架构设计</a><a href="manual.html">详细文档</a><a href="qa.html">QA问题</a><a href="contact.html">联系我们</a></nav>
-<main>
-  <section>
-    <h2>EnumHotUpdateType</h2>
-    <table><tr><th>模式</th><th>用途</th></tr><tr><td>EditorSimulate</td><td>编辑器直接走 AssetDatabase。</td></tr><tr><td>EditorRemoteSimulation</td><td>编辑器模拟真机远端下载，不绑定业务 Loading。</td></tr><tr><td>Host</td><td>标准热更，远端 Manifest + 本地缓存。</td></tr><tr><td>Web</td><td>WebGL / Web Play 远端加载。</td></tr><tr><td>Offline</td><td>内置包运行。</td></tr></table>
-  </section>
-  <section>
-    <h2>构建产物与报告</h2>
-    <p>核心只负责 AB、Manifest、version、加载、下载、GC 和诊断。构建完成后自动生成 JSON 报告并弹出报告窗口；报告默认保存在 <code>Library/AssetLib233/BuildReports</code>，不进 Git。</p>
-    <svg class="diagram" viewBox="0 0 980 250" role="img" aria-label="构建报告链路图">
-      <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#334155"></path></marker></defs>
-      <rect class="box" x="28" y="44" width="160" height="66" rx="8"></rect><text class="label" x="54" y="74">BuildProfile</text><text class="label" x="54" y="96">AssetGroup</text>
-      <line class="arrow" x1="188" y1="77" x2="236" y2="77"></line>
-      <rect class="box2" x="238" y="44" width="190" height="66" rx="8"></rect><text class="label" x="282" y="74">BuildPipeline</text><text class="label" x="286" y="96">AB + Manifest</text>
-      <line class="arrow" x1="428" y1="77" x2="476" y2="77"></line>
-      <rect class="box" x="478" y="44" width="190" height="66" rx="8"></rect><text class="label" x="520" y="74">BuildReport</text><text class="label" x="508" y="96">JSON + 窗口</text>
-      <line class="arrow" x1="668" y1="77" x2="716" y2="77"></line>
-      <rect class="box2" x="718" y="44" width="210" height="66" rx="8"></rect><text class="label" x="764" y="74">Feishu</text><text class="label" x="746" y="96">可选 webhook</text>
-      <rect class="box" x="246" y="154" width="486" height="54" rx="8"></rect><text class="label" x="306" y="188">报告记录平台、版本、Bundle 数、资源数、加密、错误摘要</text>
-    </svg>
-    <pre>set ASSETLIB233_FEISHU_WEBHOOK=https://open.feishu.cn/open-apis/bot/v2/hook/xxx</pre>
-    <p>飞书 webhook 只在环境变量存在时发送。项目也可注册 <code>IAssetLib233EditorBuildNotifier</code> 接入企业微信、钉钉、自建平台。</p>
-  </section>
-  <section>
-    <h2>短地址与 XOR 加密</h2>
-    <p>默认收集地址为文件名不带扩展名，Manifest 不再保存完整资源路径。运行时传入完整路径时会自动映射到短地址；构建端通过 <code>AssetBundleBuild.addressableNames</code> 保证 AB 内资源名与短地址一致。</p>
-    <p>AssetLib233 默认 XOR 密码为 <code>root</code>。项目可通过构建参数或运行时 <code>AssetLib233PackageConfig.BundleCryptoPassword</code> 覆盖；当前项目使用 <code>neko233</code>。构建端先记录明文 CRC，再对 AB 文件按偏移 XOR；运行端使用 <code>LoadFromStreamAsync</code> 流式解密，不整包复制。</p>
-  </section>
-  <section>
-    <h2>构建扩展点</h2>
-    <p><code>AssetLib233EditorBuildExtensionRegistry</code> 支持注册 <code>IAssetLib233BuildPackRule</code>、<code>IAssetLib233BuildCompressionStrategy</code>、<code>IAssetLib233BuildVerifier</code>。压缩默认 LZ4，小游戏优先。</p>
-  </section>
-  <section>
-    <h2>CDN 可选插件</h2>
-    <p><code>Plugin_CDN_Deploy</code> 已拆成可选插件，并通过 <code>ASSETLIB233_CDN_DEPLOY</code> 宏禁用。当前项目不启用它，继续使用已有 CDN 发布链路。</p>
-  </section>
-  <section>
-    <h2>清理废弃 Bundle</h2>
-    <p><code>AssetLib233ObsoleteBundleCleaner</code> 根据最新 Manifest 和本地 CacheIndex 生成清理计划。可先 dry-run 输出报告，再执行删除，避免误删当前版本仍在引用的 AB。</p>
-  </section>
-  <section>
-    <h2>真机诊断</h2>
-    <pre>string report = AssetLib233.Instance.BuildRuntimeDiagnosticString();
-Debug.Log(report);</pre>
-    <p>诊断串会输出平台、Package、Manifest 版本、缓存根路径、最近下载事件、Bundle 加载事件、错误信息。</p>
-  </section>
-</main>
+
+<aside class="sidebar">
+  <div class="sidebar-brand"><h2>AssetLib233</h2><span>v0.1.0 · Unity 资源热更库</span></div>
+  <nav class="sidebar-nav">
+    <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>首页</a>
+    <a href="quickstart.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>快速上手</a>
+    <a href="architecture.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>架构设计</a>
+    <a href="manual.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>详细文档</a>
+    <a href="comparison.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>框架对比</a>
+    <a href="terminology.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>术语迁移</a>
+    <a href="qa.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>QA 问答</a>
+    <a href="contact.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>联系我们</a>
+  </nav>
+  <div class="sidebar-footer"><a href="https://github.com/neko233-com/AssetLib233-unity" style="color:#6b7899">GitHub 仓库</a></div>
+</aside>
+
+<div class="main">
+  <div class="page-header">
+    <h1>详细文档</h1>
+    <p>AssetLib233 全部配置项、运行时机制、构建流水线与扩展点的完整参考手册</p>
+  </div>
+
+  <div class="content">
+
+    <!-- 1. PlayMode 详解 -->
+    <div class="card">
+      <h2><span class="badge">1</span> PlayMode 详解</h2>
+      <p>PlayMode 决定 AssetGroup 在编辑器或真机中如何定位和加载资源。在 <code>AssetLib233PackageConfig</code> 中为每个 AssetGroup 独立配置。</p>
+      <table>
+        <tr>
+          <th>PlayMode</th>
+          <th>适用场景</th>
+          <th>说明</th>
+        </tr>
+        <tr>
+          <td><code>EditorSimulate</code></td>
+          <td>编辑器日常开发</td>
+          <td>不构建 AssetBundle，直接通过 <code>AssetDatabase</code> 模拟加载。速度最快，适合快速迭代；不支持真机运行。</td>
+        </tr>
+        <tr>
+          <td><code>EditorRemoteSimulation</code></td>
+          <td>编辑器联调远端 CDN</td>
+          <td>编辑器中加载远端服务器上的 Manifest 和 Bundle，用于在不打真机包的情况下验证 CDN 资源是否正确。</td>
+        </tr>
+        <tr>
+          <td><code>Host</code></td>
+          <td>真机开发 / 热更联调</td>
+          <td>运行时从配置的 <code>DefaultHostServer</code> 地址拉取 Manifest 和 Bundle。支持 <code>FallbackHostServer</code> 做容灾回退。</td>
+        </tr>
+        <tr>
+          <td><code>Web</code></td>
+          <td>WebGL / 微信小游戏</td>
+          <td>通过 HTTP/HTTPS 从 CDN 或 Web 服务器加载资源，自动适配平台下载 API（如微信 <code>WXAssetBundle</code> 缓存链路）。</td>
+        </tr>
+        <tr>
+          <td><code>Offline</code></td>
+          <td>离线包 / 内置资源</td>
+          <td>仅从本地 StreamingAssets 或持久化缓存加载，不发网络请求。适用于首包内置资源或无网络环境。</td>
+        </tr>
+      </table>
+      <div class="note">
+        <strong>提示：</strong>同一个 AssetGroup 在不同 PlayMode 下的 Manifest 解析逻辑完全一致，差异仅在 Bundle 文件的获取通道（本地 vs 网络 vs 编辑器模拟）。
+      </div>
+    </div>
+
+    <!-- 2. AssetLib233PackageConfig 配置项 -->
+    <div class="card">
+      <h2><span class="badge">2</span> AssetLib233PackageConfig 配置项</h2>
+      <p>每个 AssetGroup 对应一份 <code>AssetLib233PackageConfig</code>，在编辑器 Inspector 或 JSON 中配置。</p>
+      <table>
+        <tr>
+          <th>字段</th>
+          <th>类型</th>
+          <th>默认值</th>
+          <th>说明</th>
+        </tr>
+        <tr>
+          <td><code>PackageName</code></td>
+          <td>string</td>
+          <td>—</td>
+          <td>AssetGroup 唯一标识，如 <code>login</code>、<code>default</code>、<code>story</code>。与构建产物的目录名和 Manifest 前缀一致。</td>
+        </tr>
+        <tr>
+          <td><code>PlayMode</code></td>
+          <td>enum</td>
+          <td>EditorSimulate</td>
+          <td>资源加载模式，详见上表。</td>
+        </tr>
+        <tr>
+          <td><code>DefaultHostServer</code></td>
+          <td>string</td>
+          <td>—</td>
+          <td>主 CDN / 服务器地址，如 <code>https://cdn.example.com/res</code>。运行时拼接 <code>/{PackageName}/</code> 定位资源。</td>
+        </tr>
+        <tr>
+          <td><code>FallbackHostServer</code></td>
+          <td>string</td>
+          <td>—</td>
+          <td>备用服务器地址。当 DefaultHostServer 连接失败时自动回退。</td>
+        </tr>
+        <tr>
+          <td><code>EnableBundleCrypto</code></td>
+          <td>bool</td>
+          <td>false</td>
+          <td>启用后 Bundle 使用 XOR 加密写入，运行时通过 <code>LoadFromStreamAsync</code> 解密加载。</td>
+        </tr>
+        <tr>
+          <td><code>BundleCryptoPassword</code></td>
+          <td>string</td>
+          <td>"root"</td>
+          <td>XOR 加密密钥。仅在 <code>EnableBundleCrypto = true</code> 时生效。</td>
+        </tr>
+        <tr>
+          <td><code>DownloadConcurrency</code></td>
+          <td>int</td>
+          <td>10</td>
+          <td>该 AssetGroup 的最大并行下载数。推荐保持默认 10，过高的并发在弱网环境下可能引发超时。</td>
+        </tr>
+        <tr>
+          <td><code>GroupRole</code></td>
+          <td>enum</td>
+          <td>Optional</td>
+          <td><code>Required</code>：启动必需，下载完成后才可进入游戏。<code>Optional</code>：按玩法入口或后台低优先级下载。</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 3. Manifest 候选顺序 -->
+    <div class="card">
+      <h2><span class="badge">3</span> Manifest 候选顺序</h2>
+      <p>运行时初始化 AssetGroup 时，按以下顺序查找 Manifest 文件，命中即停：</p>
+      <ol>
+        <li><strong>原生 <code>.manifest</code></strong> — AssetLib233 自有二进制格式，体积最小、解析最快。文件名：<code>{PackageName}.manifest</code></li>
+        <li><strong>YooAsset <code>.bytes</code></strong> — 兼容 YooAsset 1.x/2.x 的 Manifest 文件。文件名：<code>{PackageName}.bytes</code></li>
+        <li><strong>PackageManifest 别名</strong> — <code>PackageManifest_{PackageName}.bytes</code> 及 <code>PackageManifest_{PackageName}.hash</code>，用于无缝迁移 YooAsset CDN 产物。</li>
+      </ol>
+      <div class="note">
+        <strong>迁移提示：</strong>如果你正在从 YooAsset 迁移，可以直接复用已有的 CDN 文件。AssetLib233 会自动识别并解析 YooAsset 格式的 Manifest，无需重新构建。
+      </div>
+    </div>
+
+    <!-- 4. YooAsset CDN 兼容 -->
+    <div class="card">
+      <h2><span class="badge">4</span> YooAsset CDN 兼容</h2>
+      <p>AssetLib233 可以完全复用 YooAsset 的 CDN 产物文件，以下是所有被识别的文件类型：</p>
+      <table>
+        <tr>
+          <th>文件后缀 / 名称</th>
+          <th>用途</th>
+          <th>兼容性</th>
+        </tr>
+        <tr><td><code>.version</code></td><td>版本号文件，记录 Manifest 的版本哈希</td><td><span class="tag tag-green">完全兼容</span></td></tr>
+        <tr><td><code>.manifest</code></td><td>AssetLib233 原生 Manifest（二进制）</td><td><span class="tag tag-blue">原生</span></td></tr>
+        <tr><td><code>.bytes</code></td><td>YooAsset Manifest 格式</td><td><span class="tag tag-green">完全兼容</span></td></tr>
+        <tr><td><code>.hash</code></td><td>PackageManifest 附属哈希文件</td><td><span class="tag tag-green">完全兼容</span></td></tr>
+        <tr><td><code>.json</code></td><td>构建报告 JSON</td><td><span class="tag tag-orange">仅编辑器</span></td></tr>
+        <tr><td><code>PackageManifest_*.bytes</code></td><td>YooAsset 2.x PackageManifest 别名</td><td><span class="tag tag-green">完全兼容</span></td></tr>
+        <tr><td><code>.bundle</code></td><td>Unity AssetBundle 文件</td><td><span class="tag tag-green">完全兼容</span></td></tr>
+        <tr><td><code>.raw</code></td><td>RawBundle 原始文件（文本、音频等）</td><td><span class="tag tag-green">完全兼容</span></td></tr>
+      </table>
+    </div>
+
+    <!-- 5. XOR 加密说明 -->
+    <div class="card">
+      <h2><span class="badge">5</span> XOR 加密说明</h2>
+      <p>AssetLib233 内置基于 XOR 的轻量 Bundle 加密方案，适用于需要防止资源被直接解包的场景。</p>
+      <h3>加密流程</h3>
+      <ol>
+        <li>构建管线在写入 Bundle 时，使用 <code>BundleCryptoPassword</code>（默认 <code>"root"</code>）对文件内容进行 XOR 运算</li>
+        <li>加密后的 Bundle 直接写入磁盘，无额外文件头</li>
+        <li>运行时通过 <code>LoadFromStreamAsync</code> 流式解密加载，支持 <code>Seek</code> 操作</li>
+      </ol>
+      <h3>配置示例</h3>
+<pre><code>// AssetLib233PackageConfig 配置
+EnableBundleCrypto = true,
+BundleCryptoPassword = "my-secret-key"</code></pre>
+      <div class="warn">
+        <strong>注意：</strong>XOR 加密为轻量保护手段，不适合高强度安全需求场景。密钥请随项目配置管理，勿硬编码到开源仓库。
+      </div>
+    </div>
+
+    <!-- 6. 构建扩展点 -->
+    <div class="card">
+      <h2><span class="badge">6</span> 构建扩展点</h2>
+      <p>AssetLib233 构建管线提供三个核心扩展接口，允许项目自定义打包行为：</p>
+      <table>
+        <tr>
+          <th>接口</th>
+          <th>用途</th>
+          <th>典型实现</th>
+        </tr>
+        <tr>
+          <td><code>IAssetLib233BuildPackRule</code></td>
+          <td>定义资源如何分组和打包成 Bundle</td>
+          <td>按目录打包、按类型打包、按标签打包</td>
+        </tr>
+        <tr>
+          <td><code>IAssetLib233BuildCompressionStrategy</code></td>
+          <td>控制 Bundle 的压缩策略</td>
+          <td>LZ4、LZMA、Brotli、不压缩</td>
+        </tr>
+        <tr>
+          <td><code>IAssetLib233BuildVerifier</code></td>
+          <td>构建完成后的产物校验</td>
+          <td>Bundle 大小阈值检查、依赖完整性校验、Shader 变体覆盖校验</td>
+        </tr>
+      </table>
+      <h3>注册扩展</h3>
+<pre><code>// 在 Editor 脚本中注册自定义扩展
+AssetLib233EditorBuildPipeline.RegisterPackRule(new MyCustomPackRule());
+AssetLib233EditorBuildPipeline.RegisterCompressionStrategy(new BrotliCompression());
+AssetLib233EditorBuildPipeline.RegisterVerifier(new BundleSizeVerifier(50 * 1024 * 1024));</code></pre>
+    </div>
+
+    <!-- 7. 构建报告 -->
+    <div class="card">
+      <h2><span class="badge">7</span> 构建报告</h2>
+      <p>每次构建完成后，AssetLib233 自动生成结构化报告，支持多种通知渠道。</p>
+      <h3>JSON 报告</h3>
+      <p>构建产物目录下生成 <code>{PackageName}_build_report.json</code>，包含：</p>
+      <ul>
+        <li>构建时间、Unity 版本、目标平台</li>
+        <li>Bundle 清单（文件名、大小、哈希、压缩率）</li>
+        <li>Collector 映射（Collector → Bundle 映射关系）</li>
+        <li>变更差异（与上次构建的增删改对比）</li>
+      </ul>
+      <h3>飞书 Webhook 通知</h3>
+      <p>设置环境变量 <code>ASSETLIB233_FEISHU_WEBHOOK</code> 为飞书机器人 Webhook URL，构建完成后自动推送报告摘要到飞书群。</p>
+<pre><code># CI 环境中设置
+export ASSETLIB233_FEISHU_WEBHOOK="https://open.feishu.cn/open-apis/bot/v2/hook/xxxx"</code></pre>
+      <h3>自定义通知</h3>
+      <p>实现 <code>IAssetLib233EditorBuildNotifier</code> 接口可接入钉钉、Slack、邮件等任意通知渠道：</p>
+<pre><code>public class DingTalkNotifier : IAssetLib233EditorBuildNotifier
+{
+    public void OnBuildCompleted(BuildReport report)
+    {
+        // 发送钉钉群消息
+    }
+}</code></pre>
+    </div>
+
+    <!-- 8. 废弃 Bundle 清理 -->
+    <div class="card">
+      <h2><span class="badge">8</span> 废弃 Bundle 清理</h2>
+      <p>随着版本迭代，CDN 或本地缓存中会积累大量旧版本 Bundle。<code>ObsoleteBundleCleaner</code> 帮助安全清理这些废弃文件。</p>
+      <h3>Dry-Run 模式</h3>
+      <p>默认以 dry-run 模式运行，只输出将要删除的文件列表而不实际执行删除，方便人工确认：</p>
+<pre><code>// Editor 菜单或 CI 脚本中调用
+ObsoleteBundleCleaner.Scan(
+    packageConfig: config,
+    dryRun: true  // 只输出不删除
+);
+// 确认后执行实际清理
+ObsoleteBundleCleaner.Scan(
+    packageConfig: config,
+    dryRun: false
+);</code></pre>
+      <h3>清理策略</h3>
+      <ul>
+        <li>对比当前 Manifest 中的 Bundle 列表与 CDN / 本地目录中的实际文件</li>
+        <li>不在当前 Manifest 中的文件被标记为 obsolete</li>
+        <li>支持保留最近 N 个版本的 Bundle（通过配置 <code>RetainVersionCount</code>）</li>
+      </ul>
+    </div>
+
+    <!-- 9. 真机诊断 -->
+    <div class="card">
+      <h2><span class="badge">9</span> 真机诊断</h2>
+      <p><code>BuildRuntimeDiagnosticString</code> 是排查真机资源加载问题的核心工具，一次性输出运行时的全部关键状态信息。</p>
+      <h3>输出内容</h3>
+      <ul>
+        <li>运行平台（<code>RuntimePlatform</code>）和 Unity 版本</li>
+        <li>每个 AssetGroup 的 PlayMode、Manifest 版本哈希</li>
+        <li>CDN 地址（DefaultHostServer / FallbackHostServer）</li>
+        <li>本地缓存路径和已缓存 Bundle 数量</li>
+        <li>最近的下载事件（成功/失败/重试）和加载事件</li>
+      </ul>
+      <h3>使用方式</h3>
+<pre><code>// 在问题发生时调用，将输出复制到 Issue 中
+string diagnostic = AssetLib233.Instance.BuildRuntimeDiagnosticString();
+Debug.Log(diagnostic);</code></pre>
+      <div class="note">
+        <strong>建议：</strong>在真机调试 UI 中添加一个按钮，点击后调用此方法并复制到剪贴板，方便现场采集诊断信息。
+      </div>
+    </div>
+
+    <!-- 10. Asset GC 配置 -->
+    <div class="card">
+      <h2><span class="badge">10</span> Asset GC 配置</h2>
+      <p>AssetLib233 内置资源垃圾回收机制，自动释放不再被引用的 Bundle 和 Asset。</p>
+      <table>
+        <tr>
+          <th>配置项</th>
+          <th>类型</th>
+          <th>默认值</th>
+          <th>说明</th>
+        </tr>
+        <tr>
+          <td><code>GcMode</code></td>
+          <td>enum</td>
+          <td>Auto</td>
+          <td><code>Auto</code>：按间隔自动回收。<code>Manual</code>：仅手动调用 <code>RunGc()</code> 时回收。<code>Disabled</code>：关闭 GC。</td>
+        </tr>
+        <tr>
+          <td><code>GcIntervalSeconds</code></td>
+          <td>float</td>
+          <td>60</td>
+          <td>Auto 模式下的自动 GC 间隔（秒）。</td>
+        </tr>
+        <tr>
+          <td><code>GracePeriodSeconds</code></td>
+          <td>float</td>
+          <td>30</td>
+          <td>资源释放后的宽限期。引用归零后等待此时间再实际卸载，避免场景切换时反复加载。</td>
+        </tr>
+      </table>
+      <h3>手动触发</h3>
+<pre><code>// 在场景切换完成后主动触发一次 GC
+AssetLib233.Instance.RunGc();</code></pre>
+      <div class="warn">
+        <strong>注意：</strong>小游戏 / WebGL 运行时不建议直接调用 <code>Resources.UnloadUnusedAssets()</code>。资源释放应优先走 AssetLib233 的 GC 机制。
+      </div>
+    </div>
+
+    <!-- 11. 运行时插件 -->
+    <div class="card">
+      <h2><span class="badge">11</span> 运行时插件</h2>
+      <p>通过 <code>IAssetLib233RuntimePlugin</code> 接口，可以在不修改框架源码的前提下注入自定义的运行时行为观察器。</p>
+      <h3>观察者事件</h3>
+      <table>
+        <tr>
+          <th>事件</th>
+          <th>触发时机</th>
+        </tr>
+        <tr><td><code>OnManifestLoaded</code></td><td>AssetGroup 的 Manifest 加载完成</td></tr>
+        <tr><td><code>OnBundleDownloadStarted</code></td><td>Bundle 开始下载</td></tr>
+        <tr><td><code>OnBundleDownloadCompleted</code></td><td>Bundle 下载完成（含成功/失败状态）</td></tr>
+        <tr><td><code>OnAssetLoaded</code></td><td>资源加载完成</td></tr>
+        <tr><td><code>OnAssetReleased</code></td><td>资源被 GC 回收</td></tr>
+        <tr><td><code>OnError</code></td><td>运行时出现错误（下载失败、解密失败、加载异常等）</td></tr>
+      </table>
+      <h3>注册插件</h3>
+<pre><code>public class MyTelemetryPlugin : IAssetLib233RuntimePlugin
+{
+    public void OnBundleDownloadCompleted(string packageName, string bundleName, bool success)
+    {
+        // 上报到项目监控系统
+    }
+    // ... 其他事件
+}
+
+// 初始化时注册
+AssetLib233.Instance.RegisterPlugin(new MyTelemetryPlugin());</code></pre>
+    </div>
+
+    <!-- 12. AssetReference233 序列化引用 -->
+    <div class="card">
+      <h2><span class="badge">12</span> AssetReference233 序列化引用</h2>
+      <p><code>AssetReference233</code> 是可序列化的资源引用类型，替代直接硬编码资源路径，支持 Inspector 拖拽赋值和运行时异步加载。</p>
+      <h3>声明与使用</h3>
+<pre><code>// MonoBehaviour 中声明
+public AssetReference233 spriteRef;
+public AssetReference233 prefabRef;
+
+// 运行时加载
+spriteRef.LoadAssetAsync&lt;Sprite&gt;((sprite) =&gt;
+{
+    imageComponent.sprite = sprite;
+});</code></pre>
+      <h3>优势</h3>
+      <ul>
+        <li><strong>解耦</strong>：不硬编码资源路径，通过 Inspector 拖拽绑定</li>
+        <li><strong>安全</strong>：内部持有 Collector 引用计数，自动跟踪生命周期</li>
+        <li><strong>跨 AssetGroup</strong>：支持引用不同 AssetGroup 中的资源</li>
+        <li><strong>编辑器预览</strong>：在 Inspector 中可直接预览引用的资源</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>

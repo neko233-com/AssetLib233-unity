@@ -3,64 +3,467 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AssetLib233 快速上手</title>
+  <title>AssetLib233 - 快速上手</title>
   <link rel="icon" href="data:,">
   <style>
-    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
-    header{background:#17212b;color:#fff;padding:36px 28px}nav{background:#fff;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}nav a{color:#1769d8;text-decoration:none;font-weight:700;margin-right:18px}main{max-width:1120px;margin:0 auto;padding:28px}section{background:#fff;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}h1,h2{line-height:1.28;margin-top:0}code,pre{font-family:Consolas,"SFMono-Regular",monospace}pre{background:#101826;color:#e8edf5;padding:16px;border-radius:8px;overflow:auto}
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      color: #17212b;
+      background: #f5f7fb;
+      line-height: 1.75;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: fixed;
+      left: 0; top: 0;
+      width: 260px;
+      height: 100vh;
+      background: #0f1629;
+      color: #c8cee0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      overflow-y: auto;
+    }
+    .sidebar-brand {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .sidebar-brand h2 {
+      margin: 0;
+      font-size: 20px;
+      color: #fff;
+      letter-spacing: .3px;
+    }
+    .sidebar-brand span {
+      font-size: 12px;
+      color: #6b7899;
+      margin-top: 4px;
+      display: block;
+    }
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 0;
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 24px;
+      color: #8892aa;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all .2s;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-nav a:hover {
+      color: #e0e6f0;
+      background: rgba(255,255,255,.04);
+    }
+    .sidebar-nav a.active {
+      color: #fff;
+      background: rgba(255,255,255,.07);
+      border-left-color: #4f8cff;
+    }
+    .sidebar-nav a svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+    .sidebar-footer {
+      padding: 18px 24px;
+      border-top: 1px solid rgba(255,255,255,.07);
+      font-size: 13px;
+    }
+
+    /* ── Main ── */
+    .main {
+      margin-left: 260px;
+    }
+    .page-header {
+      background: linear-gradient(135deg, #0f1629, #1e2a4a);
+      color: #fff;
+      padding: 48px;
+    }
+    .page-header h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .page-header p {
+      margin: 0;
+      font-size: 15px;
+      color: #a0aec0;
+      max-width: 640px;
+    }
+    .content {
+      max-width: 1080px;
+      padding: 36px 48px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff;
+      border: 1px solid #e2e6ef;
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+    }
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      color: #0f1629;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card h2 .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f8cff, #3366cc);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .card h3 {
+      margin: 20px 0 8px;
+      font-size: 15px;
+      color: #3a4560;
+    }
+    .card p {
+      margin: 8px 0;
+      color: #4a5568;
+      font-size: 14px;
+    }
+    .card ul {
+      margin: 8px 0;
+      padding-left: 20px;
+      color: #4a5568;
+      font-size: 14px;
+    }
+    .card ul li {
+      margin-bottom: 4px;
+    }
+
+    /* ── Code ── */
+    code, pre {
+      font-family: Consolas, "SFMono-Regular", "Courier New", monospace;
+    }
+    code {
+      background: #edf2f7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #2d3748;
+    }
+    pre {
+      background: #0f1629;
+      color: #e2e8f0;
+      padding: 20px 24px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.65;
+      margin: 14px 0 4px;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+      font-size: inherit;
+    }
+    .code-comment { color: #6b7899; }
+    .code-keyword { color: #7c9cff; }
+    .code-string  { color: #8bc48a; }
+    .code-type    { color: #e2a06e; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+      .sidebar-brand { display: none; }
+      .sidebar-footer { display: none; }
+      .sidebar-nav {
+        display: flex;
+        flex-direction: row;
+        padding: 0;
+        min-width: max-content;
+      }
+      .sidebar-nav a {
+        padding: 14px 18px;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        white-space: nowrap;
+        font-size: 13px;
+      }
+      .sidebar-nav a.active {
+        border-left-color: transparent;
+        border-bottom-color: #4f8cff;
+      }
+      .main {
+        margin-left: 0;
+      }
+      .page-header { padding: 32px 20px; }
+      .page-header h1 { font-size: 24px; }
+      .content { padding: 20px 16px; }
+      .card { padding: 20px 18px; }
+    }
   </style>
 </head>
 <body>
-<header><h1>快速上手</h1><p>从安装、初始化、下载到加载，尽量只写少量业务代码。</p></header>
-<nav><a href="index.html">首页</a><a href="quickstart.html">快速上手</a><a href="comparison.html">对比其他框架</a><a href="architecture.html">架构设计</a><a href="manual.html">详细文档</a><a href="qa.html">QA问题</a><a href="contact.html">联系我们</a></nav>
-<main>
-  <section>
-    <h2>1. 初始化</h2>
-    <pre>AssetLib233PackageConfig config = new AssetLib233PackageConfig();
-config.PackageName = "default";
-config.PlayMode = EnumHotUpdateType.Host;
-config.DefaultHostServer = "https://cdn.example.com/default";
-config.FallbackHostServer = "https://backup.example.com/default";
-config.EnableBundleCrypto = true;
-config.BundleCryptoPassword = "root";
 
-AssetLib233.Instance.Initialize();
-AssetLib233.Instance.InitializeGroup(config);</pre>
-  </section>
-  <section>
-    <h2>2. 热更准备与下载</h2>
-    <pre>AssetLib233PreparePackageOperation prepareOperation =
-    AssetLib233.Instance.CreatePreparePackageOperation("default");
-await prepareOperation;
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <h2>AssetLib233</h2>
+    <span>v0.1.0 · Unity 资源热更库</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>首页
+    </a>
+    <a href="quickstart.html" class="active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>快速上手
+    </a>
+    <a href="architecture.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>架构设计
+    </a>
+    <a href="manual.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>详细文档
+    </a>
+    <a href="comparison.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>框架对比
+    </a>
+    <a href="terminology.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>术语迁移
+    </a>
+    <a href="qa.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>QA 问答
+    </a>
+    <a href="contact.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>联系我们
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="https://github.com/neko233-com/AssetLib233-unity" style="color:#6b7899">GitHub 仓库</a>
+  </div>
+</aside>
 
-AssetLib233PackageDownloadOperation downloadOperation =
-    AssetLib233.Instance.CreatePackageDownloadOperation("default", string.Empty);
-await downloadOperation;</pre>
-  </section>
-  <section>
-    <h2>3. 加载资源</h2>
-    <pre>AssetHandle233&lt;GameObject&gt; handle =
-    AssetLib233.Instance.LoadAssetAsync&lt;GameObject&gt;("default", "main");
-await handle;
-GameObject prefab = handle.AssetObject;</pre>
-  </section>
-  <section>
-    <h2>4. login 首组 + 登录后 N 组</h2>
-    <pre>AssetLib233StartupPlan plan = new AssetLib233StartupPlan();
-plan.LoginGroupName = "login";
-plan.PostLoginRequiredGroups.Add("default");
-plan.PostLoginRequiredGroups.Add("story");
-plan.PostLoginOptionalGroups.Add("voice");
+<!-- ── Main Content ── -->
+<div class="main">
+  <div class="page-header">
+    <h1>快速上手</h1>
+    <p>从安装到构建，7 步跑通完整热更链路。每步只需复制粘贴示例代码，即可在项目中使用。</p>
+  </div>
 
-AssetLib233LoginFastOperation loginOperation =
-    AssetLib233StartupFacade.CreateLoginFastOperation(plan);
-await loginOperation;</pre>
-  </section>
-  <section>
-    <h2>5. 构建报告</h2>
-    <pre>neko233/AssetLib233/构建选中 BuildProfile</pre>
-    <p>构建后会自动弹出报告窗口。需要飞书通知时，设置 <code>ASSETLIB233_FEISHU_WEBHOOK</code> 环境变量。</p>
-  </section>
-</main>
+  <div class="content">
+
+    <!-- Step 1: 安装 -->
+    <div class="card">
+      <h2><span class="step-badge">1</span> 安装</h2>
+      <p>AssetLib233 提供两种安装方式，任选其一。</p>
+
+      <h3>方式 A — UPM Git URL（推荐）</h3>
+      <p>在 Unity 编辑器中打开 <code>Window → Package Manager → Add package from git URL</code>，粘贴：</p>
+      <pre><code>https://github.com/neko233-com/AssetLib233-unity.git</code></pre>
+
+      <h3>方式 B — PowerShell 一键导入</h3>
+      <p>无 Git 环境时，可在 Unity 的 <code>Package Manager Console</code> 或系统终端执行：</p>
+      <pre><code><span class="code-keyword">powershell</span> -ExecutionPolicy Bypass -Command <span class="code-string">"iwr https://raw.githubusercontent.com/neko233-com/AssetLib233-unity/main/Tools/install-assetlib233.ps1 -OutFile $env:TEMP/install-assetlib233.ps1; & $env:TEMP/install-assetlib233.ps1 -ProjectRoot (Get-Location).Path"</span></code></pre>
+      <p>安装完成后，在 <code>Project Settings</code> 中可看到 AssetLib233 配置面板。</p>
+    </div>
+
+    <!-- Step 2: 初始化 -->
+    <div class="card">
+      <h2><span class="step-badge">2</span> 初始化</h2>
+      <p>在游戏启动脚本中完成初始化。先调用全局 <code>Initialize()</code>，再为每个 AssetGroup 创建配置并注册。</p>
+
+      <pre><code><span class="code-comment">// 全局初始化（只需调用一次）</span>
+<span class="code-type">AssetLib233</span>.Instance.Initialize();
+
+<span class="code-comment">// 为 "default" 组创建配置</span>
+<span class="code-type">AssetLib233PackageConfig</span> config = <span class="code-keyword">new</span> <span class="code-type">AssetLib233PackageConfig</span>();
+config.PackageName          = <span class="code-string">"default"</span>;
+config.PlayMode             = <span class="code-type">EnumHotUpdateType</span>.Host;
+config.DefaultHostServer    = <span class="code-string">"https://cdn.example.com/default"</span>;
+config.FallbackHostServer   = <span class="code-string">"https://backup.example.com/default"</span>;
+config.EnableBundleCrypto   = <span class="code-keyword">true</span>;
+
+<span class="code-comment">// 注册到 AssetLib233</span>
+<span class="code-type">AssetLib233</span>.Instance.InitializeGroup(config);</code></pre>
+
+      <h3>配置字段说明</h3>
+      <ul>
+        <li><code>PackageName</code> — AssetGroup 唯一标识，对应构建时的分组名</li>
+        <li><code>PlayMode</code> — <code>Host</code>（CDN 热更）、<code>EditorSimulate</code>（编辑器模拟）、<code>OfflinePlay</code>（本地沙盒）</li>
+        <li><code>DefaultHostServer</code> — 主 CDN 地址，运行时从此拉取 version 与 manifest</li>
+        <li><code>FallbackHostServer</code> — 备用 CDN，主地址失败时自动回退</li>
+        <li><code>EnableBundleCrypto</code> — 启用 Bundle 加密，防止资源被直接提取</li>
+      </ul>
+    </div>
+
+    <!-- Step 3: 热更准备与下载 -->
+    <div class="card">
+      <h2><span class="step-badge">3</span> 热更准备与下载</h2>
+      <p>初始化完成后，先执行 <code>PreparePackageOperation</code>（拉取远端版本号 + 比对本地 Manifest），再执行 <code>PackageDownloadOperation</code>（增量下载差异 Bundle）。</p>
+
+      <pre><code><span class="code-comment">// 第一步：准备 — 拉取远端 version，比对本地 manifest</span>
+<span class="code-type">AssetLib233PreparePackageOperation</span> prepareOp =
+    <span class="code-type">AssetLib233</span>.Instance.CreatePreparePackageOperation(<span class="code-string">"default"</span>);
+<span class="code-keyword">await</span> prepareOp;
+
+<span class="code-comment">// 检查准备是否成功</span>
+<span class="code-keyword">if</span> (prepareOp.Status != <span class="code-type">EnumOperationStatus</span>.Succeed)
+{
+    Debug.LogError(<span class="code-string">$"Prepare failed: </span>{prepareOp.Error}<span class="code-string">"</span>);
+    <span class="code-keyword">return</span>;
+}
+
+<span class="code-comment">// 第二步：下载 — 增量下载差异 Bundle</span>
+<span class="code-type">AssetLib233PackageDownloadOperation</span> downloadOp =
+    <span class="code-type">AssetLib233</span>.Instance.CreatePackageDownloadOperation(<span class="code-string">"default"</span>, <span class="code-keyword">string</span>.Empty);
+<span class="code-keyword">await</span> downloadOp;
+
+<span class="code-comment">// 监听下载进度（可选）</span>
+downloadOp.OnProgressChanged += (downloaded, total, ratio) =>
+{
+    Debug.Log(<span class="code-string">$"下载进度: </span>{ratio:P1}<span class="code-string"> (</span>{downloaded}<span class="code-string">/</span>{total}<span class="code-string">)"</span>);
+};</code></pre>
+
+      <p><code>PreparePackageOperation</code> 会自动处理首次安装（无本地缓存）和增量更新两种场景。下载操作内部已做并发调度（默认并发上限 10）与失败重试。</p>
+    </div>
+
+    <!-- Step 4: 加载资源 -->
+    <div class="card">
+      <h2><span class="step-badge">4</span> 加载资源</h2>
+      <p>资源下载完成后，通过 <code>LoadAssetAsync&lt;T&gt;</code> 异步加载。返回的 <code>AssetHandle233&lt;T&gt;</code> 支持 await，加载完成后通过 <code>handle.AssetObject</code> 取出资源。</p>
+
+      <pre><code><span class="code-comment">// 异步加载 Prefab</span>
+<span class="code-type">AssetHandle233</span>&lt;<span class="code-type">GameObject</span>&gt; handle =
+    <span class="code-type">AssetLib233</span>.Instance.LoadAssetAsync&lt;<span class="code-type">GameObject</span>&gt;(<span class="code-string">"default"</span>, <span class="code-string">"Assets/Prefabs/main.prefab"</span>);
+<span class="code-keyword">await</span> handle;
+
+<span class="code-comment">// 取出加载结果</span>
+<span class="code-type">GameObject</span> prefab = handle.AssetObject;
+<span class="code-keyword">if</span> (prefab != <span class="code-keyword">null</span>)
+{
+    Object.Instantiate(prefab);
+}
+
+<span class="code-comment">// 加载 Sprite 示例</span>
+<span class="code-type">AssetHandle233</span>&lt;<span class="code-type">Sprite</span>&gt; spriteHandle =
+    <span class="code-type">AssetLib233</span>.Instance.LoadAssetAsync&lt;<span class="code-type">Sprite</span>&gt;(<span class="code-string">"default"</span>, <span class="code-string">"Assets/Sprites/hero_icon.png"</span>);
+<span class="code-keyword">await</span> spriteHandle;
+myImage.sprite = spriteHandle.AssetObject;</code></pre>
+
+      <p>加载地址支持 AssetBundle 原始路径或 Collector 配置的短地址，具体取决于构建时的收集器设置。</p>
+    </div>
+
+    <!-- Step 5: 多组下载 -->
+    <div class="card">
+      <h2><span class="step-badge">5</span> 多组下载（统一 Loading）</h2>
+      <p>典型项目中，登录前只需下载 <code>login</code> 首组，登录成功后再下载 <code>default</code>、<code>story</code> 等内容组。<code>MultiGroupDownloadOperation</code> 可将多个 AssetGroup 的下载进度汇总为一个统一的 Loading 进度。</p>
+
+      <pre><code><span class="code-comment">// 定义启动计划</span>
+<span class="code-type">AssetLib233StartupPlan</span> plan = <span class="code-keyword">new</span> <span class="code-type">AssetLib233StartupPlan</span>();
+plan.LoginGroupName = <span class="code-string">"login"</span>;
+
+<span class="code-comment">// 登录后必须完成的组（Required）</span>
+plan.PostLoginRequiredGroups.Add(<span class="code-string">"default"</span>);
+plan.PostLoginRequiredGroups.Add(<span class="code-string">"story"</span>);
+
+<span class="code-comment">// 登录后可选后台下载的组（Optional）</span>
+plan.PostLoginOptionalGroups.Add(<span class="code-string">"voice"</span>);
+plan.PostLoginOptionalGroups.Add(<span class="code-string">"cg"</span>);
+
+<span class="code-comment">// 创建多组统一下载操作</span>
+<span class="code-type">AssetLib233MultiGroupDownloadOperation</span> multiOp =
+    <span class="code-type">AssetLib233</span>.Instance.CreateMultiGroupDownloadOperation(plan);
+
+<span class="code-comment">// 统一进度回调</span>
+multiOp.OnProgressChanged += (downloaded, total, ratio) =>
+{
+    loadingBar.SetProgress(ratio);
+};
+
+<span class="code-keyword">await</span> multiOp;</code></pre>
+
+      <h3>StartupPlan 分组策略</h3>
+      <ul>
+        <li><strong>LoginGroupName</strong> — 首包，登录 UI 可见前必须完成，体尽量小</li>
+        <li><strong>RequiredGroups</strong> — 进入主城 / 核心玩法前必须完成的组，Loading 会硬等</li>
+        <li><strong>OptionalGroups</strong> — 后台低优先级下载，不阻塞玩家操作</li>
+      </ul>
+    </div>
+
+    <!-- Step 6: 释放资源 -->
+    <div class="card">
+      <h2><span class="step-badge">6</span> 释放资源</h2>
+      <p>使用完毕的资源需要通过 Handle 手动释放，或交给 <code>AssetGcService</code> 自动回收。AssetLib233 内部维护引用计数，确保同一个 Bundle 在所有引用释放后才会被卸载。</p>
+
+      <h3>手动释放</h3>
+      <pre><code><span class="code-comment">// 加载并使用完毕后释放</span>
+<span class="code-type">AssetHandle233</span>&lt;<span class="code-type">GameObject</span>&gt; handle =
+    <span class="code-type">AssetLib233</span>.Instance.LoadAssetAsync&lt;<span class="code-type">GameObject</span>&gt;(<span class="code-string">"default"</span>, <span class="code-string">"Assets/Prefabs/monster.prefab"</span>);
+<span class="code-keyword">await</span> handle;
+
+<span class="code-type">GameObject</span> go = Object.Instantiate(handle.AssetObject);
+<span class="code-comment">// ... 使用完毕后 ...</span>
+handle.Release();</code></pre>
+
+      <h3>自动 GC</h3>
+      <pre><code><span class="code-comment">// 开启自动 GC 服务（建议在初始化时调用一次）</span>
+<span class="code-type">AssetLib233</span>.Instance.StartAssetGcService(intervalSeconds: <span class="code-keyword">60f</span>);
+
+<span class="code-comment">// 手动触发一次 GC（如场景切换时）</span>
+<span class="code-type">AssetLib233</span>.Instance.AssetGcCollect(<span class="code-string">"default"</span>);</code></pre>
+
+      <p><code>AssetGcService</code> 会周期性扫描所有 AssetGroup 的引用计数，将计数为 0 的 Bundle 卸载并释放内存。小游戏 / WebGL 平台建议配合 <code>Resources.UnloadUnusedAssets()</code> 使用，但需注意调用频率避免卡顿。</p>
+    </div>
+
+    <!-- Step 7: 构建 -->
+    <div class="card">
+      <h2><span class="step-badge">7</span> 构建</h2>
+      <p>AssetLib233 提供编辑器菜单和 API 两种构建入口。</p>
+
+      <h3>方式 A — 编辑器菜单</h3>
+      <p>在 Unity 菜单栏找到 <code>AssetLib233 / 构建 AssetBundle</code>，选择 BuildProfile 后一键构建。构建完成后会自动弹出构建报告窗口，包含：</p>
+      <ul>
+        <li>各 AssetGroup 的 Bundle 数量、总大小、加密状态</li>
+        <li>新增 / 变更 / 删除 Bundle 清单</li>
+        <li>CDN 文件命名映射</li>
+        <li>错误与警告摘要</li>
+      </ul>
+
+      <h3>方式 B — API 调用</h3>
+      <pre><code><span class="code-comment">// 在 Editor 脚本或 CI 中调用</span>
+<span class="code-type">AssetLib233EditorBuildPipeline</span>.BuildAllGroups(buildProfile);
+
+<span class="code-comment">// 构建产物输出到 StreamingAssets 和 CDN 目录</span>
+<span class="code-comment">// 可选：设置飞书 Webhook 环境变量启用构建通知</span>
+<span class="code-comment">// ASSETLIB233_FEISHU_WEBHOOK=https://open.feishu.cn/open-apis/bot/v2/hook/xxx</span></code></pre>
+
+      <h3>CDN 发布</h3>
+      <p>构建完成后，将 CDN 输出目录中的文件上传到 <code>DefaultHostServer</code> 对应的 CDN 路径。上传时保持目录结构不变，<code>.version</code> 文件必须在根目录。CDN 需支持 Range 请求以启用断点续传。</p>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>

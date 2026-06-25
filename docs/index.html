@@ -1,89 +1,491 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AssetLib233-unity 首页</title>
-  <link rel="icon" href="data:,">
-  <style>
-    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
-    header{background:#17212b;color:#fff;padding:44px 28px}
-    nav{background:#fff;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}
-    nav a{color:#1769d8;text-decoration:none;font-weight:700;margin-right:18px;white-space:nowrap}
-    main{max-width:1120px;margin:0 auto;padding:28px}
-    section{background:#fff;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}
-    h1,h2,h3{line-height:1.28;margin-top:0}
-    code,pre{font-family:Consolas,"SFMono-Regular",monospace}
-    pre{background:#101826;color:#e8edf5;padding:16px;border-radius:8px;overflow:auto}
-    table{width:100%;border-collapse:collapse}
-    th,td{border:1px solid #d8dee8;padding:10px;text-align:left;vertical-align:top}
-    th{background:#eef3fb}
-    .pill{display:inline-block;background:#e8f1ff;color:#1769d8;border-radius:999px;padding:3px 10px;margin:0 8px 8px 0;font-weight:700}
-    .diagram{width:100%;max-width:980px;height:auto;display:block;margin:8px auto 0}
-    .node{fill:#eef3fb;stroke:#1769d8;stroke-width:2}
-    .node2{fill:#eaf8f1;stroke:#16865a;stroke-width:2}
-    .arrow{stroke:#334155;stroke-width:2;marker-end:url(#arrow)}
-    .label{font-size:14px;font-weight:700;fill:#17212b}
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AssetLib233 - 独立 Unity / 团结引擎资源热更库</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;background:#f4f6fb;color:#1e293b;line-height:1.7;min-height:100vh}
+
+/* ─── Sidebar ─────────────────────────────────────────── */
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:#0f1629;display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.sidebar-brand{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sidebar-brand h2{color:#fff;font-size:1.25rem;font-weight:700;letter-spacing:.02em}
+.sidebar-brand span{color:#6b7899;font-size:.75rem;display:block;margin-top:4px}
+.sidebar-nav{flex:1;padding:16px 0;display:flex;flex-direction:column;gap:2px}
+.sidebar-nav a{display:flex;align-items:center;gap:12px;padding:10px 24px;color:#8896b8;text-decoration:none;font-size:.875rem;transition:all .2s}
+.sidebar-nav a:hover{color:#fff;background:rgba(79,109,245,.12)}
+.sidebar-nav a.active{color:#fff;background:rgba(79,109,245,.18);border-right:3px solid #4f6df5;font-weight:600}
+.sidebar-nav a svg{width:18px;height:18px;flex-shrink:0;opacity:.7}
+.sidebar-nav a.active svg{opacity:1}
+.sidebar-footer{padding:20px 24px;border-top:1px solid rgba(255,255,255,.07);font-size:.8rem}
+
+/* ─── Main ────────────────────────────────────────────── */
+.main{margin-left:260px;min-height:100vh}
+
+/* ─── Page Header ─────────────────────────────────────── */
+.page-header{background:linear-gradient(135deg,#0f1629 0%,#1e2a4a 40%,#2d3f7b 100%);color:#fff;padding:72px 56px 64px;position:relative;overflow:hidden}
+.page-header::after{content:"";position:absolute;top:-40%;right:-10%;width:480px;height:480px;background:radial-gradient(circle,rgba(79,109,245,.15) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+.page-header h1{font-size:2.8rem;font-weight:800;letter-spacing:-.02em;margin-bottom:16px;position:relative;z-index:1}
+.page-header .tagline{font-size:1.1rem;color:rgba(255,255,255,.75);max-width:680px;line-height:1.8;position:relative;z-index:1}
+.badge-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;position:relative;z-index:1}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:600;backdrop-filter:blur(4px)}
+.badge-blue{background:rgba(79,109,245,.2);color:#93abff;border:1px solid rgba(79,109,245,.3)}
+.badge-green{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.25)}
+.badge-purple{background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.25)}
+.badge-orange{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.25)}
+
+/* ─── Content ─────────────────────────────────────────── */
+.content{padding:48px 56px 80px}
+.section{margin-bottom:56px}
+.section-title{font-size:1.5rem;font-weight:700;color:#0f1629;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.section-title .icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.section-title .icon svg{width:16px;height:16px}
+.section-title .icon-blue{background:rgba(79,109,245,.1);color:#4f6df5}
+.section-title .icon-green{background:rgba(16,185,129,.1);color:#10b981}
+.section-title .icon-orange{background:rgba(245,158,11,.1);color:#f59e0b}
+.section-title .icon-purple{background:rgba(139,92,246,.1);color:#8b5cf6}
+.section-desc{color:#64748b;font-size:.95rem;margin-bottom:24px;max-width:720px}
+
+/* ─── Cards ───────────────────────────────────────────── */
+.card{background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:32px;transition:box-shadow .25s,border-color .25s}
+.card:hover{box-shadow:0 8px 30px rgba(15,22,41,.06);border-color:#c7d2e0}
+
+/* Feature grid */
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
+.feature-card{position:relative;overflow:hidden}
+.feature-card .icon-circle{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.feature-card .icon-circle svg{width:22px;height:22px}
+.feature-card h3{font-size:1.05rem;font-weight:700;margin-bottom:8px;color:#0f1629}
+.feature-card p{font-size:.875rem;color:#64748b;line-height:1.7}
+.ic-blue{background:rgba(79,109,245,.1);color:#4f6df5}
+.ic-green{background:rgba(16,185,129,.1);color:#10b981}
+.ic-orange{background:rgba(245,158,11,.1);color:#f59e0b}
+.ic-purple{background:rgba(139,92,246,.1);color:#8b5cf6}
+
+/* Diagram */
+.diagram-card{padding:40px;text-align:center}
+.diagram-card svg{max-width:100%;height:auto}
+
+/* Code block */
+.code-block{background:#0f1629;border-radius:10px;padding:24px 28px;overflow-x:auto;position:relative}
+.code-block code{font-family:"JetBrains Mono","Fira Code",Consolas,"Courier New",monospace;font-size:.82rem;line-height:1.8;color:#c8d6f0}
+.code-block .comment{color:#5a6a8a}
+.code-block .keyword{color:#c792ea}
+.code-block .string{color:#c3e88d}
+.code-block .type{color:#82aaff}
+.code-block .method{color:#fcd34d}
+.code-block .number{color:#f78c6c}
+.code-lang{position:absolute;top:12px;right:16px;font-size:.7rem;color:#5a6a8a;font-family:sans-serif;text-transform:uppercase;letter-spacing:.06em}
+
+/* Table */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+thead{background:#f8fafc}
+th{text-align:left;padding:12px 16px;font-weight:600;color:#475569;border-bottom:2px solid #e2e8f0}
+td{padding:12px 16px;border-bottom:1px solid #f1f5f9;color:#334155}
+tr:hover td{background:#f8fafc}
+.platform-tag{display:inline-block;padding:2px 10px;border-radius:6px;font-size:.75rem;font-weight:600}
+.pt-stable{background:rgba(16,185,129,.1);color:#059669}
+.pt-preview{background:rgba(245,158,11,.1);color:#d97706}
+.pt-planned{background:rgba(139,92,246,.1);color:#7c3aed}
+
+/* Install tabs */
+.install-tabs{display:flex;gap:0;margin-bottom:0}
+.install-tab{padding:10px 20px;font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid #e2e8f0;border-bottom:none;border-radius:8px 8px 0 0;background:#f8fafc;color:#64748b;transition:all .2s}
+.install-tab.active{background:#0f1629;color:#93abff;border-color:#0f1629}
+.install-pane{display:none}
+.install-pane.active{display:block}
+
+/* Async support */
+.async-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
+
+/* Footer */
+.page-footer{padding:32px 56px;border-top:1px solid #e2e8f0;color:#94a3b8;font-size:.8rem;display:flex;align-items:center;justify-content:space-between}
+.page-footer a{color:#4f6df5;text-decoration:none}
+.page-footer a:hover{text-decoration:underline}
+
+/* Responsive */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);transition:transform .3s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .page-header{padding:48px 24px 40px}
+  .page-header h1{font-size:2rem}
+  .content{padding:32px 24px 60px}
+  .page-footer{padding:24px;flex-direction:column;gap:8px}
+}
+</style>
 </head>
 <body>
-<header>
-  <h1>AssetLib233-unity</h1>
-  <p>独立 Unity / 团结引擎资源热更库。目标：替代 YooAsset，原生服务微信小游戏、WebGL、HybridCLR、多 AssetGroup 热更。</p>
-</header>
-<nav>
-  <a href="index.html">首页</a>
-  <a href="quickstart.html">快速上手</a>
-  <a href="comparison.html">对比其他框架</a>
-  <a href="architecture.html">架构设计</a>
-  <a href="manual.html">详细文档</a>
-  <a href="qa.html">QA问题</a>
-  <a href="contact.html">联系我们</a>
+
+<!-- ═══ Sidebar ═══ -->
+<aside class="sidebar">
+<div class="sidebar-brand"><h2>AssetLib233</h2><span>v0.1.0 · Unity 资源热更库</span></div>
+<nav class="sidebar-nav">
+<a href="index.html" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>首页</a>
+<a href="quickstart.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>快速上手</a>
+<a href="architecture.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>架构设计</a>
+<a href="manual.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>详细文档</a>
+<a href="comparison.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>框架对比</a>
+<a href="terminology.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>术语迁移</a>
+<a href="qa.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>QA 问答</a>
+<a href="contact.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>联系我们</a>
 </nav>
-<main>
-  <section>
-    <h2>一句话</h2>
-    <p><code>AssetLib233.Instance</code> 是用户唯一入口。AssetGroup 对标 YooAsset Package，但更贴合 login 首组、登录后 N 个内容包、统一 Loading、微信小游戏真机排障、构建报告和 Asset GC。</p>
-    <p><span class="pill">微信小游戏优先</span><span class="pill">默认并发 10</span><span class="pill">Runtime 0 依赖</span><span class="pill">UniTask 可选</span><span class="pill">纯 HTML 文档</span></p>
-    <svg class="diagram" viewBox="0 0 980 230" role="img" aria-label="AssetLib233 总览图">
-      <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#334155"></path></marker></defs>
-      <rect class="node" x="20" y="36" width="160" height="76" rx="8"></rect>
-      <text class="label" x="52" y="68">AssetLib233</text><text class="label" x="58" y="92">Facade 单例</text>
-      <line class="arrow" x1="180" y1="74" x2="238" y2="74"></line>
-      <rect class="node2" x="240" y="36" width="160" height="76" rx="8"></rect>
-      <text class="label" x="270" y="68">AssetGroup</text><text class="label" x="268" y="92">login/default/story</text>
-      <line class="arrow" x1="400" y1="74" x2="458" y2="74"></line>
-      <rect class="node" x="460" y="36" width="160" height="76" rx="8"></rect>
-      <text class="label" x="492" y="68">Collectors</text><text class="label" x="489" y="92">N 个 AB 包</text>
-      <line class="arrow" x1="620" y1="74" x2="678" y2="74"></line>
-      <rect class="node2" x="680" y="36" width="160" height="76" rx="8"></rect>
-      <text class="label" x="714" y="68">Manifest</text><text class="label" x="707" y="92">hash/size/deps</text>
-      <line class="arrow" x1="760" y1="112" x2="760" y2="154"></line>
-      <rect class="node" x="570" y="156" width="380" height="52" rx="8"></rect>
-      <text class="label" x="612" y="188">并发下载 10 + 统一 Loading + 真机诊断 + Asset GC</text>
-    </svg>
-  </section>
-  <section>
-    <h2>能力入口</h2>
-    <table>
-      <tr><th>能力</th><th>入口</th><th>说明</th></tr>
-      <tr><td>运行时加载</td><td><code>AssetLib233.Instance.LoadAssetAsync&lt;T&gt;</code></td><td>支持 callback、C# await、可选 UniTask。</td></tr>
-      <tr><td>多组下载</td><td><code>CreateMultiGroupDownloadOperation</code></td><td>多个 AssetGroup 汇总成一个进度，适合登录后 default + story。</td></tr>
-      <tr><td>真机诊断</td><td><code>BuildRuntimeDiagnosticString</code></td><td>输出平台、Manifest、缓存路径、下载和加载事件，便于复制日志。</td></tr>
-      <tr><td>打包产物</td><td><code>AssetLib233EditorBuildPipeline</code></td><td>生成 AB、Manifest、version、构建报告，并自动弹出报告窗口。</td></tr>
-    </table>
-  </section>
-  <section>
-    <h2>安装</h2>
-    <p>UPM Git 地址：</p>
-    <pre>https://github.com/neko233-com/AssetLib233-unity.git</pre>
-    <p>无 Git 一行导入：</p>
-    <pre>powershell -ExecutionPolicy Bypass -Command "iwr https://raw.githubusercontent.com/neko233-com/AssetLib233-unity/main/Tools/install-assetlib233.ps1 -OutFile $env:TEMP/install-assetlib233.ps1; & $env:TEMP/install-assetlib233.ps1 -ProjectRoot (Get-Location).Path"</pre>
-  </section>
-  <section>
-    <h2>核心链路</h2>
-    <p><code>AssetGroup</code> 包含 N 个 <code>AssetCollector</code>，每个 Collector 产出 N 个 AB / RawBundle / ArchiveBundle。每个 AssetGroup 产出独立 <code>.version</code> 和二进制 <code>.manifest</code>，运行时按 Manifest 下载、校验、加载、清理废弃包。</p>
-  </section>
-</main>
+<div class="sidebar-footer"><a href="https://github.com/neko233-com/AssetLib233-unity" style="color:#6b7899">GitHub 仓库</a></div>
+</aside>
+
+<!-- ═══ Main ═══ -->
+<div class="main">
+
+  <!-- ── Hero Header ── -->
+  <header class="page-header">
+    <h1>AssetLib233</h1>
+    <p class="tagline">独立 Unity / 团结引擎资源热更库。YooAsset 生态无痛升级，原生支持微信/抖音/TapTap 小游戏、WebGL、HybridCLR。</p>
+    <div class="badge-row">
+      <span class="badge badge-blue">Unity 2021.3+</span>
+      <span class="badge badge-green">团结引擎 1.x</span>
+      <span class="badge badge-purple">HybridCLR 就绪</span>
+      <span class="badge badge-orange">Runtime 零依赖</span>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ── 1. Architecture Diagram ── -->
+    <section class="section">
+      <div class="section-title">
+        <span class="icon icon-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span>
+        架构总览
+      </div>
+      <p class="section-desc">Facade 统一入口 &rarr; AssetGroup 资源组 &rarr; Collector / Manifest / Download / Provider / Platform Plugin / GC 六大子系统</p>
+      <div class="card diagram-card">
+        <svg viewBox="0 0 880 420" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,BlinkMacSystemFont,sans-serif">
+          <!-- Background -->
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4f6df5" stop-opacity=".08"/><stop offset="100%" stop-color="#8b5cf6" stop-opacity=".04"/></linearGradient>
+            <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4f6df5"/><stop offset="100%" stop-color="#3b5de7"/></linearGradient>
+            <linearGradient id="gGreen" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#059669"/></linearGradient>
+            <linearGradient id="gOrange" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#d97706"/></linearGradient>
+            <linearGradient id="gPurple" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient>
+          </defs>
+          <rect width="880" height="420" fill="url(#g1)" rx="8"/>
+
+          <!-- Facade -->
+          <rect x="310" y="20" width="260" height="56" rx="12" fill="url(#gBlue)"/>
+          <text x="440" y="54" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">AssetLib233.Instance</text>
+          <text x="440" y="70" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="10">Facade  (Singleton)</text>
+
+          <!-- Arrow Facade -> AssetGroup -->
+          <line x1="440" y1="76" x2="440" y2="110" stroke="#4f6df5" stroke-width="2" stroke-dasharray="4"/>
+          <polygon points="440,118 435,110 445,110" fill="#4f6df5"/>
+
+          <!-- AssetGroup -->
+          <rect x="310" y="118" width="260" height="48" rx="10" fill="url(#gPurple)"/>
+          <text x="440" y="147" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">AssetGroup</text>
+          <text x="440" y="160" text-anchor="middle" fill="rgba(255,255,255,.6)" font-size="9">资源组 (default / story / voice ...)</text>
+
+          <!-- Arrows to subsystems -->
+          <line x1="440" y1="166" x2="440" y2="196" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="3"/>
+          <line x1="120" y1="196" x2="760" y2="196" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="3"/>
+
+          <!-- Vertical arrows down -->
+          <line x1="120" y1="196" x2="120" y2="224" stroke="#4f6df5" stroke-width="1.5"/><polygon points="120,232 115,224 125,224" fill="#4f6df5"/>
+          <line x1="330" y1="196" x2="330" y2="224" stroke="#10b981" stroke-width="1.5"/><polygon points="330,232 325,224 335,224" fill="#10b981"/>
+          <line x1="550" y1="196" x2="550" y2="224" stroke="#f59e0b" stroke-width="1.5"/><polygon points="550,232 545,224 555,224" fill="#f59e0b"/>
+          <line x1="760" y1="196" x2="760" y2="224" stroke="#8b5cf6" stroke-width="1.5"/><polygon points="760,232 755,224 765,224" fill="#8b5cf6"/>
+
+          <!-- Collector -->
+          <rect x="40" y="232" width="160" height="44" rx="8" fill="url(#gBlue)"/>
+          <text x="120" y="259" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">Collectors</text>
+
+          <!-- Manifest -->
+          <rect x="250" y="232" width="160" height="44" rx="8" fill="url(#gGreen)"/>
+          <text x="330" y="259" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">Manifest</text>
+
+          <!-- Download + Provider -->
+          <rect x="460" y="232" width="180" height="44" rx="8" fill="url(#gOrange)"/>
+          <text x="550" y="259" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">Download + Provider</text>
+
+          <!-- Platform + GC -->
+          <rect x="680" y="232" width="160" height="44" rx="8" fill="url(#gPurple)"/>
+          <text x="760" y="259" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">Platform + GC</text>
+
+          <!-- Sub-details -->
+          <text x="120" y="296" text-anchor="middle" fill="#475569" font-size="10">资源收集 / 打包规则</text>
+          <text x="330" y="296" text-anchor="middle" fill="#475569" font-size="10">版本清单 / DAG 依赖</text>
+          <text x="550" y="296" text-anchor="middle" fill="#475569" font-size="10">CDN 下载 / 资源加载</text>
+          <text x="760" y="296" text-anchor="middle" fill="#475569" font-size="10">平台插件 / 缓存回收</text>
+
+          <!-- Bottom platform row -->
+          <rect x="40" y="330" width="800" height="64" rx="10" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
+          <text x="440" y="352" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="600" letter-spacing=".08em">SUPPORTED PLATFORMS</text>
+          <text x="110" y="378" text-anchor="middle" fill="#334155" font-size="11" font-weight="500">PC / iOS / Android</text>
+          <text x="310" y="378" text-anchor="middle" fill="#334155" font-size="11" font-weight="500">WebGL</text>
+          <text x="470" y="378" text-anchor="middle" fill="#334155" font-size="11" font-weight="500">微信小游戏</text>
+          <text x="610" y="378" text-anchor="middle" fill="#334155" font-size="11" font-weight="500">抖音小游戏</text>
+          <text x="760" y="378" text-anchor="middle" fill="#334155" font-size="11" font-weight="500">TapTap 小游戏</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ── 2. Feature Highlights ── -->
+    <section class="section">
+      <div class="section-title">
+        <span class="icon icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+        核心特性
+      </div>
+      <p class="section-desc">为小游戏与 HybridCLR 场景深度优化，同时兼容 YooAsset 既有 CDN 产物</p>
+      <div class="feature-grid">
+
+        <div class="card feature-card">
+          <div class="icon-circle ic-blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <h3>小游戏优先</h3>
+          <p>微信 / 抖音 / TapTap 小游戏原生插件适配，CDN 下载并发锁 10，完整缓存链路管理，避免小游戏环境缓存表与实际文件不一致问题。</p>
+        </div>
+
+        <div class="card feature-card">
+          <div class="icon-circle ic-green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <h3>YooAsset 兼容</h3>
+          <p>直接读取 YooAsset CDN 产物（Manifest / Bundle 格式），无需重新打包或迁移 CDN。从 YooAsset 迁移只需替换 API 调用层。</p>
+        </div>
+
+        <div class="card feature-card">
+          <div class="icon-circle ic-orange">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          </div>
+          <h3>零依赖</h3>
+          <p>Runtime 零外部依赖，可直接放入任何 Unity / 团结工程。UniTask 作为可选插件接入，不强制绑定异步方案。</p>
+        </div>
+
+        <div class="card feature-card">
+          <div class="icon-circle ic-purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <h3>真机诊断</h3>
+          <p>内置 <code>BuildRuntimeDiagnosticString()</code>，一键输出平台、缓存、版本、内存、下载状态完整诊断串，真机排查无需附加调试器。</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── 3. Installation ── -->
+    <section class="section">
+      <div class="section-title">
+        <span class="icon icon-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+        安装
+      </div>
+      <p class="section-desc">通过 Unity Package Manager 或命令行一键安装</p>
+
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="install-tabs" id="installTabs">
+          <div class="install-tab active" data-pane="pane-upm">UPM Git URL</div>
+          <div class="install-tab" data-pane="pane-cli">PowerShell</div>
+          <div class="install-tab" data-pane="pane-manifest">manifest.json</div>
+        </div>
+
+        <div id="pane-upm" class="install-pane active">
+          <div class="code-block" style="border-radius:0 0 10px 10px">
+            <span class="code-lang">Unity Package Manager</span>
+            <code><span class="comment">// Package Manager → Add package from git URL...</span>
+https://github.com/neko233-com/AssetLib233-unity.git?path=Assets/AssetLib233</code>
+          </div>
+        </div>
+
+        <div id="pane-cli" class="install-pane">
+          <div class="code-block" style="border-radius:0 0 10px 10px">
+            <span class="code-lang">PowerShell</span>
+            <code><span class="comment"># 一键克隆到项目 Assets 目录</span>
+git clone --depth 1 https://github.com/neko233-com/AssetLib233-unity.git _tmp233 `
+  ; Copy-Item -Recurse _tmp233/Assets/AssetLib233 Assets/AssetLib233 `
+  ; Remove-Item -Recurse _tmp233</code>
+          </div>
+        </div>
+
+        <div id="pane-manifest" class="install-pane">
+          <div class="code-block" style="border-radius:0 0 10px 10px">
+            <span class="code-lang">Packages/manifest.json</span>
+            <code>{
+  <span class="string">"dependencies"</span>: {
+    <span class="string">"com.neko233.assetlib233"</span>: <span class="string">"https://github.com/neko233-com/AssetLib233-unity.git?path=Assets/AssetLib233#v0.1.0"</span>
+  }
+}</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4. Quick Code Example ── -->
+    <section class="section">
+      <div class="section-title">
+        <span class="icon icon-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+        快速接入
+      </div>
+      <p class="section-desc">三行核心调用：初始化 &rarr; 初始化资源组 &rarr; 异步加载资源</p>
+
+      <div class="code-block">
+        <span class="code-lang">C#</span>
+        <code><span class="comment">// 1. 初始化 AssetLib233（通常在启动场景或热更入口调用一次）</span>
+<span class="keyword">await</span> <span class="type">AssetLib233</span>.<span class="method">Initialize</span>(<span class="keyword">new</span> <span class="type">AssetLibConfig</span> {
+    CdnBaseUrl = <span class="string">"https://cdn.example.com/res"</span>,
+    Platform   = <span class="type">EnumAssetPlatform</span>.Auto,
+});
+
+<span class="comment">// 2. 初始化资源组（拉取 Manifest、校验版本、按需下载）</span>
+<span class="keyword">await</span> <span class="type">AssetLib233</span>.<span class="method">InitializeGroup</span>(<span class="string">"default"</span>, <span class="keyword">new</span> <span class="type">GroupInitParams</span> {
+    IsRequired = <span class="keyword">true</span>,
+    OnProgress = (loaded, total) =&gt; {
+        <span class="type">Debug</span>.<span class="method">Log</span>($<span class="string">"下载进度: {loaded}/{total}"</span>);
+    }
+});
+
+<span class="comment">// 3. 异步加载资源</span>
+<span class="type">Sprite</span> icon = <span class="keyword">await</span> <span class="type">AssetLib233</span>.<span class="method">LoadAssetAsync</span>&lt;<span class="type">Sprite</span>&gt;(<span class="string">"default"</span>, <span class="string">"image_icon/hero_001"</span>);
+myImage.sprite = icon;
+
+<span class="comment">// 释放单个资源</span>
+<span class="type">AssetLib233</span>.<span class="method">ReleaseAsset</span>(<span class="string">"default"</span>, <span class="string">"image_icon/hero_001"</span>);</code>
+      </div>
+    </section>
+
+    <!-- ── 5. Platform Support ── -->
+    <section class="section">
+      <div class="section-title">
+        <span class="icon icon-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
+        平台支持
+      </div>
+      <p class="section-desc">覆盖主流 Unity / 团结引擎目标平台，小游戏平台提供原生插件级适配</p>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:22%">平台</th>
+                <th style="width:14%">宏定义</th>
+                <th style="width:14%">状态</th>
+                <th>说明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>PC / iOS / Android</strong></td>
+                <td><code>-</code></td>
+                <td><span class="platform-tag pt-stable">Stable</span></td>
+                <td>标准 UnityWebRequest / FileStream 链路，零配置开箱</td>
+              </tr>
+              <tr>
+                <td><strong>WebGL</strong></td>
+                <td><code>UNITY_WEBGL</code></td>
+                <td><span class="platform-tag pt-stable">Stable</span></td>
+                <td>异步加载 + IndexedDB 缓存，兼容 WebGL 2.0</td>
+              </tr>
+              <tr>
+                <td><strong>微信小游戏</strong></td>
+                <td><code>WX</code></td>
+                <td><span class="platform-tag pt-stable">Stable</span></td>
+                <td>微信插件预下载缓存链路，并发 10，支持 <code>wechatminigame-preload</code></td>
+              </tr>
+              <tr>
+                <td><strong>抖音小游戏</strong></td>
+                <td><code>DOUYINMINIGAME</code></td>
+                <td><span class="platform-tag pt-stable">Stable</span></td>
+                <td>抖音小游戏 SDK 原生下载接口适配</td>
+              </tr>
+              <tr>
+                <td><strong>TapTap 小游戏</strong></td>
+                <td><code>TAPMINIGAME</code></td>
+                <td><span class="platform-tag pt-stable">Stable</span></td>
+                <td>TapTap 小游戏平台下载与缓存适配</td>
+              </tr>
+              <tr>
+                <td><strong>PS5</strong></td>
+                <td><code>UNITY_PS5</code></td>
+                <td><span class="platform-tag pt-planned">Planned</span></td>
+                <td>主机平台预留扩展点，按 NDA 要求离线部署</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 6. Async Support ── -->
+    <section class="section">
+      <div class="section-title">
+        <span class="icon icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+        异步模型
+      </div>
+      <p class="section-desc">三种异步方案按需选用，不强制绑定任何一种</p>
+      <div class="async-grid">
+
+        <div class="card">
+          <h3 style="font-size:.95rem;font-weight:700;margin-bottom:12px;color:#4f6df5">Callback</h3>
+          <p style="font-size:.82rem;color:#64748b;margin-bottom:14px">传统回调模式，兼容 Unity 2021.3 无 async 场景</p>
+          <div class="code-block" style="padding:16px 20px">
+            <code style="font-size:.78rem"><span class="type">AssetLib233</span>.<span class="method">LoadAssetAsync</span>&lt;<span class="type">Sprite</span>&gt;(
+    <span class="string">"default"</span>, <span class="string">"icon"</span>,
+    sprite =&gt; { img.sprite = sprite; }
+);</code>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size:.95rem;font-weight:700;margin-bottom:12px;color:#10b981">C# await</h3>
+          <p style="font-size:.82rem;color:#64748b;margin-bottom:14px">标准 async/await，适用于 .NET 4.x / IL2CPP</p>
+          <div class="code-block" style="padding:16px 20px">
+            <code style="font-size:.78rem"><span class="type">Sprite</span> icon = <span class="keyword">await</span> <span class="type">AssetLib233</span>
+    .<span class="method">LoadAssetAsync</span>&lt;<span class="type">Sprite</span>&gt;(
+        <span class="string">"default"</span>, <span class="string">"icon"</span>);
+img.sprite = icon;</code>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size:.95rem;font-weight:700;margin-bottom:12px;color:#8b5cf6">UniTask</h3>
+          <p style="font-size:.82rem;color:#64748b;margin-bottom:14px">可选插件接入，零 GC 高性能异步，推荐小游戏使用</p>
+          <div class="code-block" style="padding:16px 20px">
+            <code style="font-size:.78rem"><span class="type">Sprite</span> icon = <span class="keyword">await</span> <span class="type">AssetLib233</span>
+    .<span class="method">LoadAssetUniTask</span>&lt;<span class="type">Sprite</span>&gt;(
+        <span class="string">"default"</span>, <span class="string">"icon"</span>);
+img.sprite = icon;</code>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer class="page-footer">
+    <span>AssetLib233 v0.1.0 &middot; MIT License</span>
+    <span><a href="https://github.com/neko233-com/AssetLib233-unity">GitHub</a> &middot; <a href="quickstart.html">快速上手</a> &middot; <a href="architecture.html">架构设计</a></span>
+  </footer>
+
+</div>
+
+<!-- ── Tab switch script ── -->
+<script>
+(function(){
+  var tabs = document.querySelectorAll('.install-tab');
+  for(var i = 0; i < tabs.length; i++){
+    tabs[i].addEventListener('click', function(){
+      for(var j = 0; j < tabs.length; j++){
+        tabs[j].classList.remove('active');
+        document.getElementById(tabs[j].getAttribute('data-pane')).classList.remove('active');
+      }
+      this.classList.add('active');
+      document.getElementById(this.getAttribute('data-pane')).classList.add('active');
+    });
+  }
+})();
+</script>
+
 </body>
 </html>

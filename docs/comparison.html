@@ -3,32 +3,550 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AssetLib233 对比其他框架</title>
+  <title>AssetLib233 - 框架对比</title>
   <link rel="icon" href="data:,">
   <style>
-    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;color:#17212b;background:#f5f7fb;line-height:1.75}
-    header{background:#17212b;color:#fff;padding:36px 28px}nav{background:#fff;border-bottom:1px solid #d8dee8;padding:12px 28px;position:sticky;top:0}nav a{color:#1769d8;text-decoration:none;font-weight:700;margin-right:18px}main{max-width:1120px;margin:0 auto;padding:28px}section{background:#fff;border:1px solid #d8dee8;border-radius:8px;padding:24px;margin-bottom:18px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #d8dee8;padding:10px;text-align:left;vertical-align:top}th{background:#eef3fb}code{font-family:Consolas,"SFMono-Regular",monospace}
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      color: #17212b;
+      background: #f5f7fb;
+      line-height: 1.75;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: fixed;
+      left: 0; top: 0;
+      width: 260px;
+      height: 100vh;
+      background: #0f1629;
+      color: #c8cee0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      overflow-y: auto;
+    }
+    .sidebar-brand {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .sidebar-brand h2 {
+      margin: 0;
+      font-size: 20px;
+      color: #fff;
+      letter-spacing: .3px;
+    }
+    .sidebar-brand span {
+      font-size: 12px;
+      color: #6b7899;
+      margin-top: 4px;
+      display: block;
+    }
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 0;
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 24px;
+      color: #8892aa;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all .2s;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-nav a:hover {
+      color: #e0e6f0;
+      background: rgba(255,255,255,.04);
+    }
+    .sidebar-nav a.active {
+      color: #fff;
+      background: rgba(255,255,255,.07);
+      border-left-color: #4f8cff;
+    }
+    .sidebar-nav a svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+    .sidebar-footer {
+      padding: 18px 24px;
+      border-top: 1px solid rgba(255,255,255,.07);
+      font-size: 13px;
+    }
+
+    /* ── Main ── */
+    .main {
+      margin-left: 260px;
+    }
+    .page-header {
+      background: linear-gradient(135deg, #0f1629, #1e2a4a);
+      color: #fff;
+      padding: 48px;
+    }
+    .page-header h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .page-header p {
+      margin: 0;
+      font-size: 15px;
+      color: #a0aec0;
+      max-width: 640px;
+    }
+    .content {
+      max-width: 1080px;
+      padding: 36px 48px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff;
+      border: 1px solid #e2e6ef;
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+    }
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      color: #0f1629;
+    }
+    .card h3 {
+      margin: 20px 0 8px;
+      font-size: 15px;
+      color: #3a4560;
+    }
+    .card p {
+      margin: 8px 0;
+      color: #4a5568;
+      font-size: 14px;
+    }
+    .card ul {
+      margin: 8px 0;
+      padding-left: 20px;
+      color: #4a5568;
+      font-size: 14px;
+    }
+    .card ul li {
+      margin-bottom: 6px;
+    }
+
+    /* ── Tables ── */
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th {
+      background: #0f1629;
+      color: #e2e8f0;
+      font-weight: 600;
+      padding: 12px 16px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    td {
+      border: 1px solid #e2e6ef;
+      padding: 10px 16px;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+    td:first-child {
+      font-weight: 600;
+      color: #0f1629;
+      white-space: nowrap;
+    }
+    .cell-good { color: #166534; }
+    .cell-warn { color: #92400e; }
+    .cell-bad  { color: #991b1b; }
+
+    /* ── Code ── */
+    code, pre {
+      font-family: Consolas, "SFMono-Regular", "Courier New", monospace;
+    }
+    code {
+      background: #edf2f7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #2d3748;
+    }
+    pre {
+      background: #0f1629;
+      color: #e2e8f0;
+      padding: 20px 24px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.65;
+      margin: 14px 0 4px;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+      font-size: inherit;
+    }
+
+    /* ── Feature pills ── */
+    .pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      margin: 2px 4px 2px 0;
+    }
+    .pill-green  { background: #dcfce7; color: #166534; }
+    .pill-yellow { background: #fef3c7; color: #92400e; }
+    .pill-red    { background: #fee2e2; color: #991b1b; }
+    .pill-blue   { background: #dbeafe; color: #1e40af; }
+
+    /* ── Design philosophy grid ── */
+    .philosophy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .philosophy-item {
+      background: #f8fafc;
+      border: 1px solid #e2e6ef;
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .philosophy-item h4 {
+      margin: 0 0 6px;
+      font-size: 15px;
+      color: #0f1629;
+    }
+    .philosophy-item p {
+      margin: 0;
+      font-size: 13px;
+      color: #4a5568;
+    }
+
+    /* ── Migration steps ── */
+    .migration-step {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .migration-num {
+      flex-shrink: 0;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f8cff, #3366cc);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .migration-body h4 {
+      margin: 0 0 4px;
+      font-size: 15px;
+      color: #0f1629;
+    }
+    .migration-body p {
+      margin: 0;
+      font-size: 13px;
+      color: #4a5568;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+      .sidebar-brand { display: none; }
+      .sidebar-footer { display: none; }
+      .sidebar-nav {
+        display: flex;
+        flex-direction: row;
+        padding: 0;
+        min-width: max-content;
+      }
+      .sidebar-nav a {
+        padding: 14px 18px;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        white-space: nowrap;
+        font-size: 13px;
+      }
+      .sidebar-nav a.active {
+        border-left-color: transparent;
+        border-bottom-color: #4f8cff;
+      }
+      .main {
+        margin-left: 0;
+      }
+      .page-header { padding: 32px 20px; }
+      .page-header h1 { font-size: 24px; }
+      .content { padding: 20px 16px; }
+      .card { padding: 20px 18px; }
+      .philosophy-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
-<header><h1>对比其他框架</h1><p>不照抄任何实现。保留好用模型，补齐小游戏、诊断、构建报告、启动链路。</p></header>
-<nav><a href="index.html">首页</a><a href="quickstart.html">快速上手</a><a href="comparison.html">对比其他框架</a><a href="architecture.html">架构设计</a><a href="manual.html">详细文档</a><a href="qa.html">QA问题</a><a href="contact.html">联系我们</a></nav>
-<main>
-  <section>
-    <h2>能力对比</h2>
-    <table>
-      <tr><th>维度</th><th>AssetLib233</th><th>常见资源框架</th></tr>
-      <tr><td>资源域</td><td><code>AssetGroup</code> 原生支持 login / default / story / voice 分层。</td><td>常见模型需要项目再包一层启动流程。</td></tr>
-      <tr><td>小游戏</td><td>WX 单宏、小游戏缓存根、并发 10、诊断串、远端模拟下载。</td><td>常需改源码或写外部适配。</td></tr>
-      <tr><td>Loading</td><td>多 AssetGroup 汇总为一个进度。</td><td>单包下载较容易，多包统一体验需业务自己写。</td></tr>
-      <tr><td>构建报告</td><td>打包后自动弹出报告，记录版本、Bundle、资源、加密和错误摘要，并支持飞书通知。</td><td>常需额外工具拼接。</td></tr>
-      <tr><td>扩展</td><td>压缩、打包规则、产物校验、下载传输、平台插件都可替换；CDN 发布可选插件化。</td><td>扩展点分散，项目要补胶水。</td></tr>
-    </table>
-  </section>
-  <section>
-    <h2>设计原则</h2>
-    <p>Runtime 0 依赖，UniTask 为可选插件。微信小游戏优先，但 iOS、Android、PC、PS5、WebGL 都走同一核心模型。稳定优先，不为追求零 GC 牺牲可排障性。</p>
-  </section>
-</main>
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <h2>AssetLib233</h2>
+    <span>v0.1.0 · Unity 资源热更库</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>首页
+    </a>
+    <a href="quickstart.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>快速上手
+    </a>
+    <a href="architecture.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>架构设计
+    </a>
+    <a href="manual.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>详细文档
+    </a>
+    <a href="comparison.html" class="active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>框架对比
+    </a>
+    <a href="terminology.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>术语迁移
+    </a>
+    <a href="qa.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>QA 问答
+    </a>
+    <a href="contact.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>联系我们
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="https://github.com/neko233-com/AssetLib233-unity" style="color:#6b7899">GitHub 仓库</a>
+  </div>
+</aside>
+
+<!-- ── Main Content ── -->
+<div class="main">
+  <div class="page-header">
+    <h1>框架对比</h1>
+    <p>AssetLib233 vs YooAsset vs Unity Addressables — 从能力维度、设计理念到迁移指南，帮你判断是否值得切换。</p>
+  </div>
+
+  <div class="content">
+
+    <!-- 能力对比表 -->
+    <div class="card">
+      <h2>能力对比总览</h2>
+      <p>以下表格覆盖热更框架在实际项目中最常遇到的 10 个关键维度。评估基于各框架的公开实现与社区反馈。</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>维度</th>
+              <th>AssetLib233</th>
+              <th>YooAsset</th>
+              <th>Unity Addressables</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>小游戏支持</td>
+              <td class="cell-good">原生支持微信小游戏 / TapTap 小游戏 / 抖音小游戏。提供 <code>WXAssetBundle</code> 缓存链路、CDN 预热、小游戏专属 PlayMode、平台插件扩展。</td>
+              <td class="cell-warn">无内置小游戏支持。需要项目自行适配微信 SDK 缓存链路和下载器，或依赖第三方分支。</td>
+              <td class="cell-bad">不支持。WebGL Build 可跑但无小游戏缓存优化，微信小游戏环境需要完全重写资源加载层。</td>
+            </tr>
+            <tr>
+              <td>CDN 兼容</td>
+              <td class="cell-good">内容寻址 + hash 命名，天然适配任意 CDN。支持 Fallback CDN 自动回退、Range 断点续传、CDN 预热钩子。</td>
+              <td class="cell-good">支持自定义远端地址和 hash 校验，可配合主流 CDN。无内置 Fallback 机制，需业务补。</td>
+              <td class="cell-warn">依赖 Unity Cloud Build 或自建 Profile。CDN 地址通过 Profile Variable 配置，切换环境需重新 Build。</td>
+            </tr>
+            <tr>
+              <td>多组统一 Loading</td>
+              <td class="cell-good">内置 <code>MultiGroupDownloadOperation</code>，多个 AssetGroup 汇总为一个 0~1 进度值，支持 Required / Optional 分组策略。</td>
+              <td class="cell-warn">单 Package 有进度回调，多 Package 统一 Loading 需要业务层聚合。</td>
+              <td class="cell-warn">单 Group 有 <code>PercentComplete</code>，多 Group 统一进度需写 <code>IResourceLocator</code> 聚合逻辑。</td>
+            </tr>
+            <tr>
+              <td>构建报告</td>
+              <td class="cell-good">构建后自动弹出报告窗口：Bundle 清单、大小统计、新增/变更/删除、加密状态、错误摘要。支持飞书 / 企微 Webhook。</td>
+              <td class="cell-warn">无内置报告。需在 Editor 脚本中自行解析 <code>BuildResult</code>。</td>
+              <td class="cell-good">提供 <code>BuildReport</code> JSON，可通过 <code>Addressables Report</code> 窗口查看。格式较完整但定制性一般。</td>
+            </tr>
+            <tr>
+              <td>真机诊断</td>
+              <td class="cell-good"><code>BuildRuntimeDiagnosticString()</code> 输出平台、Manifest、缓存、下载/加载事件。微信小游戏可导出完整诊断串。</td>
+              <td class="cell-warn">有 <code>YooLogger</code> 和事件钩子，但无一键诊断串。需手动拼接日志。</td>
+              <td class="cell-bad">依赖 Unity Profiler 或 <code>EventViewer</code>。小游戏 / WebGL 环境 Profiler 不可用，诊断困难。</td>
+            </tr>
+            <tr>
+              <td>Asset GC</td>
+              <td class="cell-good">独立 <code>AssetGcService</code>，按引用计数 + 周期扫描回收。支持按 Group 独立 GC、手动触发和自动周期。</td>
+              <td class="cell-warn"><code>Package.UnloadUnusedAssets()</code> 按 Package 粒度卸载，无自动周期服务。</td>
+              <td class="cell-warn"><code>Release()</code> 递减引用计数，配合 <code>Resources.UnloadUnusedAssets()</code>。全局粒度，无法按 Group 独立 GC。</td>
+            </tr>
+            <tr>
+              <td>平台插件</td>
+              <td class="cell-good">独立平台插件层。微信小游戏 <code>WXAssetBundle</code> 缓存、WebGL 内存优化等通过插件注入，不改核心代码。</td>
+              <td class="cell-bad">无插件机制。平台适配需 fork 或改源码。</td>
+              <td class="cell-bad">无插件机制。平台适配依赖 <code>IResourceProvider</code> 自定义实现。</td>
+            </tr>
+            <tr>
+              <td>Runtime 依赖</td>
+              <td class="cell-good">零外部依赖。UniTask 为可选插件，不强制引入。Core 仅依赖 Unity 原生 API。</td>
+              <td class="cell-good">零外部依赖。可选 UniTask。Core 较轻量。</td>
+              <td class="cell-bad">依赖 <code>Unity.Addressables</code> + <code>Unity.ResourceManager</code> 包，引入较多 Editor 管线和 Runtime 开销。</td>
+            </tr>
+            <tr>
+              <td>扩展点</td>
+              <td class="cell-good">压缩算法、打包规则、产物校验、下载传输、平台插件均可替换。CDN 发布可选插件化。</td>
+              <td class="cell-good">加密 / 解密、下载器、缓存策略可通过接口替换。打包规则扩展性较好。</td>
+              <td class="cell-warn">通过 <code>IBuildPipeline</code> 和 <code>IResourceProvider</code> 扩展，但改动涉及较多内部类。定制成本高。</td>
+            </tr>
+            <tr>
+              <td>学习成本</td>
+              <td class="cell-good">API 精简，7 步上手。术语与 YooAsset 近似，迁移门槛低。中文文档齐全。</td>
+              <td class="cell-good">社区活跃，中文文档丰富，上手快。概念清晰。</td>
+              <td class="cell-warn">概念多（Profile、Catalog、Locator、Provider），英文文档为主。初学者上手曲线较陡。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 设计理念 -->
+    <div class="card">
+      <h2>设计理念</h2>
+      <p>AssetLib233 不是 YooAsset 的 fork，也不是 Addressables 的封装。它从零设计，针对小游戏 / HybridCLR / 多内容包场景做了取舍。</p>
+
+      <div class="philosophy-grid">
+        <div class="philosophy-item">
+          <h4>小游戏优先，而非全平台妥协</h4>
+          <p>微信小游戏是当前主力平台。CDN 缓存链路、WXAssetBundle 行为、并发上限（10）、预热策略都按小游戏最优解设计，而非从 PC / Console 方案退化适配。其他平台（iOS、Android、PC、PS5）共享同一核心模型。</p>
+        </div>
+        <div class="philosophy-item">
+          <h4>稳定可排障 &gt; 极致性能</h4>
+          <p>不为追求零 GC 牺牲可排障性。<code>BuildRuntimeDiagnosticString()</code> 在真机可导出完整诊断串。每个下载事件、Manifest 变更、缓存命中/未命中都有日志钩子。线上问题能定位比少分配几 KB 更重要。</p>
+        </div>
+        <div class="philosophy-item">
+          <h4>业务分层内置</h4>
+          <p>login 首包 + 登录后 N 个内容包 + Required/Optional 分组策略，这些不是项目自己写的胶水代码，而是框架的一等公民。<code>StartupPlan</code> 和 <code>MultiGroupDownloadOperation</code> 将业务启动链路标准化。</p>
+        </div>
+        <div class="philosophy-item">
+          <h4>Runtime 零依赖</h4>
+          <p>Core 只依赖 Unity 原生 API。UniTask 是可选增强（<code>await</code> 支持），不是硬依赖。避免引入第三方包导致的版本冲突和安全审计负担。</p>
+        </div>
+        <div class="philosophy-item">
+          <h4>内容寻址 + 增量更新</h4>
+          <p>Bundle 以 hash 命名，天然支持 CDN 缓存和内容寻址。增量更新只下载差异 Bundle，本地已缓存的相同 hash 文件不会重复下载。</p>
+        </div>
+        <div class="philosophy-item">
+          <h4>平台插件隔离</h4>
+          <p>微信小游戏、WebGL 等平台的特殊行为通过插件层注入，不污染核心下载/加载管线。新增平台支持时只需实现插件接口，无需改 AssetLib233 核心。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 迁移指南 -->
+    <div class="card">
+      <h2>从 YooAsset 迁移指南</h2>
+      <p>如果你的项目当前使用 YooAsset，以下是推荐的迁移步骤。核心 API 概念相似，但初始化时序和部分类型名有差异。</p>
+
+      <div class="migration-step">
+        <div class="migration-num">1</div>
+        <div class="migration-body">
+          <h4>替换包引用</h4>
+          <p>移除 YooAsset UPM 依赖，添加 AssetLib233。全局搜索替换 <code>using YooAsset;</code> 为 <code>using AssetLib233;</code>。</p>
+        </div>
+      </div>
+
+      <div class="migration-step">
+        <div class="migration-num">2</div>
+        <div class="migration-body">
+          <h4>重构初始化代码</h4>
+          <p>YooAsset 的 <code>YooAssets.Initialize()</code> 是单步调用；AssetLib233 拆为两步：<code>AssetLib233.Instance.Initialize()</code> + <code>InitializeGroup(config)</code>。每个 Package 对应一个 <code>AssetLib233PackageConfig</code>。</p>
+        </div>
+      </div>
+
+      <div class="migration-step">
+        <div class="migration-num">3</div>
+        <div class="migration-body">
+          <h4>替换下载链路</h4>
+          <p>YooAsset 的 <code>UpdatePackageVersionAsync</code> + <code>UpdatePackageManifestAsync</code> + <code>PreDownloadContentAsync</code> 三步操作，替换为 AssetLib233 的两步：<code>CreatePreparePackageOperation</code> + <code>CreatePackageDownloadOperation</code>。</p>
+        </div>
+      </div>
+
+      <div class="migration-step">
+        <div class="migration-num">4</div>
+        <div class="migration-body">
+          <h4>替换资源加载</h4>
+          <p><code>YooAssets.LoadAssetAsync&lt;T&gt;()</code> 替换为 <code>AssetLib233.Instance.LoadAssetAsync&lt;T&gt;()</code>。注意 AssetLib233 需要传入 GroupName 作为第一个参数。</p>
+        </div>
+      </div>
+
+      <div class="migration-step">
+        <div class="migration-num">5</div>
+        <div class="migration-body">
+          <h4>替换释放逻辑</h4>
+          <p>YooAsset 的 <code>handle.Release()</code> 语义基本一致。但 AssetLib233 的 <code>Release()</code> 是递减引用计数，实际卸载由 <code>AssetGcService</code> 负责。建议在初始化时启动 <code>StartAssetGcService()</code>。</p>
+        </div>
+      </div>
+
+      <div class="migration-step">
+        <div class="migration-num">6</div>
+        <div class="migration-body">
+          <h4>替换构建管线</h4>
+          <p>移除 YooAsset Editor 构建脚本，改用 <code>AssetLib233EditorBuildPipeline.BuildAllGroups()</code>。构建产物目录结构不同（参见术语迁移表的 CDN 文件命名映射），CI / CDN 上传脚本需同步调整。</p>
+        </div>
+      </div>
+
+      <div class="migration-step">
+        <div class="migration-num">7</div>
+        <div class="migration-body">
+          <h4>验证与回归</h4>
+          <p>使用 <code>EditorSimulate</code> 模式快速验证加载地址和 Group 配置。切换到 <code>OfflinePlay</code> 验证打包产物。最后用 <code>Host</code> 模式从 CDN 拉取验证完整热更链路。建议用 <code>BuildRuntimeDiagnosticString()</code> 输出诊断串归档。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 何时不该迁移 -->
+    <div class="card">
+      <h2>何时不该迁移</h2>
+      <p>AssetLib233 不是万能的。以下场景建议保持现有方案：</p>
+      <ul>
+        <li><strong>纯 PC / Console 项目</strong> — 不需要小游戏支持和多组统一 Loading，Addressables 的生态更成熟</li>
+        <li><strong>已稳定运行的 YooAsset 项目</strong> — 如果当前热更链路无问题，迁移收益不大，除非需要小游戏或多组 Loading 能力</li>
+        <li><strong>强依赖 Addressables 生态</strong> — 如使用了 Addressables 的 Asset Reference、Scene Loading、ScriptableObject Group Template 等深度集成特性</li>
+        <li><strong>团队对 YooAsset 源码已深度定制</strong> — 定制版 YooAsset 的迁移成本可能高于收益</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>
